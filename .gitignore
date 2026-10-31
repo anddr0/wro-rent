@@ -1,0 +1,38 @@
+# dependencies
+node_modules/
+
+# build output
+.next/
+out/
+build/
+dist/
+*.tsbuildinfo
+next-env.d.ts
+
+# env files: secrets live only locally / in the hosting dashboard
+.env*
+!.env.example
+
+# secrets
+*.pem
+*.key
+
+# supabase CLI local state
+supabase/.branches/
+supabase/.temp/
+supabase/.env
+
+# deploy / tooling
+.vercel/
+.turbo/
+coverage/
+
+# editors / OS
+.idea/
+.vscode/
+.claude/settings.local.json
+.DS_Store
+
+# logs
+*.log
+npm-debug.log*
