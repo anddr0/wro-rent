@@ -27,15 +27,33 @@ POST-запросом на `APP_URL/api/telegram/webhook`. Один деплой
 
 ## Запуск локально
 
-Нужен Node.js 22+ (`fnm use`).
+Нужны Node.js 22+ (`fnm use`) и запущенный Docker.
 
 ```bash
 npm install
-cp apps/web/.env.example apps/web/.env.local   # заполнить
+npm run db:start                                # локальный Supabase в Docker
+cp apps/web/.env.example apps/web/.env.local    # заполнить, см. ниже
 ngrok http --url <твой-домен>.ngrok-free.dev 3000
 npm run dev
-npm run webhook:set       # один раз, и после смены APP_URL/секрета
+npm run webhook:set                             # один раз и после смены APP_URL/секрета
 ```
+
+## Локальная база
+
+Локальный Supabase поднимает Supabase CLI: он сам запускает Docker-контейнеры
+(`supabase_*_vityas_bike_rent`) по настройкам из `supabase/config.toml`.
+Свой docker-compose не нужен.
+
+| Сервис          | Адрес                    | Зачем                                  |
+| --------------- | ------------------------ | -------------------------------------- |
+| API             | http://127.0.0.1:54321   | сюда ходит supabase-js                 |
+| Postgres        | 127.0.0.1:54322          | прямой доступ (psql, DBeaver)          |
+| Studio          | http://127.0.0.1:54323   | веб-интерфейс: таблицы, SQL-редактор   |
+
+Отключены как ненужные: realtime, edge functions, analytics, почтовый сервер.
+
+- `npm run db:stop` останавливает контейнеры, данные сохраняются.
+- `npm run db:reset` пересоздаёт базу с нуля из миграций и `seed.sql`.
 
 ## Скрипты
 
