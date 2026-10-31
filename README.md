@@ -38,6 +38,16 @@ npm run dev
 npm run webhook:set                             # один раз и после смены APP_URL/секрета
 ```
 
+Ключи локального Supabase: `npx supabase status -o env`.
+
+| Переменная                             | Откуда                     | Где можно использовать        |
+| -------------------------------------- | -------------------------- | ----------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`             | `API_URL`                  | везде                         |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | `PUBLISHABLE_KEY`          | браузер; доступ ограничен RLS |
+| `SUPABASE_SECRET_KEY`                  | `SECRET_KEY`               | только сервер; полный доступ  |
+
+В облаке ключи создаются в Dashboard → Project Settings → API Keys.
+
 ## Локальная база
 
 Локальный Supabase поднимает Supabase CLI: он сам запускает Docker-контейнеры
