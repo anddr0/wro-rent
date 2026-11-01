@@ -17,7 +17,8 @@
     "db:reset": "supabase db reset",
     "db:types": "supabase gen types typescript --local > src/lib/database.types.ts",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "test": "tsx --conditions=react-server --test --test-reporter=spec \"src/**/*.test.ts\""
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.118.0",

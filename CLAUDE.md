@@ -48,7 +48,7 @@ Telegram-бот и мини-апп для проката велосипедов.
 
 ## Перед коммитом
 
-`npm run typecheck`, `npm run lint`, `npm run format:check`, `npm run build` должны проходить.
+`npm run typecheck`, `npm run lint`, `npm run format:check`, `npm test`, `npm run build` должны проходить.
 Форматирование не обсуждаем и не правим руками: это делает Prettier (`npm run format`).
 
 ## Next.js

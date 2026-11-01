@@ -77,6 +77,7 @@ npm run webhook:set                             # один раз и после 
 | `npm run dev`            | Next.js в режиме разработки                          |
 | `npm run build`          | продакшен-сборка                                     |
 | `npm run typecheck`      | проверка типов                                       |
+| `npm test`               | тесты (`*.test.ts`, встроенный раннер Node)          |
 | `npm run lint`           | ESLint                                               |
 | `npm run format`         | отформатировать код (Prettier)                       |
 | `npm run format:check`   | проверить форматирование, ничего не меняя            |
