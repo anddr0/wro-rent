@@ -20,7 +20,10 @@ export function createBot({ token, miniAppUrl, supabase }: BotConfig) {
 
   bot.command("start", (ctx) =>
     ctx.reply("Привет! Это прокат велосипедов Vityas 🚲", {
-      reply_markup: new InlineKeyboard().webApp("Открыть приложение", miniAppUrl),
+      reply_markup: new InlineKeyboard().webApp(
+        "Открыть приложение",
+        miniAppUrl,
+      ),
     }),
   );
 
@@ -29,7 +32,12 @@ export function createBot({ token, miniAppUrl, supabase }: BotConfig) {
   );
 
   // Log only the underlying error: the BotError's ctx contains the bot token.
-  bot.catch((err) => console.error(`Bot error in update ${err.ctx.update.update_id}:`, err.error));
+  bot.catch((err) =>
+    console.error(
+      `Bot error in update ${err.ctx.update.update_id}:`,
+      err.error,
+    ),
+  );
 
   return bot;
 }

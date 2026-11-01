@@ -32,8 +32,12 @@ export function validateInitData(
   pairs.sort();
   const dataCheckString = pairs.join("\n");
 
-  const secretKey = createHmac("sha256", "WebAppData").update(botToken).digest();
-  const expectedHash = createHmac("sha256", secretKey).update(dataCheckString).digest();
+  const secretKey = createHmac("sha256", "WebAppData")
+    .update(botToken)
+    .digest();
+  const expectedHash = createHmac("sha256", secretKey)
+    .update(dataCheckString)
+    .digest();
   const receivedHash = Buffer.from(hash, "hex");
 
   // timingSafeEqual avoids leaking how many bytes matched through response time.

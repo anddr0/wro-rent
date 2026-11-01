@@ -29,6 +29,6 @@ export function useTelegram() {
     }
   }, [webApp]);
 
-  const user = webApp ? webApp.initDataUnsafe.user ?? null : null;
+  const user = webApp ? (webApp.initDataUnsafe.user ?? null) : null;
   return { webApp, user };
 }

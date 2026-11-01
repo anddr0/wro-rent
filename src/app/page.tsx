@@ -3,7 +3,10 @@
 import { useTelegram } from "@/lib/telegram/use-telegram";
 import type { TelegramUser, TelegramWebApp } from "@/lib/telegram/types";
 
-function getGreeting(webApp: TelegramWebApp | null, user: TelegramUser | null): string {
+function getGreeting(
+  webApp: TelegramWebApp | null,
+  user: TelegramUser | null,
+): string {
   if (user) {
     return `Привет, ${user.first_name}!`;
   }
