@@ -1,6 +1,7 @@
+import "server-only";
 import { Bot, InlineKeyboard } from "grammy";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@vityas/db";
+import type { Database } from "@/lib/database.types";
 
 export type BotConfig = {
   token: string;

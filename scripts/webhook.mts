@@ -1,7 +1,7 @@
 // Usage: npm run webhook:set | webhook:info | webhook:delete
 // Reads .env.local; shell env vars take precedence (e.g. to target production).
 import { Api } from "grammy";
-import { env, WEBHOOK_PATH } from "../src/lib/env";
+import { env, WEBHOOK_PATH } from "../src/server/env";
 
 const api = new Api(env.botToken());
 const command = process.argv[2] ?? "info";
