@@ -21,6 +21,8 @@ next-env.d.ts
 supabase/.branches/
 supabase/.temp/
 supabase/.env
+# SQL drafts saved by Supabase Studio's editor
+supabase/snippets/
 
 # deploy / tooling
 .vercel/

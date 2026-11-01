@@ -22,7 +22,13 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="ru" className={`${geistSans.variable} h-full antialiased`}>
+    // Telegram's script adds theme CSS variables to <html> before React
+    // hydrates; suppressHydrationWarning ignores that (only on this tag).
+    <html
+      lang="ru"
+      className={`${geistSans.variable} h-full antialiased`}
+      suppressHydrationWarning
+    >
       <head>
         <Script
           src="https://telegram.org/js/telegram-web-app.js"

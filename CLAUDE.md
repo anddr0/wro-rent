@@ -38,6 +38,14 @@ Telegram-бот и мини-апп для проката велосипедов.
 - Браузер в Supabase не ходит: доступ только через сервер с секретным ключом,
   права проверяет сервер (`requireUser` / `requireAdmin`).
 
+## API-роуты
+
+- Каждый роут оборачиваем в `withErrorHandling` (`@/server/http`), первой строкой —
+  `requireUser(req)` или `requireAdmin(req)`.
+- Ожидаемые ошибки бросаем как `HttpError(status, message)`: их текст уходит клиенту.
+  Любая другая ошибка — баг: клиент получает 500, подробности пишутся в лог.
+- Из мини-аппа API вызываем только через `apiFetch` (`@/lib/api`): он добавляет initData.
+
 ## Перед коммитом
 
 `npm run typecheck`, `npm run lint`, `npm run format:check`, `npm run build` должны проходить.
