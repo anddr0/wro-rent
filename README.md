@@ -68,6 +68,7 @@ npm run webhook:set                             # один раз и после 
 Отключены как ненужные: realtime, edge functions, analytics, почтовый сервер.
 
 - `npm run db:stop` останавливает контейнеры, данные сохраняются.
+- `npm run db:migrate` применяет новые миграции, данные сохраняются.
 - `npm run db:reset` пересоздаёт базу с нуля из миграций и `seed.sql`.
 
 ## Скрипты
@@ -85,6 +86,7 @@ npm run webhook:set                             # один раз и после 
 | `npm run webhook:info`   | текущий вебхук бота и последняя ошибка               |
 | `npm run webhook:delete` | снять вебхук                                         |
 | `npm run db:start`       | запуск локального Supabase (Docker)                  |
+| `npm run db:migrate`     | применить новые миграции к локальной БД              |
 | `npm run db:reset`       | пересоздать локальную БД с миграциями и seed         |
 | `npm run db:types`       | сгенерировать типы БД в `src/lib/database.types.ts`  |
 

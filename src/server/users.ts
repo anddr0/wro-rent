@@ -4,7 +4,7 @@ import type { Database, Tables, TablesInsert } from "@/lib/database.types";
 import type { TelegramUser } from "@/lib/telegram/types";
 
 // Finds the user by Telegram id or creates a new customer.
-// Name, username and language are refreshed from Telegram on every sign-in.
+// Name, username, language and avatar are refreshed from Telegram on every sign-in.
 export async function upsertUserFromTelegram(
   supabase: SupabaseClient<Database>,
   telegramUser: TelegramUser,
@@ -19,6 +19,7 @@ export async function upsertUserFromTelegram(
     full_name: fullName,
     username: telegramUser.username ?? null,
     language_code: telegramUser.language_code ?? null,
+    photo_url: telegramUser.photo_url ?? null,
   };
 
   const { data, error } = await supabase

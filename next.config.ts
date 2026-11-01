@@ -7,6 +7,10 @@ const nextConfig: NextConfig = {
     "*.ngrok-free.app",
     "*.ngrok-free.dev",
   ],
+  images: {
+    // Telegram avatars (users.photo_url).
+    remotePatterns: [new URL("https://t.me/i/userpic/**")],
+  },
   cacheComponents: true,
   partialPrefetching: true,
   turbopack: {

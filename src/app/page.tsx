@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Avatar } from "@/components/avatar";
 import { apiFetch } from "@/lib/api";
 import type { Enums, Tables } from "@/lib/database.types";
 import { useTelegram } from "@/lib/telegram/use-telegram";
@@ -68,6 +69,7 @@ function Greeting({ me, isOutsideTelegram }: GreetingProps) {
 
   return (
     <div className="flex flex-col items-center gap-2">
+      <Avatar photoUrl={me.user.photo_url} name={me.user.full_name} />
       <p className="text-lg">Привет, {me.user.full_name}!</p>
       <span className="rounded-full border border-current px-3 py-1 text-sm text-zinc-500">
         {ROLE_LABELS[me.user.role]}

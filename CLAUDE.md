@@ -34,7 +34,9 @@ Telegram-бот и мини-апп для проката велосипедов.
 
 - Схема меняется только миграциями (`supabase/migrations`), не через дашборд.
 - Применённую где-либо миграцию не редактируем — пишем новую.
-- После изменения схемы: `npm run db:reset` → `npm run db:types` → `npm run typecheck`.
+- Новая миграция: `npx supabase migration new <name>` → SQL → `npm run db:migrate`
+  (применяет только новые миграции, данные сохраняются) → `npm run db:types` → `npm run typecheck`.
+  `npm run db:reset` — когда нужно пересоздать базу с нуля (данные пропадут, останется seed).
 - Браузер в Supabase не ходит: доступ только через сервер с секретным ключом,
   права проверяет сервер (`requireUser` / `requireAdmin`).
 

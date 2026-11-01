@@ -135,14 +135,14 @@ isOneToOne: false
                   ]
                 },"users": {
                   Row: {
-                    "created_at": string,"full_name": string,"id": string,"language_code": string | null,"phone": string | null,"role": Database["public"]['Enums']["user_role"],"telegram_id": number,"updated_at": string,"username": string | null
+                    "created_at": string,"full_name": string,"id": string,"language_code": string | null,"phone": string | null,"photo_url": string | null,"role": Database["public"]['Enums']["user_role"],"telegram_id": number,"updated_at": string,"username": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "created_at"?: string,"full_name": string,"id"?: string,"language_code"?: string | null,"phone"?: string | null,"role"?: Database["public"]['Enums']["user_role"],"telegram_id": number,"updated_at"?: string,"username"?: string | null
+                    "created_at"?: string,"full_name": string,"id"?: string,"language_code"?: string | null,"phone"?: string | null,"photo_url"?: string | null,"role"?: Database["public"]['Enums']["user_role"],"telegram_id": number,"updated_at"?: string,"username"?: string | null
                   }
                   Update: {
-                    "created_at"?: string,"full_name"?: string,"id"?: string,"language_code"?: string | null,"phone"?: string | null,"role"?: Database["public"]['Enums']["user_role"],"telegram_id"?: number,"updated_at"?: string,"username"?: string | null
+                    "created_at"?: string,"full_name"?: string,"id"?: string,"language_code"?: string | null,"phone"?: string | null,"photo_url"?: string | null,"role"?: Database["public"]['Enums']["user_role"],"telegram_id"?: number,"updated_at"?: string,"username"?: string | null
                   }
                   Relationships: [
                     
