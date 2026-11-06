@@ -23,45 +23,7 @@ export type Database = {
           }
         },"public": {
           Tables: {
-            "bike_price_overrides": {
-                  Row: {
-                    "bike_id": string,"created_at": string,"plan_id": string,"price": number,"updated_at": string
-                  }
-                  ComputedFields: never
-                  Insert: {
-                    "bike_id": string,"created_at"?: string,"plan_id": string,"price": number,"updated_at"?: string
-                  }
-                  Update: {
-                    "bike_id"?: string,"created_at"?: string,"plan_id"?: string,"price"?: number,"updated_at"?: string
-                  }
-                  Relationships: [
-                    {
-      foreignKeyName: "bike_price_overrides_bike_id_fkey"
-      columns: ["bike_id"]
-isOneToOne: false
-      referencedRelation: "bike_plan_prices"
-      referencedColumns: ["bike_id"]
-    },{
-      foreignKeyName: "bike_price_overrides_bike_id_fkey"
-      columns: ["bike_id"]
-isOneToOne: false
-      referencedRelation: "bikes"
-      referencedColumns: ["id"]
-    },{
-      foreignKeyName: "bike_price_overrides_plan_id_fkey"
-      columns: ["plan_id"]
-isOneToOne: false
-      referencedRelation: "bike_plan_prices"
-      referencedColumns: ["plan_id"]
-    },{
-      foreignKeyName: "bike_price_overrides_plan_id_fkey"
-      columns: ["plan_id"]
-isOneToOne: false
-      referencedRelation: "rental_plans"
-      referencedColumns: ["id"]
-    }
-                  ]
-                },"bikes": {
+            "bikes": {
                   Row: {
                     "created_at": string,"description": string | null,"id": string,"is_available": boolean,"name": string,"photo_url": string | null,"updated_at": string
                   }
@@ -91,20 +53,8 @@ isOneToOne: false
       foreignKeyName: "bookings_bike_id_fkey"
       columns: ["bike_id"]
 isOneToOne: false
-      referencedRelation: "bike_plan_prices"
-      referencedColumns: ["bike_id"]
-    },{
-      foreignKeyName: "bookings_bike_id_fkey"
-      columns: ["bike_id"]
-isOneToOne: false
       referencedRelation: "bikes"
       referencedColumns: ["id"]
-    },{
-      foreignKeyName: "bookings_plan_id_fkey"
-      columns: ["plan_id"]
-isOneToOne: false
-      referencedRelation: "bike_plan_prices"
-      referencedColumns: ["plan_id"]
     },{
       foreignKeyName: "bookings_plan_id_fkey"
       columns: ["plan_id"]
@@ -150,15 +100,7 @@ isOneToOne: false
                 }
           }
           Views: {
-            "bike_plan_prices": {
-                  Row: {
-                    "bike_id": string,"duration": string,"is_override": boolean | null,"plan_id": string,"plan_name": string,"price": number | null,"sort_order": number
-                  }
-                  ComputedFields: never
-                  Relationships: [
-                    
-                  ]
-                }
+            [_ in never]: never
           }
           Functions: {
             [_ in never]: never
