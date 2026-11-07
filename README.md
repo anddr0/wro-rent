@@ -73,22 +73,40 @@ npm run webhook:set                             # один раз и после 
 
 ## Скрипты
 
-| Команда                  | Что делает                                           |
-| ------------------------ | ---------------------------------------------------- |
-| `npm run dev`            | Next.js в режиме разработки                          |
-| `npm run build`          | продакшен-сборка                                     |
-| `npm run typecheck`      | проверка типов                                       |
-| `npm test`               | тесты (`*.test.ts`, встроенный раннер Node)          |
-| `npm run lint`           | ESLint                                               |
-| `npm run format`         | отформатировать код (Prettier)                       |
-| `npm run format:check`   | проверить форматирование, ничего не меняя            |
-| `npm run webhook:set`    | зарегистрировать вебхук на `APP_URL` из `.env.local` |
-| `npm run webhook:info`   | текущий вебхук бота и последняя ошибка               |
-| `npm run webhook:delete` | снять вебхук                                         |
-| `npm run db:start`       | запуск локального Supabase (Docker)                  |
-| `npm run db:migrate`     | применить новые миграции к локальной БД              |
-| `npm run db:reset`       | пересоздать локальную БД с миграциями и seed         |
-| `npm run db:types`       | сгенерировать типы БД в `src/lib/database.types.ts`  |
+| Команда                     | Что делает                                                 |
+| --------------------------- | ---------------------------------------------------------- |
+| `npm run dev`               | Next.js в режиме разработки                                |
+| `npm run build`             | продакшен-сборка                                           |
+| `npm run typecheck`         | проверка типов                                             |
+| `npm test`                  | тесты (`*.test.ts`, встроенный раннер Node)                |
+| `npm run lint`              | ESLint                                                     |
+| `npm run format`            | отформатировать код (Prettier)                             |
+| `npm run format:check`      | проверить форматирование, ничего не меняя                  |
+| `npm run webhook:set`       | вебхук и кнопка меню дев-бота на `APP_URL` из `.env.local` |
+| `npm run webhook:info`      | текущий вебхук бота и последняя ошибка                     |
+| `npm run webhook:delete`    | снять вебхук                                               |
+| `npm run webhook:set:prod`  | то же для прод-бота, из `.env.prod`                        |
+| `npm run webhook:info:prod` | вебхук прод-бота и последняя ошибка                        |
+| `npm run db:start`          | запуск локального Supabase (Docker)                        |
+| `npm run db:migrate`        | применить новые миграции к локальной БД                    |
+| `npm run db:reset`          | пересоздать локальную БД с миграциями и seed               |
+| `npm run db:types`          | сгенерировать типы БД в `src/lib/database.types.ts`        |
 
-Переменные из окружения shell важнее `.env.local`, поэтому вебхук для прода
-ставится так: `BOT_TOKEN=… APP_URL=https://… TELEGRAM_WEBHOOK_SECRET=… npm run webhook:set`.
+## Прод
+
+| Что      | Где                                                    |
+| -------- | ------------------------------------------------------ |
+| мини-апп | Vercel, https://wro-rent.vercel.app (функции в Париже) |
+| база     | облачный Supabase, тоже Париж                          |
+| бот      | `@wro_rent_bot`                                        |
+
+Деплой — автоматически при пуше в `main`. Переменные окружения — в Vercel
+(Settings → Environment Variables, только Production), те же, что в `.env.example`.
+
+Миграции на прод — вручную: `npx supabase db push --linked --dry-run`, проверить
+список, потом то же без `--dry-run`. Seed на прод не едет.
+
+Вебхук и кнопку меню прод-бота ставит `npm run webhook:set:prod`. Он читает `.env.prod`:
+`BOT_TOKEN`, `APP_URL`, `TELEGRAM_WEBHOOK_SECRET` прод-версии, секрет — тот же, что в Vercel.
+Не `.env.production.local`: такой файл Next.js сам читает при локальной сборке,
+и она пошла бы в прод-базу.

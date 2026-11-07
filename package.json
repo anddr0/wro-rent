@@ -11,6 +11,8 @@
     "webhook:set": "tsx --env-file-if-exists=.env.local scripts/webhook.mts set",
     "webhook:info": "tsx --env-file-if-exists=.env.local scripts/webhook.mts info",
     "webhook:delete": "tsx --env-file-if-exists=.env.local scripts/webhook.mts delete",
+    "webhook:set:prod": "tsx --env-file=.env.prod scripts/webhook.mts set",
+    "webhook:info:prod": "tsx --env-file=.env.prod scripts/webhook.mts info",
     "db:start": "supabase start",
     "db:stop": "supabase stop",
     "db:status": "supabase status",
