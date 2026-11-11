@@ -1,0 +1,49 @@
+"use client";
+
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useTelegram } from "@/lib/telegram/use-telegram";
+
+// Telegram's own buttons in the mini app header, shared by all pages:
+// the back arrow (everywhere except the home page) and "Settings" in the ⋯ menu.
+export function TelegramHeaderButtons() {
+  const { webApp } = useTelegram();
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const isHomePage = pathname === "/";
+
+  useEffect(() => {
+    if (!webApp) {
+      return;
+    }
+    if (isHomePage) {
+      webApp.BackButton.hide();
+      return;
+    }
+
+    function goBack() {
+      router.back();
+    }
+
+    webApp.BackButton.show();
+    webApp.BackButton.onClick(goBack);
+    return () => webApp.BackButton.offClick(goBack);
+  }, [webApp, isHomePage, router]);
+
+  useEffect(() => {
+    if (!webApp) {
+      return;
+    }
+
+    function openSettings() {
+      router.push("/settings");
+    }
+
+    webApp.SettingsButton.show();
+    webApp.SettingsButton.onClick(openSettings);
+    return () => webApp.SettingsButton.offClick(openSettings);
+  }, [webApp, router]);
+
+  return null;
+}

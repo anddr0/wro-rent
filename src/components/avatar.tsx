@@ -20,7 +20,7 @@ export function Avatar({ photoUrl, name, size = 80 }: AvatarProps) {
 
     return (
       <div
-        className="flex items-center justify-center rounded-full bg-zinc-200 font-semibold text-zinc-600 dark:bg-zinc-700 dark:text-zinc-200"
+        className="flex items-center justify-center rounded-full bg-muted font-semibold text-muted-foreground"
         style={{ width: size, height: size, fontSize: size / 2.5 }}
       >
         {firstLetter.toUpperCase()}
