@@ -38,7 +38,7 @@ POST-запросом на `APP_URL/api/telegram/webhook`. Один деплой
 npm install
 npm run db:start                                # локальный Supabase в Docker
 cp .env.example .env.local                      # заполнить, см. ниже
-ngrok http --url <твой-домен>.ngrok-free.dev 3000
+ngrok http --url <твой-домен>.ngrok-free.dev 3030
 npm run dev
 npm run webhook:set                             # один раз и после смены APP_URL/секрета
 ```
@@ -65,9 +65,12 @@ Next не подгружает страницы заранее (prefetch ест�
 
 | Сервис   | Адрес                  | Зачем                                |
 | -------- | ---------------------- | ------------------------------------ |
-| API      | http://127.0.0.1:54321 | сюда ходит supabase-js               |
-| Postgres | 127.0.0.1:54322        | прямой доступ (psql, DBeaver)        |
-| Studio   | http://127.0.0.1:54323 | веб-интерфейс: таблицы, SQL-редактор |
+| API      | http://127.0.0.1:54421 | сюда ходит supabase-js               |
+| Postgres | 127.0.0.1:54422        | прямой доступ (psql, DBeaver)        |
+| Studio   | http://127.0.0.1:54423 | веб-интерфейс: таблицы, SQL-редактор |
+
+Порты — стандартные Supabase + 100, а мини-апп в деве — на 3030, а не 3000:
+так проект не спорит за порты с другими локальными проектами.
 
 Отключены как ненужные: realtime, edge functions, analytics, почтовый сервер.
 
