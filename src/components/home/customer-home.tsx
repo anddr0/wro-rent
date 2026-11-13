@@ -1,21 +1,21 @@
 "use client";
 
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Bike } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { BikePhoto } from "@/components/bike-photo";
 import { BookingStatusBadge } from "@/components/booking-status-badge";
 import { ButtonLink } from "@/components/button";
+import { EmptyState } from "@/components/empty-state";
+import { ErrorState } from "@/components/error-state";
 import { Greeting } from "@/components/home/greeting";
 import { Row, Section, SectionTitle } from "@/components/section";
-import {
-  cheapestDemoPlan,
-  DEMO_BIKES,
-  DEMO_BOOKINGS,
-  isCurrentBooking,
-} from "@/lib/demo-data";
+import { Skeleton } from "@/components/skeleton";
+import type { BikesResponse } from "@/lib/catalog";
+import { DEMO_BOOKINGS, isCurrentBooking } from "@/lib/demo-data";
 import type { MessageKey } from "@/lib/i18n/messages/ru";
 import { useT } from "@/lib/i18n/use-t";
+import { useApi } from "@/lib/use-api";
 
 // A new phrase under the greeting every time the app opens.
 const GREETING_PHRASES: MessageKey[] = [
@@ -30,21 +30,22 @@ function pickRandomPhrase(): MessageKey {
   return GREETING_PHRASES[index];
 }
 
+// How many bikes the home page shows; the rest are in the catalog.
+const BIKES_ON_HOME = 2;
+
 export function CustomerHome() {
   const t = useT();
   const [phrase] = useState(pickRandomPhrase);
+  const catalog = useApi<BikesResponse>("/api/bikes");
   // TODO(slice 3.1): the user's bookings from the API.
   const currentBookings = DEMO_BOOKINGS.filter(isCurrentBooking).slice(0, 3);
-  // TODO(slice 1.1): visible bikes from the API.
-  const bikes = DEMO_BIKES.filter((bike) => bike.isVisible);
-  const priceFrom = t("common.priceFrom", { price: cheapestDemoPlan().price });
 
   return (
     <>
       <Greeting subtitle={t(phrase)} />
 
       {currentBookings.length === 0 ? (
-        <HowItWorks />
+        <HowItWorks priceFrom={catalog.data?.priceFrom ?? null} />
       ) : (
         <Section title={t("home.myBookings")}>
           {currentBookings.map((booking) => (
@@ -61,12 +62,56 @@ export function CustomerHome() {
         </Section>
       )}
 
+      <HomeBikes
+        catalog={catalog.data}
+        hasFailed={catalog.error !== undefined}
+        onRetry={() => catalog.mutate()}
+      />
+    </>
+  );
+}
+
+type HomeBikesProps = {
+  catalog: BikesResponse | undefined;
+  hasFailed: boolean;
+  onRetry: () => void;
+};
+
+// A peek at the catalog: how many bikes there are, the first two
+// and the way to the rest.
+function HomeBikes({ catalog, hasFailed, onRetry }: HomeBikesProps) {
+  const t = useT();
+
+  if (hasFailed && !catalog) {
+    return <ErrorState onRetry={onRetry} />;
+  }
+  if (!catalog) {
+    return (
+      <div className="grid grid-cols-2 gap-3">
+        <Skeleton className="aspect-4/3" />
+        <Skeleton className="aspect-4/3" />
+      </div>
+    );
+  }
+  // No "choose a bike" button here: it would lead to an empty catalog.
+  if (catalog.bikes.length === 0) {
+    return (
+      <EmptyState
+        icon={Bike}
+        title={t("bikes.empty")}
+        description={t("bikes.emptyHint")}
+      />
+    );
+  }
+
+  return (
+    <>
       <section className="flex flex-col gap-2">
         <SectionTitle>
-          {t("home.availableNow", { count: bikes.length })}
+          {t("home.inCatalog", { count: catalog.bikes.length })}
         </SectionTitle>
         <div className="grid grid-cols-2 gap-3">
-          {bikes.slice(0, 2).map((bike) => (
+          {catalog.bikes.slice(0, BIKES_ON_HOME).map((bike) => (
             <Link
               key={bike.id}
               href={`/bikes/${bike.id}`}
@@ -74,7 +119,11 @@ export function CustomerHome() {
             >
               <BikePhoto size="medium" />
               <span className="font-medium">{bike.name}</span>
-              <span className="text-sm text-muted-foreground">{priceFrom}</span>
+              {catalog.priceFrom !== null && (
+                <span className="text-sm text-muted-foreground">
+                  {t("common.priceFrom", { price: catalog.priceFrom })}
+                </span>
+              )}
             </Link>
           ))}
         </div>
@@ -95,16 +144,19 @@ const STEPS: MessageKey[] = [
 ];
 
 // For someone who has no bookings yet: what this is and how it works.
-function HowItWorks() {
+function HowItWorks({ priceFrom }: { priceFrom: number | null }) {
   const t = useT();
+
+  let details = t("common.paymentOptions");
+  if (priceFrom !== null) {
+    details = t("home.pitchDetails", { price: priceFrom });
+  }
 
   return (
     <>
       <div className="flex flex-col gap-1 rounded-xl border bg-card p-4 shadow-sm">
         <span className="font-medium">{t("home.pitchTitle")}</span>
-        <span className="text-sm text-muted-foreground">
-          {t("home.pitchDetails", { price: cheapestDemoPlan().price })}
-        </span>
+        <span className="text-sm text-muted-foreground">{details}</span>
       </div>
       <Section title={t("home.howItWorks")}>
         {STEPS.map((step, index) => (

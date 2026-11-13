@@ -12,13 +12,20 @@ export class HttpError extends Error {
   }
 }
 
-type RouteHandler = (req: Request) => Promise<Response>;
+// `context` is what Next passes as the second argument, e.g. { params }
+// for a route like /api/bikes/[id]. Routes without params just ignore it.
+type RouteHandler<Context> = (
+  req: Request,
+  context: Context,
+) => Promise<Response>;
 
 // Wraps a route handler: HttpError → JSON with its status, anything else → 500.
-export function withErrorHandling(handler: RouteHandler): RouteHandler {
-  return async function handleRequest(req) {
+export function withErrorHandling<Context>(
+  handler: RouteHandler<Context>,
+): RouteHandler<Context> {
+  return async function handleRequest(req, context) {
     try {
-      return await handler(req);
+      return await handler(req, context);
     } catch (error) {
       // Next.js signals things like "this route is dynamic" by throwing; let those through.
       unstable_rethrow(error);

@@ -23,6 +23,8 @@ export const pl: Record<MessageKey, Message> = {
   "common.priceFrom": "od {price} zł",
   "common.paymentOptions": "Na miejscu, gotówką lub BLIK",
   "common.contactAdmin": "Napisz do administratora",
+  "common.loadFailed": "Nie udało się wczytać",
+  "common.retry": "Spróbuj ponownie",
 
   "status.pending": "Oczekuje",
   "status.confirmed": "Potwierdzona",
@@ -38,7 +40,7 @@ export const pl: Record<MessageKey, Message> = {
   "home.myBookings": "Moje rezerwacje",
   "home.until": "do {date}",
   "home.history": "Historia rezerwacji",
-  "home.availableNow": "Wolne teraz: {count}",
+  "home.inCatalog": "W katalogu: {count}",
   "home.chooseBike": "Wybierz rower",
   "home.pitchTitle": "Rowery do wynajęcia we Wrocławiu",
   "home.pitchDetails": "od {price} zł · płatność na miejscu lub BLIK",
@@ -48,7 +50,8 @@ export const pl: Record<MessageKey, Message> = {
   "home.stepPickUp": "Odbierz go",
 
   "bikes.title": "Wybierz rower",
-  "bikes.priceFromPerPlan": "od {price} zł / {plan}",
+  "bikes.empty": "Na razie nie ma rowerów",
+  "bikes.emptyHint": "Zajrzyj trochę później.",
   "bikes.details": "Szczegóły",
   "bike.prices": "Ceny",
 
@@ -59,6 +62,7 @@ export const pl: Record<MessageKey, Message> = {
   "book.summary": "Podsumowanie",
   "book.commentPlaceholder": "Komentarz dla administratora (opcjonalnie)",
   "book.submit": "Wyślij zgłoszenie",
+  "book.noPlans": "Rezerwacja jest teraz niedostępna",
 
   "booking.pendingNote":
     "Administrator jeszcze nie potwierdził zgłoszenia. Napiszemy do Ciebie w Telegramie.",

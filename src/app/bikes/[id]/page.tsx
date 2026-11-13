@@ -2,55 +2,79 @@
 
 import { useParams } from "next/navigation";
 import { BikePhoto } from "@/components/bike-photo";
+import { BottomBar } from "@/components/bottom-bar";
 import { ButtonLink } from "@/components/button";
+import { ErrorState } from "@/components/error-state";
 import { NotFoundText } from "@/components/not-found-text";
 import { PageTitle } from "@/components/page-title";
 import { Row, Section } from "@/components/section";
-import { DEMO_PLANS, findDemoBike } from "@/lib/demo-data";
+import { Skeleton } from "@/components/skeleton";
+import type { BikeResponse } from "@/lib/catalog";
 import { useT } from "@/lib/i18n/use-t";
+import { isNotFound, useApi } from "@/lib/use-api";
 
 export default function BikePage() {
   const t = useT();
   const { id } = useParams<{ id: string }>();
-  // TODO(slice 1.2): the bike and active plans from the API.
-  const bike = findDemoBike(id);
-  const plans = DEMO_PLANS.filter((plan) => plan.isActive);
+  const { data, error, mutate } = useApi<BikeResponse>(`/api/bikes/${id}`);
 
-  if (!bike) {
+  if (isNotFound(error)) {
     return <NotFoundText>{t("common.bikeNotFound")}</NotFoundText>;
   }
+  if (error && !data) {
+    return <ErrorState onRetry={() => mutate()} />;
+  }
+  if (!data) {
+    return <BikePageSkeleton />;
+  }
+
+  const { bike, plans } = data;
 
   return (
     <>
+      {/* TODO(slice 1.3): the bike's photos, swipeable. */}
       <BikePhoto size="large" />
-      {/* TODO(slice 1.3): swipeable photos instead of thumbnails. */}
-      <div className="flex gap-2">
-        <BikePhoto size="small" />
-        <BikePhoto size="small" />
-        <BikePhoto size="small" />
+
+      <div className="flex flex-col gap-2">
+        <PageTitle>{bike.name}</PageTitle>
+        {bike.description && <p>{bike.description}</p>}
       </div>
 
-      <PageTitle>{bike.name}</PageTitle>
-      <p>{bike.description}</p>
+      {plans.length > 0 && (
+        <Section title={t("bike.prices")}>
+          {plans.map((plan) => (
+            <Row
+              key={plan.id}
+              title={plan.name}
+              end={
+                <span className="font-semibold">
+                  {t("common.priceValue", { price: plan.price })}
+                </span>
+              }
+            />
+          ))}
+        </Section>
+      )}
 
-      <Section title={t("bike.prices")}>
-        {plans.map((plan) => (
-          <Row
-            key={plan.id}
-            title={plan.name}
-            subtitle={plan.duration}
-            end={
-              <span className="font-semibold">
-                {t("common.priceValue", { price: plan.price })}
-              </span>
-            }
-          />
-        ))}
-      </Section>
+      {/* Without an active plan there is nothing to book. */}
+      {plans.length > 0 && (
+        <BottomBar>
+          <ButtonLink href={`/bikes/${bike.id}/book`}>
+            {t("common.book")}
+          </ButtonLink>
+        </BottomBar>
+      )}
+    </>
+  );
+}
 
-      <ButtonLink href={`/bikes/${bike.id}/book`}>
-        {t("common.book")}
-      </ButtonLink>
+function BikePageSkeleton() {
+  return (
+    <>
+      <Skeleton className="aspect-4/3 rounded-xl" />
+      <Skeleton className="h-8 w-1/2" />
+      <Skeleton className="h-5 w-3/4" />
+      <Skeleton className="h-40 rounded-xl" />
     </>
   );
 }

@@ -1,6 +1,17 @@
+// An error answer from our API. `status` tells "not found" (404) apart
+// from "something broke" (500), so screens can show the right message.
+export class ApiError extends Error {
+  status: number;
+
+  constructor(status: number, message: string) {
+    super(message);
+    this.status = status;
+  }
+}
+
 // Calls our API from the mini app. Sends Telegram initData in the
 // Authorization header so the server can check who the user is.
-// Throws an Error with the server's message if the response is not 2xx.
+// Throws ApiError with the server's message if the response is not 2xx.
 export async function apiFetch<T>(
   path: string,
   init?: RequestInit,
@@ -15,7 +26,10 @@ export async function apiFetch<T>(
   if (!res.ok) {
     // Our routes always answer errors as { error: "..." } (see withErrorHandling).
     const body = (await res.json()) as { error?: string };
-    throw new Error(body.error ?? `Request failed with status ${res.status}`);
+    throw new ApiError(
+      res.status,
+      body.error ?? `Request failed with status ${res.status}`,
+    );
   }
 
   return (await res.json()) as T;

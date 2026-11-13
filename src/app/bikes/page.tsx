@@ -1,48 +1,87 @@
 "use client";
 
+import { Bike } from "lucide-react";
 import Link from "next/link";
 import { BikePhoto } from "@/components/bike-photo";
 import { ButtonLink } from "@/components/button";
+import { EmptyState } from "@/components/empty-state";
+import { ErrorState } from "@/components/error-state";
 import { PageTitle } from "@/components/page-title";
-import { cheapestDemoPlan, DEMO_BIKES } from "@/lib/demo-data";
+import { Skeleton } from "@/components/skeleton";
+import type { BikesResponse, CatalogBike } from "@/lib/catalog";
 import { useT } from "@/lib/i18n/use-t";
+import { useApi } from "@/lib/use-api";
 
 export default function BikesPage() {
   const t = useT();
-  // TODO(slice 1.1): visible bikes from the API.
-  const bikes = DEMO_BIKES.filter((bike) => bike.isVisible);
-  const cheapestPlan = cheapestDemoPlan();
 
   return (
     <>
       <PageTitle>{t("bikes.title")}</PageTitle>
-      {bikes.map((bike) => (
-        <div
-          key={bike.id}
-          className="flex flex-col gap-2 rounded-xl border bg-card p-3 shadow-sm"
-        >
-          <Link href={`/bikes/${bike.id}`} className="active:opacity-70">
-            <BikePhoto size="medium" />
-          </Link>
-          <div className="flex flex-col">
-            <span className="font-medium">{bike.name}</span>
-            <span className="text-sm text-muted-foreground">
-              {t("bikes.priceFromPerPlan", {
-                price: cheapestPlan.price,
-                plan: cheapestPlan.name.toLowerCase(),
-              })}
-            </span>
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <ButtonLink href={`/bikes/${bike.id}`} variant="secondary">
-              {t("bikes.details")}
-            </ButtonLink>
-            <ButtonLink href={`/bikes/${bike.id}/book`}>
-              {t("common.book")}
-            </ButtonLink>
-          </div>
-        </div>
-      ))}
+      <BikeList />
     </>
+  );
+}
+
+function BikeList() {
+  const t = useT();
+  const { data, error, mutate } = useApi<BikesResponse>("/api/bikes");
+
+  if (error && !data) {
+    return <ErrorState onRetry={() => mutate()} />;
+  }
+  if (!data) {
+    return (
+      <>
+        <Skeleton className="h-80 rounded-xl" />
+        <Skeleton className="h-80 rounded-xl" />
+      </>
+    );
+  }
+  if (data.bikes.length === 0) {
+    return (
+      <EmptyState
+        icon={Bike}
+        title={t("bikes.empty")}
+        description={t("bikes.emptyHint")}
+      />
+    );
+  }
+
+  return data.bikes.map((bike) => (
+    <BikeCard key={bike.id} bike={bike} priceFrom={data.priceFrom} />
+  ));
+}
+
+type BikeCardProps = {
+  bike: CatalogBike;
+  priceFrom: number | null;
+};
+
+function BikeCard({ bike, priceFrom }: BikeCardProps) {
+  const t = useT();
+
+  return (
+    <div className="flex flex-col gap-3 rounded-xl border bg-card p-3 shadow-sm">
+      <Link href={`/bikes/${bike.id}`} className="active:opacity-70">
+        <BikePhoto size="medium" />
+      </Link>
+      <div className="flex flex-col gap-0.5 px-1">
+        <span className="font-medium">{bike.name}</span>
+        {priceFrom !== null && (
+          <span className="text-sm text-muted-foreground">
+            {t("common.priceFrom", { price: priceFrom })}
+          </span>
+        )}
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        <ButtonLink href={`/bikes/${bike.id}`} variant="secondary">
+          {t("bikes.details")}
+        </ButtonLink>
+        <ButtonLink href={`/bikes/${bike.id}/book`}>
+          {t("common.book")}
+        </ButtonLink>
+      </div>
+    </div>
   );
 }

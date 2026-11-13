@@ -36,6 +36,8 @@ export const ru = {
   "common.priceFrom": "от {price} zł",
   "common.paymentOptions": "На месте, наличными или BLIK",
   "common.contactAdmin": "Написать админу",
+  "common.loadFailed": "Не удалось загрузить",
+  "common.retry": "Повторить",
 
   "status.pending": "Ожидает",
   "status.confirmed": "Подтверждена",
@@ -51,7 +53,7 @@ export const ru = {
   "home.myBookings": "Мои брони",
   "home.until": "до {date}",
   "home.history": "История броней",
-  "home.availableNow": "Свободно сейчас: {count}",
+  "home.inCatalog": "В каталоге: {count}",
   "home.chooseBike": "Выбрать велосипед",
   "home.pitchTitle": "Велосипеды в аренду во Вроцлаве",
   "home.pitchDetails": "от {price} zł · оплата на месте или BLIK",
@@ -61,7 +63,8 @@ export const ru = {
   "home.stepPickUp": "Заберите его",
 
   "bikes.title": "Выберите велосипед",
-  "bikes.priceFromPerPlan": "от {price} zł / {plan}",
+  "bikes.empty": "Велосипедов пока нет",
+  "bikes.emptyHint": "Загляните чуть позже.",
   "bikes.details": "Подробнее",
   "bike.prices": "Цены",
 
@@ -72,6 +75,7 @@ export const ru = {
   "book.summary": "Итого",
   "book.commentPlaceholder": "Комментарий для админа (необязательно)",
   "book.submit": "Отправить заявку",
+  "book.noPlans": "Сейчас бронирование недоступно",
 
   "booking.pendingNote":
     "Админ ещё не подтвердил заявку. Мы напишем вам в Telegram.",

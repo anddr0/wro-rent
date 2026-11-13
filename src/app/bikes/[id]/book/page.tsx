@@ -5,11 +5,14 @@ import { useState } from "react";
 import { ButtonLink } from "@/components/button";
 import { Chip } from "@/components/chip";
 import { TextArea } from "@/components/form";
+import { ErrorState } from "@/components/error-state";
 import { NotFoundText } from "@/components/not-found-text";
 import { PageTitle } from "@/components/page-title";
 import { DetailRow, Row, Section, SectionTitle } from "@/components/section";
-import { DEMO_PLANS, findDemoBike } from "@/lib/demo-data";
+import { Skeleton } from "@/components/skeleton";
+import type { BikeResponse } from "@/lib/catalog";
 import { useT } from "@/lib/i18n/use-t";
+import { isNotFound, useApi } from "@/lib/use-api";
 
 // TODO(slice 2.2): free start times from the API.
 const DEMO_TIMES = ["9:00", "10:00", "11:00", "12:00", "14:00", "16:00"];
@@ -17,16 +20,28 @@ const DEMO_TIMES = ["9:00", "10:00", "11:00", "12:00", "14:00", "16:00"];
 export default function BookPage() {
   const t = useT();
   const { id } = useParams<{ id: string }>();
-  const bike = findDemoBike(id);
-  const plans = DEMO_PLANS.filter((plan) => plan.isActive);
-  const [planId, setPlanId] = useState(plans[0].id);
+  // Same path as the bike page, so coming from there it's already loaded.
+  const { data, error, mutate } = useApi<BikeResponse>(`/api/bikes/${id}`);
+  const [chosenPlanId, setChosenPlanId] = useState<string | null>(null);
   const [time, setTime] = useState<string | null>(null);
 
-  if (!bike) {
+  if (isNotFound(error)) {
     return <NotFoundText>{t("common.bikeNotFound")}</NotFoundText>;
   }
+  if (error && !data) {
+    return <ErrorState onRetry={() => mutate()} />;
+  }
+  if (!data) {
+    return <Skeleton className="h-96 rounded-xl" />;
+  }
 
-  const plan = plans.find((item) => item.id === planId) ?? plans[0];
+  const { bike, plans } = data;
+  if (plans.length === 0) {
+    return <NotFoundText>{t("book.noPlans")}</NotFoundText>;
+  }
+
+  // Until the customer picks a plan, the first one is chosen.
+  const plan = plans.find((item) => item.id === chosenPlanId) ?? plans[0];
   const price = t("common.priceValue", { price: plan.price });
 
   return (
@@ -43,8 +58,8 @@ export default function BookPage() {
                   <input
                     type="radio"
                     name="plan"
-                    checked={item.id === planId}
-                    onChange={() => setPlanId(item.id)}
+                    checked={item.id === plan.id}
+                    onChange={() => setChosenPlanId(item.id)}
                     className="accent-primary"
                   />
                 }

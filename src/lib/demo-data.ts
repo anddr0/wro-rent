@@ -156,15 +156,3 @@ export function findDemoBike(id: string): DemoBike | undefined {
 export function findDemoBooking(id: string): DemoBooking | undefined {
   return DEMO_BOOKINGS.find((booking) => booking.id === id);
 }
-
-// Price "from" in the catalog: the cheapest active plan.
-export function cheapestDemoPlan(): DemoPlan {
-  const activePlans = DEMO_PLANS.filter((plan) => plan.isActive);
-  let cheapest = activePlans[0];
-  for (const plan of activePlans) {
-    if (plan.price < cheapest.price) {
-      cheapest = plan;
-    }
-  }
-  return cheapest;
-}
