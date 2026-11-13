@@ -7,15 +7,17 @@ import { NotFoundText } from "@/components/not-found-text";
 import { PageTitle } from "@/components/page-title";
 import { Row, Section } from "@/components/section";
 import { DEMO_PLANS, findDemoBike } from "@/lib/demo-data";
+import { useT } from "@/lib/i18n/use-t";
 
 export default function BikePage() {
+  const t = useT();
   const { id } = useParams<{ id: string }>();
   // TODO(slice 1.2): the bike and active plans from the API.
   const bike = findDemoBike(id);
   const plans = DEMO_PLANS.filter((plan) => plan.isActive);
 
   if (!bike) {
-    return <NotFoundText>Велосипед не найден</NotFoundText>;
+    return <NotFoundText>{t("common.bikeNotFound")}</NotFoundText>;
   }
 
   return (
@@ -31,18 +33,24 @@ export default function BikePage() {
       <PageTitle>{bike.name}</PageTitle>
       <p>{bike.description}</p>
 
-      <Section title="Цены">
+      <Section title={t("bike.prices")}>
         {plans.map((plan) => (
           <Row
             key={plan.id}
             title={plan.name}
             subtitle={plan.duration}
-            end={<span className="font-medium">{plan.price} zł</span>}
+            end={
+              <span className="font-semibold">
+                {t("common.priceValue", { price: plan.price })}
+              </span>
+            }
           />
         ))}
       </Section>
 
-      <ButtonLink href={`/bikes/${bike.id}/book`}>Забронировать</ButtonLink>
+      <ButtonLink href={`/bikes/${bike.id}/book`}>
+        {t("common.book")}
+      </ButtonLink>
     </>
   );
 }

@@ -2,9 +2,12 @@
 
 import { createContext, use, useEffect, useState } from "react";
 import type { ReactNode } from "react";
-import { StatusScreen } from "@/components/status-screen";
+import { LoadingScreen, StatusScreen } from "@/components/status-screen";
 import { apiFetch } from "@/lib/api";
 import type { Tables } from "@/lib/database.types";
+import { resolveLocale } from "@/lib/i18n/locales";
+import { createTranslate } from "@/lib/i18n/translate";
+import { LocaleContext } from "@/lib/i18n/use-t";
 import { useTelegram } from "@/lib/telegram/use-telegram";
 
 type User = Tables<"users">;
@@ -12,16 +15,33 @@ type User = Tables<"users">;
 type LoadState =
   { status: "loading" } | { status: "ready"; user: User } | { status: "error" };
 
-const CurrentUserContext = createContext<User | null>(null);
+type CurrentUserContextValue = {
+  user: User;
+  // Replaces the user after the server changed it, e.g. a new language.
+  setUser: (user: User) => void;
+};
+
+const CurrentUserContext = createContext<CurrentUserContextValue | null>(null);
 
 // Loads the user once, when the mini app opens, and shows the pages only
 // after that. So every page can rely on the user being there.
+// Also sets the app language: the user's choice, otherwise Telegram's.
 export function CurrentUserProvider({ children }: { children: ReactNode }) {
-  const { webApp } = useTelegram();
+  const { webApp, user: telegramUser } = useTelegram();
   const [state, setState] = useState<LoadState>({ status: "loading" });
 
   // Telegram's script loads in a normal browser too, but initData is empty there.
   const isOutsideTelegram = webApp !== null && !webApp.initData;
+
+  // Until the user is loaded, only Telegram's language is known.
+  let locale = resolveLocale(null, telegramUser?.language_code);
+  if (state.status === "ready") {
+    locale = resolveLocale(state.user.locale, state.user.language_code);
+  }
+
+  useEffect(() => {
+    document.documentElement.lang = locale;
+  }, [locale]);
 
   useEffect(() => {
     if (!webApp || !webApp.initData) {
@@ -41,24 +61,43 @@ export function CurrentUserProvider({ children }: { children: ReactNode }) {
     loadUser();
   }, [webApp]);
 
+  const t = createTranslate(locale);
+
   if (isOutsideTelegram) {
-    return <StatusScreen>Откройте приложение через Telegram-бота</StatusScreen>;
+    return <StatusScreen>{t("common.openViaBot")}</StatusScreen>;
   }
   if (state.status === "loading") {
-    return <StatusScreen>Загрузка…</StatusScreen>;
+    return <LoadingScreen />;
   }
   if (state.status === "error") {
-    return <StatusScreen>Не удалось загрузить профиль</StatusScreen>;
+    return <StatusScreen>{t("common.profileLoadFailed")}</StatusScreen>;
   }
 
-  return <CurrentUserContext value={state.user}>{children}</CurrentUserContext>;
+  function setUser(user: User) {
+    setState({ status: "ready", user });
+  }
+
+  return (
+    <CurrentUserContext value={{ user: state.user, setUser }}>
+      <LocaleContext value={locale}>{children}</LocaleContext>
+    </CurrentUserContext>
+  );
 }
 
 // The signed-in user. Works in any page: they are all inside the provider.
 export function useCurrentUser(): User {
-  const user = use(CurrentUserContext);
-  if (user === null) {
+  return useCurrentUserContext().user;
+}
+
+// For pages that change the user, e.g. the language in settings.
+export function useSetCurrentUser(): (user: User) => void {
+  return useCurrentUserContext().setUser;
+}
+
+function useCurrentUserContext(): CurrentUserContextValue {
+  const value = use(CurrentUserContext);
+  if (value === null) {
     throw new Error("useCurrentUser must be used inside CurrentUserProvider");
   }
-  return user;
+  return value;
 }

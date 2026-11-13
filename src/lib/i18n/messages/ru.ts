@@ -1,0 +1,177 @@
+// Russian texts. This file is the reference: every other language must have
+// exactly the same keys (TypeScript checks it in their files).
+// {name} is filled in by t(key, { name: ... }).
+
+// A text that depends on a number: "1 велосипед, 3 велосипеда, 5 велосипедов".
+// Which form a number takes is decided by Intl.PluralRules for each language.
+export type PluralForms = {
+  zero?: string;
+  one?: string;
+  two?: string;
+  few?: string;
+  many?: string;
+  other: string;
+};
+
+export type Message = string | PluralForms;
+
+export const ru = {
+  "common.loading": "Загрузка…",
+  "common.openViaBot": "Откройте приложение через Telegram-бота",
+  "common.profileLoadFailed": "Не удалось загрузить профиль",
+  "common.bikeNotFound": "Велосипед не найден",
+  "common.bookingNotFound": "Бронь не найдена",
+  "common.adminOnly": "Раздел только для администраторов",
+  "common.book": "Забронировать",
+  "common.save": "Сохранить",
+  "common.start": "Начало",
+  "common.end": "Конец",
+  "common.plan": "Тариф",
+  "common.price": "Цена",
+  "common.comment": "Комментарий",
+  "common.payment": "Оплата",
+  "common.bike": "Велосипед",
+  "common.dates": "Даты",
+  "common.priceValue": "{price} zł",
+  "common.priceFrom": "от {price} zł",
+  "common.paymentOptions": "На месте, наличными или BLIK",
+  "common.contactAdmin": "Написать админу",
+
+  "status.pending": "Ожидает",
+  "status.confirmed": "Подтверждена",
+  "status.active": "Велосипед у клиента",
+  "status.completed": "Завершена",
+  "status.cancelled": "Отменена",
+
+  "home.greeting": "Привет, {name}!",
+  "home.phrase1": "Нужен велосипед?",
+  "home.phrase2": "Куда поедем сегодня?",
+  "home.phrase3": "Погода для прогулки!",
+  "home.phrase4": "Вроцлав лучше видно с велосипеда",
+  "home.myBookings": "Мои брони",
+  "home.until": "до {date}",
+  "home.history": "История броней",
+  "home.availableNow": "Свободно сейчас: {count}",
+  "home.chooseBike": "Выбрать велосипед",
+  "home.pitchTitle": "Велосипеды в аренду во Вроцлаве",
+  "home.pitchDetails": "от {price} zł · оплата на месте или BLIK",
+  "home.howItWorks": "Как это работает",
+  "home.stepChoose": "Выберите велосипед",
+  "home.stepRequest": "Оставьте заявку",
+  "home.stepPickUp": "Заберите его",
+
+  "bikes.title": "Выберите велосипед",
+  "bikes.priceFromPerPlan": "от {price} zł / {plan}",
+  "bikes.details": "Подробнее",
+  "bike.prices": "Цены",
+
+  "book.startDate": "Дата начала",
+  "book.calendarPlaceholder": "Здесь будет календарь",
+  "book.startTime": "Время начала",
+  "book.othersWaiting": "Кто-то уже ждёт подтверждения на это время",
+  "book.summary": "Итого",
+  "book.commentPlaceholder": "Комментарий для админа (необязательно)",
+  "book.submit": "Отправить заявку",
+
+  "booking.pendingNote":
+    "Админ ещё не подтвердил заявку. Мы напишем вам в Telegram.",
+  "booking.cancel": "Отменить заявку",
+
+  "sent.title": "Заявка отправлена",
+  "sent.thanks": "Спасибо! Мы подтвердим заявку и напишем вам в Telegram.",
+  "sent.whatNext": "Что дальше",
+  "sent.stepSent": "Заявка отправлена",
+  "sent.stepConfirm": "Админ подтверждает заявку",
+  "sent.stepPickUp": "Вы забираете велосипед",
+  "sent.yourRequest": "Ваша заявка",
+  "sent.whereAndHow": "Где и как",
+  "sent.address": "Адрес",
+  "sent.addressValue": "ул. Примерная 1, Вроцлав",
+  "sent.toHome": "На главную",
+
+  "history.title": "История броней",
+  "history.empty": "Пока пусто",
+
+  "settings.title": "Настройки",
+  "settings.language": "Язык",
+  "settings.saveFailed": "Не удалось сохранить. Попробуйте ещё раз.",
+
+  "adminHome.role": "Администратор",
+  "adminHome.today": "Сегодня",
+  "adminHome.newRequests": {
+    one: "Новая заявка",
+    few: "Новые заявки",
+    many: "Новых заявок",
+    other: "Новой заявки",
+  },
+  "adminHome.toHandOut": "Выдать",
+  "adminHome.toTakeBack": "Принять",
+  "adminHome.awaitingReply": "Ждут ответа",
+  "adminHome.manage": "Управление",
+  "adminHome.bookings": "Брони",
+  "adminHome.bookingsHint": "Заявки, выдача и возврат",
+  "adminHome.bikes": "Автопарк",
+  "adminHome.bikesHint": "Велосипеды и их фото",
+  "adminHome.plans": "Тарифы",
+  "adminHome.plansHint": "Цены для всех велосипедов",
+
+  "adminBookings.title": "Брони",
+  "adminBookings.newestFirst": "Новые заявки — сверху",
+  "adminBookings.filterPending": "Ожидают",
+  "adminBookings.filterConfirmed": "Подтверждены",
+  "adminBookings.filterActive": "У клиентов",
+  "adminBookings.filterAll": "Все",
+  "adminBookings.anyDates": "Любые даты",
+  "adminBookings.empty": "Здесь пусто",
+
+  "adminBooking.customer": "Клиент",
+  "adminBooking.message": "Написать",
+  "adminBooking.rental": "Аренда",
+  "adminBooking.deposit": "Депозит",
+  "adminBooking.notPaid": "не оплачено",
+  "adminBooking.note": "Заметка",
+  "adminBooking.reject": "Отклонить",
+  "adminBooking.confirm": "Подтвердить",
+  "adminBooking.handedOut": "Выдал велосипед",
+  "adminBooking.cancel": "Отменить бронь",
+  "adminBooking.returned": "Принял велосипед",
+
+  "adminBikes.title": "Автопарк",
+  "adminBikes.summary": "В парке: {total} · скрыто: {hidden}",
+  "adminBikes.clientView": "Каталог глазами клиента",
+  "adminBikes.clientViewHint": "Как велосипеды видят клиенты",
+  "adminBikes.archive": "Архив",
+  "adminBikes.archiveHint": "Велосипеды, которые больше не сдаются",
+  "adminBikes.add": "Добавить велосипед",
+  "adminBikes.busyUntil": "У клиента до {date}",
+  "adminBikes.free": "Свободен",
+  "adminBikes.hidden": "Скрыт",
+
+  "adminArchive.title": "Архив",
+  "adminArchive.empty": "Архив пуст",
+  "adminArchive.emptyHint":
+    "Сюда попадают велосипеды, которые больше не сдаются. Их история броней сохраняется.",
+
+  "adminBike.new": "Новый велосипед",
+  "adminBike.create": "Добавить",
+  "adminBike.toArchive": "В архив",
+
+  "bikeForm.photos": "Фото",
+  "bikeForm.photosHint": "Первое фото — обложка в каталоге.",
+  "bikeForm.name": "Название",
+  "bikeForm.namePlaceholder": "Городской #3",
+  "bikeForm.description": "Описание",
+  "bikeForm.descriptionPlaceholder": "Скорости, рост, что в комплекте",
+  "bikeForm.visible": "Видно клиентам",
+  "bikeForm.visibleHint": "Скрытый велосипед не показывается в каталоге",
+
+  "adminPlans.title": "Тарифы",
+  "adminPlans.description":
+    "Общие для всех велосипедов. Новая цена не меняет уже созданные брони.",
+  "adminPlans.add": "Добавить тариф",
+
+  "bot.welcome": "Привет! Это WroRent — прокат велосипедов во Вроцлаве 🚲",
+  "bot.openApp": "Открыть приложение",
+} satisfies Record<string, Message>;
+
+export type MessageKey = keyof typeof ru;

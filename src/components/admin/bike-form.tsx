@@ -1,8 +1,11 @@
+"use client";
+
 import { ImagePlus } from "lucide-react";
 import { BikePhoto } from "@/components/bike-photo";
 import { Field, TextArea, TextInput } from "@/components/form";
 import { Switch } from "@/components/switch";
 import type { DemoBike } from "@/lib/demo-data";
+import { useT } from "@/lib/i18n/use-t";
 
 type BikeFormProps = {
   // Empty for a new bike.
@@ -12,10 +15,12 @@ type BikeFormProps = {
 // The fields of a bike. The page adds the "Save" button.
 // TODO(slices 5.2, 5.3): save the form and upload photos.
 export function BikeForm({ bike }: BikeFormProps) {
+  const t = useT();
+
   return (
     <>
       <section className="flex flex-col gap-2">
-        <span className="text-sm font-medium">Фото</span>
+        <span className="text-sm font-medium">{t("bikeForm.photos")}</span>
         <div className="grid grid-cols-4 gap-2">
           {bike && <BikePhoto size="medium" />}
           <button
@@ -26,25 +31,28 @@ export function BikeForm({ bike }: BikeFormProps) {
           </button>
         </div>
         <p className="text-sm text-muted-foreground">
-          Первое фото — обложка в каталоге.
+          {t("bikeForm.photosHint")}
         </p>
       </section>
 
-      <Field label="Название">
-        <TextInput defaultValue={bike?.name} placeholder="Городской #3" />
+      <Field label={t("bikeForm.name")}>
+        <TextInput
+          defaultValue={bike?.name}
+          placeholder={t("bikeForm.namePlaceholder")}
+        />
       </Field>
 
-      <Field label="Описание">
+      <Field label={t("bikeForm.description")}>
         <TextArea
           defaultValue={bike?.description}
-          placeholder="Скорости, рост, что в комплекте"
+          placeholder={t("bikeForm.descriptionPlaceholder")}
           rows={4}
         />
       </Field>
 
       <Switch
-        label="Видно клиентам"
-        description="Скрытый велосипед не показывается в каталоге"
+        label={t("bikeForm.visible")}
+        description={t("bikeForm.visibleHint")}
         defaultChecked={bike?.isVisible ?? true}
       />
     </>

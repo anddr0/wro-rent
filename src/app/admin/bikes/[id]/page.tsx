@@ -8,14 +8,16 @@ import { Button } from "@/components/button";
 import { NotFoundText } from "@/components/not-found-text";
 import { PageTitle } from "@/components/page-title";
 import { findDemoBike } from "@/lib/demo-data";
+import { useT } from "@/lib/i18n/use-t";
 
 export default function AdminBikePage() {
+  const t = useT();
   const { id } = useParams<{ id: string }>();
   // TODO(slice 5.2): the bike from the API.
   const bike = findDemoBike(id);
 
   if (!bike) {
-    return <NotFoundText>Велосипед не найден</NotFoundText>;
+    return <NotFoundText>{t("common.bikeNotFound")}</NotFoundText>;
   }
 
   return (
@@ -24,10 +26,11 @@ export default function AdminBikePage() {
       <BikeForm bike={bike} />
       {/* TODO(slice 5.4): archive; delete only a bike without bookings. */}
       <Button variant="destructive">
-        <Archive />В архив
+        <Archive />
+        {t("adminBike.toArchive")}
       </Button>
       <BottomBar>
-        <Button>Сохранить</Button>
+        <Button>{t("common.save")}</Button>
       </BottomBar>
     </>
   );

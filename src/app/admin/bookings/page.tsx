@@ -9,17 +9,20 @@ import { PageTitle } from "@/components/page-title";
 import { Row, Section } from "@/components/section";
 import type { Enums } from "@/lib/database.types";
 import { DEMO_BOOKINGS } from "@/lib/demo-data";
+import type { MessageKey } from "@/lib/i18n/messages/ru";
+import { useT } from "@/lib/i18n/use-t";
 
 type StatusFilter = Enums<"booking_status"> | "all";
 
-const FILTERS: { value: StatusFilter; label: string }[] = [
-  { value: "pending", label: "Ожидают" },
-  { value: "confirmed", label: "Подтверждены" },
-  { value: "active", label: "У клиентов" },
-  { value: "all", label: "Все" },
+const FILTERS: { value: StatusFilter; label: MessageKey }[] = [
+  { value: "pending", label: "adminBookings.filterPending" },
+  { value: "confirmed", label: "adminBookings.filterConfirmed" },
+  { value: "active", label: "adminBookings.filterActive" },
+  { value: "all", label: "adminBookings.filterAll" },
 ];
 
 export default function AdminBookingsPage() {
+  const t = useT();
   const [filter, setFilter] = useState<StatusFilter>("pending");
 
   // TODO(slice 4.1): filtered bookings from the API, newest first.
@@ -30,14 +33,16 @@ export default function AdminBookingsPage() {
 
   return (
     <>
-      <PageTitle description="Новые заявки — сверху">Брони</PageTitle>
+      <PageTitle description={t("adminBookings.newestFirst")}>
+        {t("adminBookings.title")}
+      </PageTitle>
 
       {/* Scrolls sideways instead of wrapping, so the list stays in place. */}
       <div className="-mx-4 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none]">
         {FILTERS.map((item) => (
           <Chip
             key={item.value}
-            label={item.label}
+            label={t(item.label)}
             isSelected={item.value === filter}
             onSelect={() => setFilter(item.value)}
           />
@@ -45,14 +50,14 @@ export default function AdminBookingsPage() {
         {/* TODO(slice 4.1): filter by dates. */}
         <Chip
           icon={CalendarDays}
-          label="Любые даты"
+          label={t("adminBookings.anyDates")}
           isSelected={false}
           onSelect={() => {}}
         />
       </div>
 
       {bookings.length === 0 ? (
-        <EmptyState icon={Inbox} title="Здесь пусто" />
+        <EmptyState icon={Inbox} title={t("adminBookings.empty")} />
       ) : (
         <Section>
           {bookings.map((booking) => (

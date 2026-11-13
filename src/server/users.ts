@@ -1,6 +1,7 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database, Tables, TablesInsert } from "@/lib/database.types";
+import type { Locale } from "@/lib/i18n/locales";
 import type { TelegramUser } from "@/lib/telegram/types";
 
 // Finds the user by Telegram id or creates a new customer.
@@ -25,6 +26,26 @@ export async function upsertUserFromTelegram(
   const { data, error } = await supabase
     .from("users")
     .upsert(row, { onConflict: "telegram_id" })
+    .select()
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
+
+// Saves the language the user picked in settings. Sign-in never overwrites it.
+export async function updateUserLocale(
+  supabase: SupabaseClient<Database>,
+  userId: string,
+  locale: Locale,
+): Promise<Tables<"users">> {
+  const { data, error } = await supabase
+    .from("users")
+    .update({ locale })
+    .eq("id", userId)
     .select()
     .single();
 

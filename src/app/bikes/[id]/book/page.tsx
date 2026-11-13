@@ -7,13 +7,15 @@ import { Chip } from "@/components/chip";
 import { TextArea } from "@/components/form";
 import { NotFoundText } from "@/components/not-found-text";
 import { PageTitle } from "@/components/page-title";
-import { DetailRow, Row, Section } from "@/components/section";
+import { DetailRow, Row, Section, SectionTitle } from "@/components/section";
 import { DEMO_PLANS, findDemoBike } from "@/lib/demo-data";
+import { useT } from "@/lib/i18n/use-t";
 
 // TODO(slice 2.2): free start times from the API.
 const DEMO_TIMES = ["9:00", "10:00", "11:00", "12:00", "14:00", "16:00"];
 
 export default function BookPage() {
+  const t = useT();
   const { id } = useParams<{ id: string }>();
   const bike = findDemoBike(id);
   const plans = DEMO_PLANS.filter((plan) => plan.isActive);
@@ -21,10 +23,11 @@ export default function BookPage() {
   const [time, setTime] = useState<string | null>(null);
 
   if (!bike) {
-    return <NotFoundText>Велосипед не найден</NotFoundText>;
+    return <NotFoundText>{t("common.bikeNotFound")}</NotFoundText>;
   }
 
   const plan = plans.find((item) => item.id === planId) ?? plans[0];
+  const price = t("common.priceValue", { price: plan.price });
 
   return (
     <>
@@ -32,7 +35,7 @@ export default function BookPage() {
 
       {/* With a single plan there is nothing to choose (К-4). */}
       {plans.length > 1 && (
-        <Section title="Тариф">
+        <Section title={t("common.plan")}>
           {plans.map((item) => (
             <label key={item.id} className="cursor-pointer">
               <Row
@@ -46,22 +49,24 @@ export default function BookPage() {
                   />
                 }
                 title={item.name}
-                end={<span>{item.price} zł</span>}
+                end={
+                  <span>{t("common.priceValue", { price: item.price })}</span>
+                }
               />
             </label>
           ))}
         </Section>
       )}
 
-      <Section title="Дата начала">
+      <Section title={t("book.startDate")}>
         {/* TODO(slice 2.2): month calendar with busy days. */}
         <div className="flex aspect-square items-center justify-center p-4 text-center text-muted-foreground">
-          Здесь будет календарь
+          {t("book.calendarPlaceholder")}
         </div>
       </Section>
 
-      <section className="flex flex-col gap-1.5">
-        <h2 className="px-3 text-sm text-muted-foreground">Время начала</h2>
+      <section className="flex flex-col gap-2">
+        <SectionTitle>{t("book.startTime")}</SectionTitle>
         <div className="flex flex-wrap gap-2">
           {DEMO_TIMES.map((item) => (
             <Chip
@@ -75,22 +80,25 @@ export default function BookPage() {
       </section>
 
       <p className="rounded-xl bg-amber-500/15 p-3 text-sm text-amber-700 dark:text-amber-400">
-        Кто-то уже ждёт подтверждения на это время
+        {t("book.othersWaiting")}
       </p>
 
-      <Section title="Итого">
-        <DetailRow label="Тариф" value={plan.name} />
-        <DetailRow label="Начало" value={`7 дек ${time ?? "—"}`} />
-        <DetailRow label="Цена" value={`${plan.price} zł`} />
-        <DetailRow label="Оплата" value="на месте, наличными или BLIK" />
+      <Section title={t("book.summary")}>
+        <DetailRow label={t("common.plan")} value={plan.name} />
+        <DetailRow label={t("common.start")} value={`07.12 ${time ?? "—"}`} />
+        <DetailRow label={t("common.price")} value={price} />
+        <DetailRow
+          label={t("common.payment")}
+          value={t("common.paymentOptions")}
+        />
       </Section>
 
-      <TextArea placeholder="Комментарий для админа (необязательно)" rows={3} />
+      <TextArea placeholder={t("book.commentPlaceholder")} rows={3} />
 
       {/* TODO(slice 2.3): send the request, then open its "sent" screen.
           replace: "back" from there should not return to this form. */}
       <ButtonLink href="/bookings/b1/sent" replace>
-        Отправить заявку
+        {t("book.submit")}
       </ButtonLink>
     </>
   );

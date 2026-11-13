@@ -1,13 +1,17 @@
+"use client";
+
 import type { Enums } from "@/lib/database.types";
+import type { MessageKey } from "@/lib/i18n/messages/ru";
+import { useT } from "@/lib/i18n/use-t";
 
 type BookingStatus = Enums<"booking_status">;
 
-const STATUS_LABELS: Record<BookingStatus, string> = {
-  pending: "Ожидает",
-  confirmed: "Подтверждена",
-  active: "Велосипед у клиента",
-  completed: "Завершена",
-  cancelled: "Отменена",
+const STATUS_LABELS: Record<BookingStatus, MessageKey> = {
+  pending: "status.pending",
+  confirmed: "status.confirmed",
+  active: "status.active",
+  completed: "status.completed",
+  cancelled: "status.cancelled",
 };
 
 const STATUS_CLASSES: Record<BookingStatus, string> = {
@@ -19,11 +23,13 @@ const STATUS_CLASSES: Record<BookingStatus, string> = {
 };
 
 export function BookingStatusBadge({ status }: { status: BookingStatus }) {
+  const t = useT();
+
   return (
     <span
       className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${STATUS_CLASSES[status]}`}
     >
-      {STATUS_LABELS[status]}
+      {t(STATUS_LABELS[status])}
     </span>
   );
 }

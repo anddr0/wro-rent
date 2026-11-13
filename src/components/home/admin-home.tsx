@@ -4,70 +4,89 @@ import { Bike, CalendarDays, Tags } from "lucide-react";
 import { Greeting } from "@/components/home/greeting";
 import { Row, Section, SectionTitle } from "@/components/section";
 import { DEMO_BOOKINGS } from "@/lib/demo-data";
+import type { MessageKey } from "@/lib/i18n/messages/ru";
+import { useT } from "@/lib/i18n/use-t";
 
-const ADMIN_SECTIONS = [
+const ADMIN_SECTIONS: {
+  href: string;
+  title: MessageKey;
+  subtitle: MessageKey;
+  icon: typeof Bike;
+}[] = [
   {
     href: "/admin/bookings",
-    title: "Брони",
-    subtitle: "Заявки, выдача и возврат",
+    title: "adminHome.bookings",
+    subtitle: "adminHome.bookingsHint",
     icon: CalendarDays,
   },
   {
     href: "/admin/bikes",
-    title: "Автопарк",
-    subtitle: "Велосипеды и их фото",
+    title: "adminHome.bikes",
+    subtitle: "adminHome.bikesHint",
     icon: Bike,
   },
   {
     href: "/admin/plans",
-    title: "Тарифы",
-    subtitle: "Цены для всех велосипедов",
+    title: "adminHome.plans",
+    subtitle: "adminHome.plansHint",
     icon: Tags,
   },
 ];
 
 // А-0: what needs attention today, right on opening the app.
 export function AdminHome() {
+  const t = useT();
   // TODO(slice 4.6): the summary from the API.
   const pendingBookings = DEMO_BOOKINGS.filter(
     (booking) => booking.status === "pending",
   );
+  const toHandOut = 2;
+  const toTakeBack = 1;
 
   return (
     <>
-      <Greeting subtitle="Администратор" />
+      <Greeting subtitle={t("adminHome.role")} />
 
       <section className="flex flex-col gap-2">
-        <SectionTitle>Сегодня</SectionTitle>
+        <SectionTitle>{t("adminHome.today")}</SectionTitle>
         <div className="grid grid-cols-3 gap-2">
-          <SummaryTile count={pendingBookings.length} label="Новые заявки" />
-          <SummaryTile count={2} label="Выдать" />
-          <SummaryTile count={1} label="Принять" />
+          <SummaryTile
+            count={pendingBookings.length}
+            label={t("adminHome.newRequests", {
+              count: pendingBookings.length,
+            })}
+          />
+          <SummaryTile count={toHandOut} label={t("adminHome.toHandOut")} />
+          <SummaryTile count={toTakeBack} label={t("adminHome.toTakeBack")} />
         </div>
       </section>
 
       {pendingBookings.length > 0 && (
-        <Section title="Ждут ответа">
+        <Section title={t("adminHome.awaitingReply")}>
           {pendingBookings.map((booking) => (
             <Row
               key={booking.id}
               href={`/admin/bookings/${booking.id}`}
               title={booking.bikeName}
               subtitle={`${booking.customerName} · ${booking.startsAt}`}
-              end={<span className="font-semibold">{booking.price} zł</span>}
+              end={
+                <span className="font-semibold">
+                  {t("common.priceValue", { price: booking.price })}
+                </span>
+              }
             />
           ))}
         </Section>
       )}
 
-      <Section title="Управление">
+      <Section title={t("adminHome.manage")}>
         {ADMIN_SECTIONS.map((section) => (
           <Row
             key={section.href}
             href={section.href}
             icon={section.icon}
-            title={section.title}
-            subtitle={section.subtitle}
+            title={t(section.title)}
+            subtitle={t(section.subtitle)}
           />
         ))}
       </Section>

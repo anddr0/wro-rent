@@ -3,7 +3,7 @@ import Script from "next/script";
 import { Manrope } from "next/font/google";
 import { Suspense } from "react";
 import { CurrentUserProvider } from "@/components/current-user";
-import { StatusScreen } from "@/components/status-screen";
+import { LoadingScreen } from "@/components/status-screen";
 import { TelegramColorScheme } from "@/components/telegram-color-scheme";
 import { TelegramHeaderButtons } from "@/components/telegram-header-buttons";
 import "./globals.css";
@@ -16,7 +16,7 @@ const manrope = Manrope({
 
 export const metadata: Metadata = {
   title: "WroRent",
-  description: "Прокат велосипедов во Вроцлаве",
+  description: "Wypożyczalnia rowerów we Wrocławiu",
 };
 
 export const viewport: Viewport = {
@@ -32,7 +32,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     // hydrates, and TelegramColorScheme adds the "dark" class;
     // suppressHydrationWarning ignores that (only on this tag).
     <html
-      lang="ru"
+      lang="pl"
       className={`${manrope.variable} h-full antialiased`}
       suppressHydrationWarning
     >
@@ -48,7 +48,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           {/* Pages with an id in the URL (/bikes/[id]) learn it only when
               the page is opened, not at build time. Until then Next shows this
               fallback; without Suspense the build fails. */}
-          <Suspense fallback={<StatusScreen>Загрузка…</StatusScreen>}>
+          <Suspense fallback={<LoadingScreen />}>
             <TelegramHeaderButtons />
             <main className="flex flex-1 flex-col gap-6 px-4 pt-5 pb-4">
               {children}

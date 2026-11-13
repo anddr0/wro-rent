@@ -11,14 +11,16 @@ import { PageTitle } from "@/components/page-title";
 import { DetailRow, Row, Section } from "@/components/section";
 import type { DemoBooking } from "@/lib/demo-data";
 import { findDemoBooking } from "@/lib/demo-data";
+import { useT } from "@/lib/i18n/use-t";
 
 export default function AdminBookingPage() {
+  const t = useT();
   const { id } = useParams<{ id: string }>();
   // TODO(slice 4.2): the booking from the API.
   const booking = findDemoBooking(id);
 
   if (!booking) {
-    return <NotFoundText>Бронь не найдена</NotFoundText>;
+    return <NotFoundText>{t("common.bookingNotFound")}</NotFoundText>;
   }
 
   return (
@@ -30,7 +32,7 @@ export default function AdminBookingPage() {
         {booking.bikeName}
       </PageTitle>
 
-      <Section title="Клиент">
+      <Section title={t("adminBooking.customer")}>
         <Row
           start={
             <Avatar photoUrl={null} name={booking.customerName} size={40} />
@@ -41,36 +43,39 @@ export default function AdminBookingPage() {
           end={
             <Button variant="secondary" size="small">
               <MessageCircle />
-              Написать
+              {t("adminBooking.message")}
             </Button>
           }
         />
       </Section>
 
-      <Section title="Аренда">
-        <DetailRow label="Начало" value={booking.startsAt} />
-        <DetailRow label="Конец" value={booking.endsAt} />
-        <DetailRow label="Тариф" value={booking.planName} />
+      <Section title={t("adminBooking.rental")}>
+        <DetailRow label={t("common.start")} value={booking.startsAt} />
+        <DetailRow label={t("common.end")} value={booking.endsAt} />
+        <DetailRow label={t("common.plan")} value={booking.planName} />
         {/* TODO(slice 4.5): change the price. */}
         <DetailRow
-          label="Цена"
+          label={t("common.price")}
           value={
             <span className="inline-flex items-center gap-2">
-              {booking.price} zł
+              {t("common.priceValue", { price: booking.price })}
               <Pencil className="size-4 text-muted-foreground" />
             </span>
           }
         />
         {booking.comment && (
-          <DetailRow label="Комментарий" value={booking.comment} />
+          <DetailRow label={t("common.comment")} value={booking.comment} />
         )}
       </Section>
 
       {/* TODO(slice 4.5): edit deposit, payment and the note. */}
-      <Section title="Оплата">
-        <DetailRow label="Депозит" value="—" />
-        <DetailRow label="Оплата" value="не оплачено" />
-        <DetailRow label="Заметка" value="—" />
+      <Section title={t("common.payment")}>
+        <DetailRow label={t("adminBooking.deposit")} value="—" />
+        <DetailRow
+          label={t("common.payment")}
+          value={t("adminBooking.notPaid")}
+        />
+        <DetailRow label={t("adminBooking.note")} value="—" />
       </Section>
 
       <StatusActions status={booking.status} />
@@ -80,12 +85,14 @@ export default function AdminBookingPage() {
 
 // TODO(slices 4.3, 4.4): make the buttons work.
 function StatusActions({ status }: { status: DemoBooking["status"] }) {
+  const t = useT();
+
   if (status === "pending") {
     return (
       <BottomBar>
         <div className="grid grid-cols-2 gap-2">
-          <Button variant="destructive">Отклонить</Button>
-          <Button>Подтвердить</Button>
+          <Button variant="destructive">{t("adminBooking.reject")}</Button>
+          <Button>{t("adminBooking.confirm")}</Button>
         </div>
       </BottomBar>
     );
@@ -93,15 +100,15 @@ function StatusActions({ status }: { status: DemoBooking["status"] }) {
   if (status === "confirmed") {
     return (
       <BottomBar>
-        <Button>Выдал велосипед</Button>
-        <Button variant="destructive">Отменить бронь</Button>
+        <Button>{t("adminBooking.handedOut")}</Button>
+        <Button variant="destructive">{t("adminBooking.cancel")}</Button>
       </BottomBar>
     );
   }
   if (status === "active") {
     return (
       <BottomBar>
-        <Button>Принял велосипед</Button>
+        <Button>{t("adminBooking.returned")}</Button>
       </BottomBar>
     );
   }
