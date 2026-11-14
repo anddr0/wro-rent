@@ -1,7 +1,13 @@
+"use client";
+
 import { Bike } from "lucide-react";
+import Image from "next/image";
+import { useState } from "react";
 
 type BikePhotoProps = {
   size: "small" | "medium" | "large";
+  // TODO(blocks 3–5): pass it on the screens that still use demo data.
+  url?: string | null;
 };
 
 const BOX_CLASSES: Record<BikePhotoProps["size"], string> = {
@@ -16,13 +22,33 @@ const ICON_CLASSES: Record<BikePhotoProps["size"], string> = {
   large: "size-16",
 };
 
-// TODO(slice 1.3): show the real photo. Until then, a bike icon.
-export function BikePhoto({ size }: BikePhotoProps) {
+// The bike's photo, cropped to the box. A bike icon when there is no photo
+// or it failed to load.
+export function BikePhoto({ size, url = null }: BikePhotoProps) {
+  // The url that failed, not a flag: a new url gets a new try.
+  const [failedUrl, setFailedUrl] = useState<string | null>(null);
+  const boxClasses = `relative flex shrink-0 items-center justify-center overflow-hidden bg-muted text-muted-foreground ${BOX_CLASSES[size]}`;
+
+  if (!url || url === failedUrl) {
+    return (
+      <div className={boxClasses}>
+        <Bike className={ICON_CLASSES[size]} strokeWidth={1.5} />
+      </div>
+    );
+  }
+
   return (
-    <div
-      className={`flex shrink-0 items-center justify-center bg-muted text-muted-foreground ${BOX_CLASSES[size]}`}
-    >
-      <Bike className={ICON_CLASSES[size]} strokeWidth={1.5} />
+    <div className={boxClasses}>
+      {/* unoptimized: photos are resized on upload (slice 5.3), and Vercel's
+          image optimization has a monthly limit on the free plan. */}
+      <Image
+        src={url}
+        alt=""
+        fill
+        unoptimized
+        className="object-cover"
+        onError={() => setFailedUrl(url)}
+      />
     </div>
   );
 }

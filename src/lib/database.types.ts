@@ -23,16 +23,36 @@ export type Database = {
           }
         },"public": {
           Tables: {
-            "bikes": {
+            "bike_photos": {
                   Row: {
-                    "created_at": string,"description": string | null,"id": string,"is_available": boolean,"name": string,"photo_url": string | null,"updated_at": string
+                    "bike_id": string,"created_at": string,"id": string,"path": string,"sort_order": number
                   }
                   ComputedFields: never
                   Insert: {
-                    "created_at"?: string,"description"?: string | null,"id"?: string,"is_available"?: boolean,"name": string,"photo_url"?: string | null,"updated_at"?: string
+                    "bike_id": string,"created_at"?: string,"id"?: string,"path": string,"sort_order"?: number
                   }
                   Update: {
-                    "created_at"?: string,"description"?: string | null,"id"?: string,"is_available"?: boolean,"name"?: string,"photo_url"?: string | null,"updated_at"?: string
+                    "bike_id"?: string,"created_at"?: string,"id"?: string,"path"?: string,"sort_order"?: number
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "bike_photos_bike_id_fkey"
+      columns: ["bike_id"]
+isOneToOne: false
+      referencedRelation: "bikes"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"bikes": {
+                  Row: {
+                    "created_at": string,"description": string | null,"id": string,"is_available": boolean,"name": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"description"?: string | null,"id"?: string,"is_available"?: boolean,"name": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"description"?: string | null,"id"?: string,"is_available"?: boolean,"name"?: string,"updated_at"?: string
                   }
                   Relationships: [
                     

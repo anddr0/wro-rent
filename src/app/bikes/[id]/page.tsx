@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { BikePhoto } from "@/components/bike-photo";
+import { BikeGallery } from "@/components/bike-gallery";
 import { BottomBar } from "@/components/bottom-bar";
 import { ButtonLink } from "@/components/button";
 import { ErrorState } from "@/components/error-state";
@@ -32,8 +32,7 @@ export default function BikePage() {
 
   return (
     <>
-      {/* TODO(slice 1.3): the bike's photos, swipeable. */}
-      <BikePhoto size="large" />
+      <BikeGallery photoUrls={bike.photoUrls} />
 
       <div className="flex flex-col gap-2">
         <PageTitle>{bike.name}</PageTitle>

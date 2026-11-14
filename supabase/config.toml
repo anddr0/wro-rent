@@ -120,12 +120,14 @@ enabled = true
 # The maximum file size allowed (e.g. "5MB", "500KB").
 file_size_limit = "50MiB"
 
-# Uncomment to configure local storage buckets
-# [storage.buckets.images]
-# public = false
-# file_size_limit = "50MiB"
-# allowed_mime_types = ["image/png", "image/jpeg"]
-# objects_path = "./images"
+# The bucket itself is created by a migration, so it exists in prod too.
+# Here it is repeated only to upload test photos locally (seed).
+# Keep the settings the same as in the migration.
+[storage.buckets.bike-photos]
+public = true
+file_size_limit = "5MiB"
+allowed_mime_types = ["image/jpeg", "image/png", "image/webp"]
+objects_path = "./seed-photos"
 
 # Allow connections via S3 compatible clients
 [storage.s3_protocol]

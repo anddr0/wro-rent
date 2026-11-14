@@ -1,7 +1,13 @@
 // What the catalog API sends to the mini app: only the fields customers see.
 import type { Tables } from "@/lib/database.types";
 
-export type CatalogBike = Pick<Tables<"bikes">, "id" | "name" | "description">;
+type BikeFields = Pick<Tables<"bikes">, "id" | "name" | "description">;
+
+// A bike in the catalog list, with its cover (the first photo).
+export type CatalogBike = BikeFields & { coverUrl: string | null };
+
+// A bike on its own page, with all its photos in order.
+export type BikeDetails = BikeFields & { photoUrls: string[] };
 
 export type CatalogPlan = Pick<Tables<"rental_plans">, "id" | "name" | "price">;
 
@@ -14,6 +20,6 @@ export type BikesResponse = {
 
 // GET /api/bikes/[id]
 export type BikeResponse = {
-  bike: CatalogBike;
+  bike: BikeDetails;
   plans: CatalogPlan[];
 };

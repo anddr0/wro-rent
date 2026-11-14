@@ -117,7 +117,7 @@ function HomeBikes({ catalog, hasFailed, onRetry }: HomeBikesProps) {
               href={`/bikes/${bike.id}`}
               className="flex flex-col gap-1 active:opacity-70"
             >
-              <BikePhoto size="medium" />
+              <BikePhoto size="medium" url={bike.coverUrl} />
               <span className="font-medium">{bike.name}</span>
               {catalog.priceFrom !== null && (
                 <span className="text-sm text-muted-foreground">

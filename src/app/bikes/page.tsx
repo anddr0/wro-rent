@@ -64,7 +64,7 @@ function BikeCard({ bike, priceFrom }: BikeCardProps) {
   return (
     <div className="flex flex-col gap-3 rounded-xl border bg-card p-3 shadow-sm">
       <Link href={`/bikes/${bike.id}`} className="active:opacity-70">
-        <BikePhoto size="medium" />
+        <BikePhoto size="medium" url={bike.coverUrl} />
       </Link>
       <div className="flex flex-col gap-0.5 px-1">
         <span className="font-medium">{bike.name}</span>
