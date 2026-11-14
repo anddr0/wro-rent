@@ -154,6 +154,17 @@ export function parseCalendarDay(text: string): CalendarDay | null {
   return { year, month, day };
 }
 
+// Is `day` before `other` in the calendar?
+export function isDayBefore(day: CalendarDay, other: CalendarDay): boolean {
+  if (day.year !== other.year) {
+    return day.year < other.year;
+  }
+  if (day.month !== other.month) {
+    return day.month < other.month;
+  }
+  return day.day < other.day;
+}
+
 export function isSameDay(a: CalendarDay, b: CalendarDay): boolean {
   return a.year === b.year && a.month === b.month && a.day === b.day;
 }

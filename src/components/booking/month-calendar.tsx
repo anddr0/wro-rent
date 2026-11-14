@@ -3,7 +3,7 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { useLocale } from "@/lib/i18n/use-t";
-import { daysInMonth, isSameDay } from "@/lib/rental-time";
+import { daysInMonth, isDayBefore, isSameDay } from "@/lib/rental-time";
 import type { CalendarDay } from "@/lib/rental-time";
 
 type Month = { year: number; month: number };
@@ -16,8 +16,14 @@ type MonthCalendarProps = {
   firstDay: CalendarDay;
   lastDay: CalendarDay;
   selectedDay: CalendarDay | null;
+  // The day the rental ends. The days from the selected one to this one are
+  // tinted, so the customer sees how long the bike is theirs. Null — no tint.
+  rangeEndDay: CalendarDay | null;
   onSelect: (day: CalendarDay) => void;
 };
+
+// Where a day is in the tinted range of the rental.
+type RangePart = "none" | "start" | "middle" | "end";
 
 // A month grid to pick a day from, weeks start on Monday.
 export function MonthCalendar({
@@ -25,6 +31,7 @@ export function MonthCalendar({
   firstDay,
   lastDay,
   selectedDay,
+  rangeEndDay,
   onSelect,
 }: MonthCalendarProps) {
   const locale = useLocale();
@@ -50,6 +57,27 @@ export function MonthCalendar({
     } else {
       setShownMonth({ year: shownMonth.year, month: shownMonth.month + 1 });
     }
+  }
+
+  function rangePartOf(day: CalendarDay): RangePart {
+    // A rental that ends on the day it starts has no range to show.
+    if (
+      selectedDay === null ||
+      rangeEndDay === null ||
+      isSameDay(selectedDay, rangeEndDay)
+    ) {
+      return "none";
+    }
+    if (isSameDay(day, selectedDay)) {
+      return "start";
+    }
+    if (isSameDay(day, rangeEndDay)) {
+      return "end";
+    }
+    if (isDayBefore(selectedDay, day) && isDayBefore(day, rangeEndDay)) {
+      return "middle";
+    }
+    return "none";
   }
 
   const dayCount = daysInMonth(shownMonth.year, shownMonth.month);
@@ -94,6 +122,7 @@ export function MonthCalendar({
             day={day}
             isAvailable={availableDays.some((item) => isSameDay(item, day))}
             isSelected={selectedDay !== null && isSameDay(selectedDay, day)}
+            rangePart={rangePartOf(day)}
             onSelect={onSelect}
           />
         ))}
@@ -106,27 +135,53 @@ type DayButtonProps = {
   day: CalendarDay;
   isAvailable: boolean;
   isSelected: boolean;
+  rangePart: RangePart;
   onSelect: (day: CalendarDay) => void;
 };
 
-function DayButton({ day, isAvailable, isSelected, onSelect }: DayButtonProps) {
+// The pale band behind the days of the rental. On the first day it starts
+// from the middle of the cell, on the last one it ends there, so the band
+// runs from one circle to the other.
+const RANGE_BAND_CLASSES: Record<RangePart, string> = {
+  none: "hidden",
+  start: "left-1/2 right-0",
+  middle: "inset-x-0",
+  end: "left-0 right-1/2",
+};
+
+function DayButton({
+  day,
+  isAvailable,
+  isSelected,
+  rangePart,
+  onSelect,
+}: DayButtonProps) {
   let colors = "text-foreground active:bg-muted";
-  if (!isAvailable) {
-    colors = "text-muted-foreground/40";
-  } else if (isSelected) {
+  if (isSelected) {
     colors = "bg-primary font-semibold text-primary-foreground";
+  } else if (rangePart === "end") {
+    // The last day of the rental: a pale circle that closes the band.
+    colors = "bg-muted-foreground/25 font-semibold text-foreground";
+  } else if (!isAvailable && rangePart === "none") {
+    colors = "text-muted-foreground/40";
   }
 
   return (
-    <button
-      type="button"
-      disabled={!isAvailable}
-      aria-pressed={isSelected}
-      onClick={() => onSelect(day)}
-      className={`mx-auto flex size-10 items-center justify-center rounded-full transition-colors ${colors}`}
-    >
-      {day.day}
-    </button>
+    <div className="relative flex justify-center">
+      <span
+        aria-hidden
+        className={`absolute inset-y-0 bg-muted-foreground/15 ${RANGE_BAND_CLASSES[rangePart]}`}
+      />
+      <button
+        type="button"
+        disabled={!isAvailable}
+        aria-pressed={isSelected}
+        onClick={() => onSelect(day)}
+        className={`relative flex size-10 items-center justify-center rounded-full transition-colors ${colors}`}
+      >
+        {day.day}
+      </button>
+    </div>
   );
 }
 

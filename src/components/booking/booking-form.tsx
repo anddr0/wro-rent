@@ -20,7 +20,12 @@ import type { BookingResponse, NewBookingRequest } from "@/lib/bookings";
 import type { BikeDetails, CatalogPlan } from "@/lib/catalog";
 import type { MessageKey } from "@/lib/i18n/messages/ru";
 import { useLocale, useT } from "@/lib/i18n/use-t";
-import { formatDateTime, formatTime, isSameDay } from "@/lib/rental-time";
+import {
+  formatDateTime,
+  formatTime,
+  isSameDay,
+  toCalendarDay,
+} from "@/lib/rental-time";
 import type { CalendarDay } from "@/lib/rental-time";
 import { requestWriteAccess } from "@/lib/telegram/dialogs";
 import { useTelegram } from "@/lib/telegram/use-telegram";
@@ -99,6 +104,15 @@ export function BookingForm({
       (item) => item.startsAt.toISOString() === chosenStart && !item.isBusy,
     ) ?? null;
   const hasBusySlots = slots.some((item) => item.isBusy);
+
+  // The calendar tints the days of the rental. Before a time is picked the
+  // end is counted from the first time of the day: it gives the same day
+  // for every plan that lasts days, weeks or months.
+  let rangeEndDay: CalendarDay | null = null;
+  const rangeSlot = slot ?? slots[0];
+  if (rangeSlot) {
+    rangeEndDay = toCalendarDay(rangeSlot.endsAt);
+  }
 
   async function sendRequest() {
     if (slot === null || isSending) {
@@ -181,6 +195,7 @@ export function BookingForm({
               firstDay={bookableDays[0]}
               lastDay={bookableDays[bookableDays.length - 1]}
               selectedDay={day}
+              rangeEndDay={rangeEndDay}
               onSelect={setChosenDay}
             />
           </Section>
