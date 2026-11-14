@@ -224,10 +224,21 @@ export const ru = {
   "adminArchive.emptyHint":
     "Сюда попадают велосипеды, которые больше не сдаются. Их история броней сохраняется.",
 
+  "adminArchive.openToRestore": "Откройте, чтобы вернуть",
+  "adminBikes.emptyHint": "Добавьте первый велосипед.",
   "adminBike.new": "Новый велосипед",
   "adminBike.create": "Добавить",
   "adminBike.toArchive": "В архив",
 
+  "adminBike.archived": "В архиве",
+  "adminBike.restore": "Вернуть из архива",
+  "adminBike.delete": "Удалить велосипед",
+  "adminBike.archiveConfirm":
+    "Убрать велосипед в архив? Клиенты перестанут его видеть.",
+  "adminBike.deleteConfirm": "Удалить велосипед? Это нельзя отменить.",
+  "adminBike.hasBookingsHint":
+    "У велосипеда есть брони, поэтому удалить его нельзя — только убрать в архив.",
+  "adminBike.actionFailed": "Не получилось. Попробуйте ещё раз.",
   "bikeForm.photos": "Фото",
   "bikeForm.photosHint": "Первое фото — обложка в каталоге.",
   "bikeForm.name": "Название",
@@ -237,6 +248,18 @@ export const ru = {
   "bikeForm.visible": "Видно клиентам",
   "bikeForm.visibleHint": "Скрытый велосипед не показывается в каталоге",
 
+  "bikeForm.nameRequired": "Введите название",
+  "bikeForm.photosAfterCreate":
+    "Фото добавите на следующем шаге, после создания.",
+  "bikeForm.cover": "Обложка",
+  "bikeForm.addPhoto": "Добавить фото",
+  "bikeForm.deletePhoto": "Удалить фото",
+  "bikeForm.moveLeft": "Сдвинуть влево",
+  "bikeForm.moveRight": "Сдвинуть вправо",
+  "bikeForm.deletePhotoConfirm": "Удалить фото?",
+  "bikeForm.tooManyPhotos": "У велосипеда может быть не больше {count} фото.",
+  "bikeForm.badPhoto": "Этот файл не подходит. Нужно фото JPEG, PNG или WebP.",
+  "bikeForm.photoFailed": "Не получилось. Попробуйте ещё раз.",
   "adminPlans.title": "Тарифы",
   "adminPlans.description":
     "Общие для всех велосипедов. Новая цена не меняет уже созданные брони.",

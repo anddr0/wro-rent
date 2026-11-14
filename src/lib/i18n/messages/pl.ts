@@ -217,10 +217,21 @@ export const pl: Record<MessageKey, Message> = {
   "adminArchive.emptyHint":
     "Trafiają tu rowery, które nie są już wynajmowane. Ich historia rezerwacji zostaje.",
 
+  "adminArchive.openToRestore": "Otwórz, aby przywrócić",
+  "adminBikes.emptyHint": "Dodaj pierwszy rower.",
   "adminBike.new": "Nowy rower",
   "adminBike.create": "Dodaj",
   "adminBike.toArchive": "Do archiwum",
 
+  "adminBike.archived": "W archiwum",
+  "adminBike.restore": "Przywróć z archiwum",
+  "adminBike.delete": "Usuń rower",
+  "adminBike.archiveConfirm":
+    "Przenieść rower do archiwum? Klienci przestaną go widzieć.",
+  "adminBike.deleteConfirm": "Usunąć rower? Tego nie da się cofnąć.",
+  "adminBike.hasBookingsHint":
+    "Rower ma rezerwacje, więc nie można go usunąć — tylko przenieść do archiwum.",
+  "adminBike.actionFailed": "Nie udało się. Spróbuj ponownie.",
   "bikeForm.photos": "Zdjęcia",
   "bikeForm.photosHint": "Pierwsze zdjęcie to okładka w katalogu.",
   "bikeForm.name": "Nazwa",
@@ -230,6 +241,19 @@ export const pl: Record<MessageKey, Message> = {
   "bikeForm.visible": "Widoczny dla klientów",
   "bikeForm.visibleHint": "Ukryty rower nie jest pokazywany w katalogu",
 
+  "bikeForm.nameRequired": "Podaj nazwę",
+  "bikeForm.photosAfterCreate":
+    "Zdjęcia dodasz w następnym kroku, po utworzeniu.",
+  "bikeForm.cover": "Okładka",
+  "bikeForm.addPhoto": "Dodaj zdjęcie",
+  "bikeForm.deletePhoto": "Usuń zdjęcie",
+  "bikeForm.moveLeft": "Przesuń w lewo",
+  "bikeForm.moveRight": "Przesuń w prawo",
+  "bikeForm.deletePhotoConfirm": "Usunąć zdjęcie?",
+  "bikeForm.tooManyPhotos": "Rower może mieć najwyżej {count} zdjęć.",
+  "bikeForm.badPhoto":
+    "Ten plik nie pasuje. Potrzebne zdjęcie JPEG, PNG lub WebP.",
+  "bikeForm.photoFailed": "Nie udało się. Spróbuj ponownie.",
   "adminPlans.title": "Taryfy",
   "adminPlans.description":
     "Wspólne dla wszystkich rowerów. Nowa cena nie zmienia już utworzonych rezerwacji.",

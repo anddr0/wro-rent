@@ -1,50 +1,76 @@
 "use client";
 
-import { ImagePlus } from "lucide-react";
-import { BikePhoto } from "@/components/bike-photo";
+import { useState } from "react";
+import { BottomBar } from "@/components/bottom-bar";
+import { Button } from "@/components/button";
 import { Field, TextArea, TextInput } from "@/components/form";
+import { FormError } from "@/components/form-error";
 import { Switch } from "@/components/switch";
-import type { DemoBike } from "@/lib/demo-data";
+import { BIKE_LIMITS } from "@/lib/admin-bikes";
+import type { BikeFields } from "@/lib/admin-bikes";
+import type { MessageKey } from "@/lib/i18n/messages/ru";
 import { useT } from "@/lib/i18n/use-t";
 
 type BikeFormProps = {
-  // Empty for a new bike.
-  bike?: DemoBike;
+  // What the fields start with: the bike's values, or empty for a new bike.
+  initialFields: BikeFields;
+  submitLabel: string;
+  // Saves the bike. Throws when saving failed: the form shows the error.
+  onSubmit: (fields: BikeFields) => Promise<void>;
 };
 
-// The fields of a bike. The page adds the "Save" button.
-// TODO(slices 5.2, 5.3): save the form and upload photos.
-export function BikeForm({ bike }: BikeFormProps) {
+// The text fields of a bike with the button that saves them (А-2, А-3).
+// Photos are edited separately, see BikePhotosEditor.
+export function BikeForm({
+  initialFields,
+  submitLabel,
+  onSubmit,
+}: BikeFormProps) {
   const t = useT();
+  const [name, setName] = useState(initialFields.name);
+  const [description, setDescription] = useState(initialFields.description);
+  const [isAvailable, setIsAvailable] = useState(initialFields.isAvailable);
+  const [isSaving, setIsSaving] = useState(false);
+  const [errorKey, setErrorKey] = useState<MessageKey | null>(null);
+
+  async function submit() {
+    if (name.trim() === "") {
+      setErrorKey("bikeForm.nameRequired");
+      return;
+    }
+
+    setIsSaving(true);
+    setErrorKey(null);
+    try {
+      await onSubmit({
+        name: name.trim(),
+        description: description.trim(),
+        isAvailable,
+      });
+    } catch (error) {
+      console.error(error);
+      setErrorKey("common.saveFailed");
+    } finally {
+      setIsSaving(false);
+    }
+  }
 
   return (
     <>
-      <section className="flex flex-col gap-2">
-        <span className="text-sm font-medium">{t("bikeForm.photos")}</span>
-        <div className="grid grid-cols-4 gap-2">
-          {bike && <BikePhoto size="medium" />}
-          <button
-            type="button"
-            className="flex aspect-4/3 items-center justify-center rounded-lg border border-dashed text-muted-foreground"
-          >
-            <ImagePlus className="size-6" strokeWidth={1.5} />
-          </button>
-        </div>
-        <p className="text-sm text-muted-foreground">
-          {t("bikeForm.photosHint")}
-        </p>
-      </section>
-
       <Field label={t("bikeForm.name")}>
         <TextInput
-          defaultValue={bike?.name}
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+          maxLength={BIKE_LIMITS.maxNameLength}
           placeholder={t("bikeForm.namePlaceholder")}
         />
       </Field>
 
       <Field label={t("bikeForm.description")}>
         <TextArea
-          defaultValue={bike?.description}
+          value={description}
+          onChange={(event) => setDescription(event.target.value)}
+          maxLength={BIKE_LIMITS.maxDescriptionLength}
           placeholder={t("bikeForm.descriptionPlaceholder")}
           rows={4}
         />
@@ -53,9 +79,16 @@ export function BikeForm({ bike }: BikeFormProps) {
       <Switch
         label={t("bikeForm.visible")}
         description={t("bikeForm.visibleHint")}
-        isOn={bike?.isVisible ?? true}
-        onChange={() => {}}
+        isOn={isAvailable}
+        onChange={setIsAvailable}
       />
+
+      <BottomBar>
+        {errorKey !== null && <FormError>{t(errorKey)}</FormError>}
+        <Button onClick={submit} disabled={isSaving}>
+          {submitLabel}
+        </Button>
+      </BottomBar>
     </>
   );
 }

@@ -1,47 +1,43 @@
 "use client";
 
-import { Archive, Eye, Plus } from "lucide-react";
+import { Archive, Bike, Eye, Plus } from "lucide-react";
+import { HiddenBadge } from "@/components/admin/hidden-badge";
 import { BikePhoto } from "@/components/bike-photo";
 import { BottomBar } from "@/components/bottom-bar";
 import { ButtonLink } from "@/components/button";
+import { EmptyState } from "@/components/empty-state";
+import { ErrorState } from "@/components/error-state";
 import { PageTitle } from "@/components/page-title";
 import { Row, Section } from "@/components/section";
-import { DEMO_BIKES } from "@/lib/demo-data";
-import type { DemoBike } from "@/lib/demo-data";
-import type { Translate } from "@/lib/i18n/translate";
-import { useT } from "@/lib/i18n/use-t";
+import { Skeleton } from "@/components/skeleton";
+import type { AdminBike, AdminBikesResponse } from "@/lib/admin-bikes";
+import { useLocale, useT } from "@/lib/i18n/use-t";
+import { formatDate } from "@/lib/rental-time";
+import { useApi } from "@/lib/use-api";
 
 export default function AdminBikesPage() {
   const t = useT();
-  // TODO(slice 5.1): bikes from the API, without archived ones.
-  const bikes = DEMO_BIKES;
-  const hiddenCount = bikes.filter((bike) => !bike.isVisible).length;
+  const { data, error, mutate } =
+    useApi<AdminBikesResponse>("/api/admin/bikes");
+
+  let summary: string | undefined;
+  if (data) {
+    const hiddenCount = data.bikes.filter((bike) => !bike.isAvailable).length;
+    summary = t("adminBikes.summary", {
+      total: data.bikes.length,
+      hidden: hiddenCount,
+    });
+  }
 
   return (
     <>
-      <PageTitle
-        description={t("adminBikes.summary", {
-          total: bikes.length,
-          hidden: hiddenCount,
-        })}
-      >
-        {t("adminBikes.title")}
-      </PageTitle>
+      <PageTitle description={summary}>{t("adminBikes.title")}</PageTitle>
 
-      <Section>
-        {bikes.map((bike) => (
-          <Row
-            key={bike.id}
-            href={`/admin/bikes/${bike.id}`}
-            start={<BikePhoto size="small" />}
-            title={bike.name}
-            subtitle={bikeState(bike, t)}
-            badge={
-              !bike.isVisible && <HiddenBadge label={t("adminBikes.hidden")} />
-            }
-          />
-        ))}
-      </Section>
+      <BikeList
+        bikes={data?.bikes}
+        hasFailed={error !== undefined}
+        onRetry={() => mutate()}
+      />
 
       <Section>
         <Row
@@ -68,17 +64,57 @@ export default function AdminBikesPage() {
   );
 }
 
-function bikeState(bike: DemoBike, t: Translate): string {
-  if (bike.busyUntil) {
-    return t("adminBikes.busyUntil", { date: bike.busyUntil });
-  }
-  return t("adminBikes.free");
-}
+type BikeListProps = {
+  bikes: AdminBike[] | undefined;
+  hasFailed: boolean;
+  onRetry: () => void;
+};
 
-function HiddenBadge({ label }: { label: string }) {
+function BikeList({ bikes, hasFailed, onRetry }: BikeListProps) {
+  const t = useT();
+  const locale = useLocale();
+
+  if (hasFailed && !bikes) {
+    return <ErrorState onRetry={onRetry} />;
+  }
+  if (!bikes) {
+    return <Skeleton className="h-40 rounded-xl" />;
+  }
+  if (bikes.length === 0) {
+    return (
+      <EmptyState
+        icon={Bike}
+        title={t("bikes.empty")}
+        description={t("adminBikes.emptyHint")}
+      />
+    );
+  }
+
   return (
-    <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
-      {label}
-    </span>
+    <Section>
+      {bikes.map((bike) => {
+        let state = t("adminBikes.free");
+        if (bike.busyUntil) {
+          state = t("adminBikes.busyUntil", {
+            date: formatDate(bike.busyUntil, locale),
+          });
+        }
+
+        return (
+          <Row
+            key={bike.id}
+            href={`/admin/bikes/${bike.id}`}
+            start={<BikePhoto size="small" url={bike.coverUrl} />}
+            title={bike.name}
+            subtitle={state}
+            badge={
+              !bike.isAvailable && (
+                <HiddenBadge label={t("adminBikes.hidden")} />
+              )
+            }
+          />
+        );
+      })}
+    </Section>
   );
 }

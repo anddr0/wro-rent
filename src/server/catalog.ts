@@ -6,8 +6,8 @@ import type { Database } from "@/lib/database.types";
 
 type Supabase = SupabaseClient<Database>;
 
-// Bikes customers can see (К-1), each with its cover photo.
-// Archived bikes join this rule in slice 5.4.
+// Bikes customers can see (К-1): not hidden and not archived.
+// Each comes with its cover photo.
 export async function listVisibleBikes(
   supabase: Supabase,
 ): Promise<CatalogBike[]> {
@@ -15,6 +15,7 @@ export async function listVisibleBikes(
     .from("bikes")
     .select("id, name, description, bike_photos(path)")
     .eq("is_available", true)
+    .is("archived_at", null)
     .order("name")
     // Only the first photo of each bike: the cover.
     .order("sort_order", { referencedTable: "bike_photos" })
@@ -36,7 +37,7 @@ export async function listVisibleBikes(
 }
 
 // One bike with all its photos, if customers can see it.
-// Null for a hidden or missing bike.
+// Null for a hidden, archived or missing bike.
 export async function findVisibleBike(
   supabase: Supabase,
   bikeId: string,
@@ -46,6 +47,7 @@ export async function findVisibleBike(
     .select("id, name, description, bike_photos(path)")
     .eq("id", bikeId)
     .eq("is_available", true)
+    .is("archived_at", null)
     .order("sort_order", { referencedTable: "bike_photos" })
     .maybeSingle();
 
