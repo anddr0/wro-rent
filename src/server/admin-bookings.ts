@@ -20,7 +20,7 @@ import type { Supabase } from "@/server/supabase";
 // BOOKING_FIELDS from bookings.ts plus what only admins see and the customer.
 // Written out in full: supabase-js reads the column types from this exact text.
 const ADMIN_BOOKING_FIELDS =
-  "id, status, starts_at, ends_at, price, comment, created_at, deposit, payment_method, paid_at, picked_up_at, returned_at, admin_note, bikes(id, name, bike_photos(path, sort_order)), rental_plans(name), users(id, full_name, username, photo_url, telegram_id, locale, language_code)";
+  "id, status, starts_at, ends_at, price, comment, decline_reason, created_at, deposit, payment_method, paid_at, picked_up_at, returned_at, admin_note, bikes(id, name, bike_photos(path, sort_order)), rental_plans(name), users(id, full_name, username, photo_url, telegram_id, locale, language_code)";
 
 // A row selected with ADMIN_BOOKING_FIELDS.
 type AdminBookingRow = BookingRow & {
@@ -132,10 +132,12 @@ export async function getAdminBooking(
 }
 
 // Does what the admin pressed in the booking card (А-7) and tells the customer.
+// `reason` is what the admin wrote when rejecting or cancelling, or null.
 export async function performBookingAction(
   supabase: Supabase,
   bookingId: string,
   action: BookingAction,
+  reason: string | null,
 ): Promise<AdminBooking> {
   const now = new Date().toISOString();
 
@@ -147,22 +149,25 @@ export async function performBookingAction(
   let notice: CustomerNotice | null = null;
 
   if (action === "reject") {
-    row = await moveBooking(supabase, bookingId, "pending", {
+    row = await moveBooking(supabase, bookingId, ["pending"], {
       status: "rejected",
+      decline_reason: reason,
     });
     notice = "rejected";
   } else if (action === "cancel") {
-    row = await moveBooking(supabase, bookingId, "confirmed", {
+    // Also when the bike is already with the customer: e.g. it broke down.
+    row = await moveBooking(supabase, bookingId, ["confirmed", "active"], {
       status: "cancelled",
+      decline_reason: reason,
     });
     notice = "cancelledByAdmin";
   } else if (action === "handOut") {
-    row = await moveBooking(supabase, bookingId, "confirmed", {
+    row = await moveBooking(supabase, bookingId, ["confirmed"], {
       status: "active",
       picked_up_at: now,
     });
   } else {
-    row = await moveBooking(supabase, bookingId, "active", {
+    row = await moveBooking(supabase, bookingId, ["active"], {
       status: "completed",
       returned_at: now,
     });
@@ -179,22 +184,23 @@ type StatusChange = {
   status: BookingStatus;
   picked_up_at?: string;
   returned_at?: string;
+  decline_reason?: string | null;
 };
 
-// Moves a booking from one status to the next. The current status is checked
-// in the same query that changes it: if another admin was faster, nothing
-// changes and this one gets "status_changed" instead of overwriting.
+// Moves a booking to the next status. The current status is checked in the
+// same query that changes it: if another admin was faster, nothing changes
+// and this one gets "status_changed" instead of overwriting.
 async function moveBooking(
   supabase: Supabase,
   bookingId: string,
-  fromStatus: BookingStatus,
+  fromStatuses: BookingStatus[],
   change: StatusChange,
 ): Promise<AdminBookingRow> {
   const { data, error } = await supabase
     .from("bookings")
     .update(change)
     .eq("id", bookingId)
-    .eq("status", fromStatus)
+    .in("status", fromStatuses)
     .select(ADMIN_BOOKING_FIELDS)
     .maybeSingle();
 
@@ -209,7 +215,7 @@ async function moveBooking(
   await getAdminBookingRow(supabase, bookingId);
   throw new HttpError(
     409,
-    `The booking is not ${fromStatus} any more`,
+    "The booking is in another status now",
     "status_changed",
   );
 }

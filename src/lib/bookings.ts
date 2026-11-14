@@ -18,6 +18,8 @@ export type CustomerBooking = {
   endsAt: string;
   price: number;
   comment: string | null;
+  // Why the admin rejected or cancelled it, if they said why.
+  declineReason: string | null;
   createdAt: string;
   bike: BookingBike;
   // Null for a rental agreed individually, without a plan.

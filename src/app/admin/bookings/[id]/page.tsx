@@ -8,6 +8,7 @@ import { BookingStatusBadge } from "@/components/booking-status-badge";
 import { BottomBar } from "@/components/bottom-bar";
 import { Button, ButtonLink } from "@/components/button";
 import { ErrorState } from "@/components/error-state";
+import { TextArea } from "@/components/form";
 import { FormError } from "@/components/form-error";
 import { NotFoundText } from "@/components/not-found-text";
 import { PageTitle } from "@/components/page-title";
@@ -17,7 +18,9 @@ import type {
   AdminBooking,
   AdminBookingResponse,
   BookingAction,
+  BookingActionRequest,
 } from "@/lib/admin-bookings";
+import { MAX_REASON_LENGTH } from "@/lib/admin-bookings";
 import { apiErrorCode, apiSendJson } from "@/lib/api";
 import type { Locale } from "@/lib/i18n/locales";
 import type { MessageKey } from "@/lib/i18n/messages/ru";
@@ -25,7 +28,7 @@ import type { Translate } from "@/lib/i18n/translate";
 import { useLocale, useT } from "@/lib/i18n/use-t";
 import { PAYMENT_METHOD_LABELS } from "@/lib/payments";
 import { formatDateTime } from "@/lib/rental-time";
-import { confirmInTelegram, openTelegramChat } from "@/lib/telegram/dialogs";
+import { openTelegramChat } from "@/lib/telegram/dialogs";
 import { useTelegram } from "@/lib/telegram/use-telegram";
 import { isNotFound, refreshApi, useApi } from "@/lib/use-api";
 
@@ -49,12 +52,9 @@ export default function AdminBookingPage() {
   return <AdminBookingCard booking={data.booking} />;
 }
 
-// Actions the admin is asked "are you sure?" about: the customer gets
-// a message, and there is no button to undo them.
-const CONFIRM_QUESTIONS: Partial<Record<BookingAction, MessageKey>> = {
-  reject: "adminBooking.confirmReject",
-  cancel: "adminBooking.confirmCancel",
-};
+// The two actions that end a booking against the customer's wish. Before
+// either of them the admin may write why.
+type DeclineAction = "reject" | "cancel";
 
 // The booking with everything an admin can do about it (А-7).
 function AdminBookingCard({ booking }: { booking: AdminBooking }) {
@@ -65,19 +65,18 @@ function AdminBookingCard({ booking }: { booking: AdminBooking }) {
     null,
   );
   const [errorKey, setErrorKey] = useState<MessageKey | null>(null);
+  // Set while the admin is asked for the reason of a rejection or cancellation.
+  const [decliningAction, setDecliningAction] = useState<DeclineAction | null>(
+    null,
+  );
 
-  async function runAction(action: BookingAction) {
+  // `reason` is for "reject" and "cancel": what the customer is told.
+  async function runAction(action: BookingAction, reason = "") {
     if (runningAction !== null) {
       return;
     }
 
-    const question = CONFIRM_QUESTIONS[action];
-    if (question) {
-      const isConfirmed = await confirmInTelegram(webApp, t(question));
-      if (!isConfirmed) {
-        return;
-      }
-    }
+    const request: BookingActionRequest = { action, reason };
 
     setRunningAction(action);
     setErrorKey(null);
@@ -85,8 +84,9 @@ function AdminBookingCard({ booking }: { booking: AdminBooking }) {
       await apiSendJson<AdminBookingResponse>(
         "POST",
         `/api/admin/bookings/${booking.id}/status`,
-        { action },
+        request,
       );
+      setDecliningAction(null);
     } catch (error) {
       console.error(error);
       const code = apiErrorCode(error);
@@ -178,6 +178,12 @@ function AdminBookingCard({ booking }: { booking: AdminBooking }) {
         {booking.comment && (
           <DetailRow label={t("common.comment")} value={booking.comment} />
         )}
+        {booking.declineReason && (
+          <DetailRow
+            label={t("booking.reason")}
+            value={booking.declineReason}
+          />
+        )}
       </Section>
 
       <Section title={t("common.payment")}>
@@ -208,12 +214,23 @@ function AdminBookingCard({ booking }: { booking: AdminBooking }) {
         {t("adminBooking.edit")}
       </ButtonLink>
 
-      <StatusActions
-        booking={booking}
-        errorKey={errorKey}
-        isBusy={runningAction !== null}
-        onAction={runAction}
-      />
+      {decliningAction === null ? (
+        <StatusActions
+          booking={booking}
+          errorKey={errorKey}
+          isBusy={runningAction !== null}
+          onAction={runAction}
+          onDecline={setDecliningAction}
+        />
+      ) : (
+        <DeclineForm
+          action={decliningAction}
+          errorKey={errorKey}
+          isBusy={runningAction !== null}
+          onBack={() => setDecliningAction(null)}
+          onSubmit={(reason) => runAction(decliningAction, reason)}
+        />
+      )}
     </>
   );
 }
@@ -246,6 +263,8 @@ type StatusActionsProps = {
   // An action is being sent: the buttons wait.
   isBusy: boolean;
   onAction: (action: BookingAction) => void;
+  // "Reject" and "cancel" first ask for a reason, see DeclineForm.
+  onDecline: (action: DeclineAction) => void;
 };
 
 // The buttons depend on the status, see docs/wireframes/README.md.
@@ -254,6 +273,7 @@ function StatusActions({
   errorKey,
   isBusy,
   onAction,
+  onDecline,
 }: StatusActionsProps) {
   const t = useT();
   const error = errorKey !== null && <FormError>{t(errorKey)}</FormError>;
@@ -266,7 +286,7 @@ function StatusActions({
           <Button
             variant="destructive"
             disabled={isBusy}
-            onClick={() => onAction("reject")}
+            onClick={() => onDecline("reject")}
           >
             {t("adminBooking.reject")}
           </Button>
@@ -287,7 +307,7 @@ function StatusActions({
         <Button
           variant="destructive"
           disabled={isBusy}
-          onClick={() => onAction("cancel")}
+          onClick={() => onDecline("cancel")}
         >
           {t("adminBooking.cancel")}
         </Button>
@@ -301,9 +321,77 @@ function StatusActions({
         <Button disabled={isBusy} onClick={() => onAction("takeBack")}>
           {t("adminBooking.returned")}
         </Button>
+        <Button
+          variant="destructive"
+          disabled={isBusy}
+          onClick={() => onDecline("cancel")}
+        >
+          {t("adminBooking.cancel")}
+        </Button>
       </BottomBar>
     );
   }
   // Finished bookings: nothing to do but edit price, payment and the note.
   return error;
+}
+
+const DECLINE_TITLES: Record<DeclineAction, MessageKey> = {
+  reject: "adminBooking.rejectTitle",
+  cancel: "adminBooking.cancelTitle",
+};
+
+const DECLINE_BUTTONS: Record<DeclineAction, MessageKey> = {
+  reject: "adminBooking.reject",
+  cancel: "adminBooking.cancel",
+};
+
+type DeclineFormProps = {
+  action: DeclineAction;
+  errorKey: MessageKey | null;
+  isBusy: boolean;
+  onBack: () => void;
+  onSubmit: (reason: string) => void;
+};
+
+// Shown in place of the buttons after "Reject" or "Cancel": the last
+// "are you sure?" and a place to tell the customer why. The reason is optional.
+function DeclineForm({
+  action,
+  errorKey,
+  isBusy,
+  onBack,
+  onSubmit,
+}: DeclineFormProps) {
+  const t = useT();
+  const [reason, setReason] = useState("");
+
+  return (
+    <BottomBar>
+      <span className="font-semibold">{t(DECLINE_TITLES[action])}</span>
+      <TextArea
+        value={reason}
+        onChange={(event) => setReason(event.target.value)}
+        maxLength={MAX_REASON_LENGTH}
+        placeholder={t("adminBooking.reasonPlaceholder")}
+        rows={3}
+        autoFocus
+      />
+      <span className="text-sm text-muted-foreground">
+        {t("adminBooking.reasonHint")}
+      </span>
+      {errorKey !== null && <FormError>{t(errorKey)}</FormError>}
+      <div className="grid grid-cols-2 gap-2">
+        <Button variant="secondary" disabled={isBusy} onClick={onBack}>
+          {t("adminBooking.back")}
+        </Button>
+        <Button
+          variant="destructive"
+          disabled={isBusy}
+          onClick={() => onSubmit(reason)}
+        >
+          {t(DECLINE_BUTTONS[action])}
+        </Button>
+      </div>
+    </BottomBar>
+  );
 }

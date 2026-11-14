@@ -13,7 +13,7 @@ import type { Supabase } from "@/server/supabase";
 
 // The columns of a booking the customer sees, with its bike and plan.
 export const BOOKING_FIELDS =
-  "id, status, starts_at, ends_at, price, comment, created_at, bikes(id, name, bike_photos(path, sort_order)), rental_plans(name)";
+  "id, status, starts_at, ends_at, price, comment, decline_reason, created_at, bikes(id, name, bike_photos(path, sort_order)), rental_plans(name)";
 
 // A row selected with BOOKING_FIELDS.
 export type BookingRow = {
@@ -23,6 +23,7 @@ export type BookingRow = {
   ends_at: string;
   price: number;
   comment: string | null;
+  decline_reason: string | null;
   created_at: string;
   bikes: {
     id: string;
@@ -52,6 +53,7 @@ export function toCustomerBooking(row: BookingRow): CustomerBooking {
     endsAt: row.ends_at,
     price: row.price,
     comment: row.comment,
+    declineReason: row.decline_reason,
     createdAt: row.created_at,
     bike: { id: row.bikes.id, name: row.bikes.name, coverUrl },
     planName,

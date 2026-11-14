@@ -1,6 +1,5 @@
 "use client";
 
-import { MessageCircle } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { BikePhoto } from "@/components/bike-photo";
@@ -13,15 +12,15 @@ import { NotFoundText } from "@/components/not-found-text";
 import { PageTitle } from "@/components/page-title";
 import { DetailRow, Section } from "@/components/section";
 import { Skeleton } from "@/components/skeleton";
+import { SupportContacts } from "@/components/support-contacts";
 import { apiErrorCode, apiSendJson } from "@/lib/api";
 import type { BookingResponse, CustomerBooking } from "@/lib/bookings";
 import type { MessageKey } from "@/lib/i18n/messages/ru";
 import { useLocale, useT } from "@/lib/i18n/use-t";
 import { formatDateTime } from "@/lib/rental-time";
-import { confirmInTelegram, openTelegramChat } from "@/lib/telegram/dialogs";
+import { confirmInTelegram } from "@/lib/telegram/dialogs";
 import { useTelegram } from "@/lib/telegram/use-telegram";
 import { isNotFound, refreshApi, useApi } from "@/lib/use-api";
-import { useSupportUsername } from "@/lib/use-settings";
 
 export default function BookingPage() {
   const t = useT();
@@ -50,7 +49,6 @@ function BookingCard({ booking }: { booking: CustomerBooking }) {
   const { webApp } = useTelegram();
   const [isCancelling, setIsCancelling] = useState(false);
   const [errorKey, setErrorKey] = useState<MessageKey | null>(null);
-  const supportUsername = useSupportUsername();
 
   async function cancelRequest() {
     const isConfirmed = await confirmInTelegram(
@@ -115,6 +113,17 @@ function BookingCard({ booking }: { booking: CustomerBooking }) {
         )}
       </Section>
 
+      {booking.declineReason && (
+        <div className="flex flex-col gap-1 rounded-xl border border-destructive/40 bg-card p-4">
+          <span className="text-sm text-muted-foreground">
+            {t("booking.reason")}
+          </span>
+          <span className="wrap-anywhere whitespace-pre-line">
+            {booking.declineReason}
+          </span>
+        </div>
+      )}
+
       <BookingSteps booking={booking} />
 
       {booking.status === "pending" && (
@@ -129,16 +138,9 @@ function BookingCard({ booking }: { booking: CustomerBooking }) {
 
       {errorKey !== null && <FormError>{t(errorKey)}</FormError>}
 
-      {/* A confirmed booking is cancelled only by an admin (К-7). */}
-      {supportUsername !== null && (
-        <Button
-          variant="secondary"
-          onClick={() => openTelegramChat(webApp, supportUsername)}
-        >
-          <MessageCircle />
-          {t("common.contactAdmin")}
-        </Button>
-      )}
+      {/* A confirmed booking is cancelled only by an admin (К-7),
+          so the way to reach them is right here. */}
+      <SupportContacts />
     </>
   );
 }

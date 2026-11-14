@@ -13,13 +13,18 @@ export type RentalSettings = OpeningHours & {
   isRoundTheClock: boolean;
   // Telegram username customers write to, without "@". Null — not set.
   supportUsername: string | null;
+  // A phone number customers can call: "+48123456789". Null — not set.
+  supportPhone: string | null;
 };
 
 // GET, PATCH /api/admin/settings
 export type AdminSettingsResponse = { settings: RentalSettings };
 
 // GET /api/settings: the part of the settings every user may see.
-export type PublicSettingsResponse = { supportUsername: string | null };
+export type PublicSettingsResponse = {
+  supportUsername: string | null;
+  supportPhone: string | null;
+};
 
 const MINUTES_IN_DAY = 24 * 60;
 
@@ -81,4 +86,16 @@ export function parseTelegramUsername(text: string): string | null {
     return null;
   }
   return username;
+}
+
+// Reads a phone number typed by a person: "+48 123 456 789" or
+// "123-456-789" give "+48123456789" and "123456789". Null when it isn't one.
+export function parsePhone(text: string): string | null {
+  // Spaces, dashes and brackets are only for reading.
+  const phone = text.replace(/[\s\-()]/g, "");
+  // An optional "+", then 6–15 digits.
+  if (!/^\+?\d{6,15}$/.test(phone)) {
+    return null;
+  }
+  return phone;
 }

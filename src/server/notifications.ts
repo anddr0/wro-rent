@@ -96,6 +96,10 @@ export async function notifyCustomer(
     ...bookingLines(booking, locale, t),
   ];
 
+  if (booking.declineReason) {
+    lines.push("", t("notify.reason", { reason: booking.declineReason }));
+  }
+
   await sendTelegramMessage(customer.telegram_id, lines.join("\n"), {
     text: t("notify.open"),
     path: `/bookings/${booking.id}`,

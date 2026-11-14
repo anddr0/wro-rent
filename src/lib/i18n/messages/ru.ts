@@ -35,7 +35,6 @@ export const ru = {
   "common.priceValue": "{price} zł",
   "common.priceFrom": "от {price} zł",
   "common.paymentOptions": "На месте, наличными или BLIK",
-  "common.contactAdmin": "Написать админу",
   "common.loadFailed": "Не удалось загрузить",
   "common.retry": "Повторить",
   "common.saveFailed": "Не удалось сохранить. Попробуйте ещё раз.",
@@ -126,6 +125,7 @@ export const ru = {
   "booking.cancelConfirm": "Отменить заявку?",
   "booking.cancelFailed": "Не удалось отменить. Попробуйте ещё раз.",
   "booking.statusChanged": "Статус брони уже изменился.",
+  "booking.reason": "Причина",
 
   "steps.title": "Что дальше",
   "steps.sent": "Заявка отправлена",
@@ -188,10 +188,14 @@ export const ru = {
     "В эти часы клиент может начать аренду, каждый день. Время варшавское. Уже созданные брони не меняются.",
   "adminSettings.hoursInvalid": "Первая выдача не может быть позже последней",
   "adminSettings.contact": "Контакт для клиентов",
-  "adminSettings.contactHint":
-    "Username в Telegram. Ему клиенты пишут по кнопке «Написать админу». Пусто — кнопки нет.",
   "adminSettings.contactInvalid":
     "Это не похоже на username: нужны латинские буквы, цифры и _, от 4 символов",
+  "adminSettings.telegram": "Username в Telegram",
+  "adminSettings.phone": "Телефон",
+  "adminSettings.contactHint":
+    "Клиенты видят это на главной, в настройках и в карточке брони. Пустое поле не показывается.",
+  "adminSettings.phoneInvalid":
+    "Это не похоже на телефон: нужны цифры, можно с + в начале",
 
   "adminBookings.title": "Брони",
   "adminBookings.newestFirst": "Новые заявки — сверху",
@@ -231,12 +235,16 @@ export const ru = {
   "adminBooking.depositInvalid":
     "Введите депозит числом или оставьте поле пустым",
   "adminBooking.noUsername": "нет username в Telegram",
-  "adminBooking.confirmReject": "Отклонить заявку? Клиент получит сообщение.",
-  "adminBooking.confirmCancel": "Отменить бронь? Клиент получит сообщение.",
   "adminBooking.errorDatesTaken": "На эти даты уже есть подтверждённая бронь.",
   "adminBooking.errorStatusChanged":
     "Статус брони уже изменился — данные обновлены.",
   "adminBooking.errorGeneric": "Не получилось. Попробуйте ещё раз.",
+  "adminBooking.rejectTitle": "Отклонить заявку?",
+  "adminBooking.cancelTitle": "Отменить бронь?",
+  "adminBooking.reasonPlaceholder": "Причина для клиента (необязательно)",
+  "adminBooking.reasonHint":
+    "Клиент получит сообщение. Причину увидит в нём и в карточке брони.",
+  "adminBooking.back": "Назад",
 
   "payment.cash": "Наличные",
   "payment.blik": "BLIK",
@@ -327,6 +335,12 @@ export const ru = {
   "notify.datesTaken": "Велосипед на эти даты уже заняли, заявка отклонена",
   "notify.cancelledByAdmin": "Вашу бронь отменил администратор",
   "notify.priceChanged": "Цена вашей брони изменилась",
+  "notify.reason": "Причина: {reason}",
+
+  "contact.title": "Связаться с нами",
+  "contact.write": "Написать в Telegram",
+  "contact.writeHint": "Вопросы про аренду и брони",
+  "contact.call": "Позвонить",
 
   "bot.welcome": "Привет! Это WroRent — прокат велосипедов во Вроцлаве 🚲",
   "bot.openApp": "Открыть приложение",

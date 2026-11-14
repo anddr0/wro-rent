@@ -14,6 +14,7 @@ import { useT } from "@/lib/i18n/use-t";
 import {
   formatMinuteOfDay,
   listMinutesOfDay,
+  parsePhone,
   parseTelegramUsername,
 } from "@/lib/settings";
 import type { AdminSettingsResponse, RentalSettings } from "@/lib/settings";
@@ -36,6 +37,7 @@ export function SettingsForm({ settings }: { settings: RentalSettings }) {
   const [supportUsername, setSupportUsername] = useState(
     settings.supportUsername ?? "",
   );
+  const [supportPhone, setSupportPhone] = useState(settings.supportPhone ?? "");
   const [isSaving, setIsSaving] = useState(false);
   const [errorKey, setErrorKey] = useState<MessageKey | null>(null);
 
@@ -55,11 +57,21 @@ export function SettingsForm({ settings }: { settings: RentalSettings }) {
       }
     }
 
+    let phone: string | null = null;
+    if (supportPhone.trim() !== "") {
+      phone = parsePhone(supportPhone);
+      if (phone === null) {
+        setErrorKey("adminSettings.phoneInvalid");
+        return;
+      }
+    }
+
     const newSettings: RentalSettings = {
       firstStartMinute,
       lastStartMinute,
       isRoundTheClock,
       supportUsername: username,
+      supportPhone: phone,
     };
 
     setIsSaving(true);
@@ -133,16 +145,25 @@ export function SettingsForm({ settings }: { settings: RentalSettings }) {
         </p>
       </section>
 
-      <section className="flex flex-col gap-2">
+      <section className="flex flex-col gap-4">
         <SectionTitle>{t("adminSettings.contact")}</SectionTitle>
-        <TextInput
-          value={supportUsername}
-          onChange={(event) => setSupportUsername(event.target.value)}
-          placeholder="@username"
-          autoCapitalize="none"
-          autoCorrect="off"
-          aria-label={t("adminSettings.contact")}
-        />
+        <Field label={t("adminSettings.telegram")}>
+          <TextInput
+            value={supportUsername}
+            onChange={(event) => setSupportUsername(event.target.value)}
+            placeholder="@username"
+            autoCapitalize="none"
+            autoCorrect="off"
+          />
+        </Field>
+        <Field label={t("adminSettings.phone")}>
+          <TextInput
+            type="tel"
+            value={supportPhone}
+            onChange={(event) => setSupportPhone(event.target.value)}
+            placeholder="+48 123 456 789"
+          />
+        </Field>
         <p className="px-1 text-sm text-muted-foreground">
           {t("adminSettings.contactHint")}
         </p>

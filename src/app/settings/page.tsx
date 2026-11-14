@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useSetCurrentUser } from "@/components/current-user";
 import { PageTitle } from "@/components/page-title";
 import { Section } from "@/components/section";
+import { SupportContacts } from "@/components/support-contacts";
 import { apiFetch } from "@/lib/api";
 import type { Tables } from "@/lib/database.types";
 import { LOCALE_NAMES, LOCALES } from "@/lib/i18n/locales";
@@ -63,6 +64,8 @@ export default function SettingsPage() {
           {t("settings.saveFailed")}
         </p>
       )}
+
+      <SupportContacts />
     </>
   );
 }

@@ -33,7 +33,8 @@ export type AdminBookingResponse = { booking: AdminBooking };
 export type BookingStatusFilter = BookingStatus | "all";
 
 // What an admin can do with a booking, and from which status:
-// confirm, reject — pending; cancel, handOut — confirmed; takeBack — active.
+// confirm, reject — pending; handOut — confirmed; takeBack — active;
+// cancel — confirmed or active.
 export type BookingAction =
   "confirm" | "reject" | "cancel" | "handOut" | "takeBack";
 
@@ -44,6 +45,15 @@ export const BOOKING_ACTIONS: BookingAction[] = [
   "handOut",
   "takeBack",
 ];
+
+// The body of POST /api/admin/bookings/[id]/status. `reason` is only for
+// "reject" and "cancel": what the customer is told, may be empty.
+export type BookingActionRequest = {
+  action: BookingAction;
+  reason: string;
+};
+
+export const MAX_REASON_LENGTH = 500;
 
 // The body of PATCH /api/admin/bookings/[id]: everything is sent at once.
 export type BookingDetailsUpdate = {

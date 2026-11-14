@@ -1,4 +1,8 @@
-import { isValidStartMinute, parseTelegramUsername } from "@/lib/settings";
+import {
+  isValidStartMinute,
+  parsePhone,
+  parseTelegramUsername,
+} from "@/lib/settings";
 import type { AdminSettingsResponse, RentalSettings } from "@/lib/settings";
 import { requireAdmin } from "@/server/auth";
 import { HttpError, withErrorHandling } from "@/server/http";
@@ -16,7 +20,7 @@ export const GET = withErrorHandling(async (req) => {
   return Response.json(response);
 });
 
-// Saves them: { firstStartMinute, lastStartMinute, isRoundTheClock, supportUsername }.
+// Saves them: { firstStartMinute, lastStartMinute, isRoundTheClock, supportUsername, supportPhone }.
 export const PATCH = withErrorHandling(async (req) => {
   await requireAdmin(req);
   const newSettings = readSettings(await readJson(req));
@@ -50,6 +54,7 @@ function readSettings(body: Record<string, unknown>): RentalSettings {
     lastStartMinute,
     isRoundTheClock: body.isRoundTheClock,
     supportUsername: readSupportUsername(body.supportUsername),
+    supportPhone: readSupportPhone(body.supportPhone),
   };
 }
 
@@ -66,4 +71,18 @@ function readSupportUsername(value: unknown): string | null {
     throw new HttpError(400, "supportUsername must be a Telegram username");
   }
   return username;
+}
+
+function readSupportPhone(value: unknown): string | null {
+  if (value === null || value === undefined || value === "") {
+    return null;
+  }
+  if (typeof value !== "string") {
+    throw new HttpError(400, "supportPhone must be text");
+  }
+  const phone = parsePhone(value);
+  if (phone === null) {
+    throw new HttpError(400, "supportPhone must be a phone number");
+  }
+  return phone;
 }

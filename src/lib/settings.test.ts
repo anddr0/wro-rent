@@ -4,6 +4,7 @@ import {
   effectiveOpeningHours,
   formatMinuteOfDay,
   isValidStartMinute,
+  parsePhone,
   parseTelegramUsername,
 } from "./settings";
 
@@ -12,6 +13,7 @@ const SETTINGS = {
   lastStartMinute: 1200,
   isRoundTheClock: false,
   supportUsername: null,
+  supportPhone: null,
 };
 
 describe("effectiveOpeningHours", () => {
@@ -64,5 +66,19 @@ describe("parseTelegramUsername", () => {
     assert.equal(parseTelegramUsername("abc"), null);
     assert.equal(parseTelegramUsername("имя"), null);
     assert.equal(parseTelegramUsername("two words"), null);
+  });
+});
+
+describe("parsePhone", () => {
+  it("drops spaces, dashes and brackets", () => {
+    assert.equal(parsePhone("+48 123 456 789"), "+48123456789");
+    assert.equal(parsePhone("(71) 123-45-67"), "711234567");
+  });
+
+  it("returns null for anything that can't be a phone number", () => {
+    assert.equal(parsePhone(""), null);
+    assert.equal(parsePhone("12345"), null);
+    assert.equal(parsePhone("call me"), null);
+    assert.equal(parsePhone("+48 123 abc"), null);
   });
 });

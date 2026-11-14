@@ -11,6 +11,7 @@ import { ErrorState } from "@/components/error-state";
 import { Greeting } from "@/components/home/greeting";
 import { Row, Section, SectionTitle } from "@/components/section";
 import { Skeleton } from "@/components/skeleton";
+import { SupportContacts } from "@/components/support-contacts";
 import type { BikesResponse } from "@/lib/catalog";
 import { isOpenStatus } from "@/lib/bookings";
 import type { BookingsResponse } from "@/lib/bookings";
@@ -56,6 +57,8 @@ export function CustomerHome() {
         hasFailed={catalog.error !== undefined}
         onRetry={() => catalog.mutate()}
       />
+
+      <SupportContacts />
     </>
   );
 }

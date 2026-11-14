@@ -12,6 +12,7 @@ export const GET = withErrorHandling(async (req) => {
 
   const response: PublicSettingsResponse = {
     supportUsername: settings.supportUsername,
+    supportPhone: settings.supportPhone,
   };
   return Response.json(response);
 });

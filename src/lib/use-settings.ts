@@ -3,10 +3,18 @@
 import type { PublicSettingsResponse } from "@/lib/settings";
 import { useApi } from "@/lib/use-api";
 
-// The Telegram username customers write to with questions, set by the admin.
-// Null while it loads or when the admin hasn't set one: then there is
-// nobody to write to, and the "contact" buttons are hidden.
-export function useSupportUsername(): string | null {
+export type SupportContacts = {
+  // Telegram username, without "@".
+  username: string | null;
+  phone: string | null;
+};
+
+// How customers reach the rental, as the admin set it. Both are null while
+// the settings load or when the admin hasn't filled them in.
+export function useSupportContacts(): SupportContacts {
   const { data } = useApi<PublicSettingsResponse>("/api/settings");
-  return data?.supportUsername ?? null;
+  return {
+    username: data?.supportUsername ?? null,
+    phone: data?.supportPhone ?? null,
+  };
 }

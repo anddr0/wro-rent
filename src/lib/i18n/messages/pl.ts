@@ -22,7 +22,6 @@ export const pl: Record<MessageKey, Message> = {
   "common.priceValue": "{price} zł",
   "common.priceFrom": "od {price} zł",
   "common.paymentOptions": "Na miejscu, gotówką lub BLIK",
-  "common.contactAdmin": "Napisz do administratora",
   "common.loadFailed": "Nie udało się wczytać",
   "common.retry": "Spróbuj ponownie",
   "common.saveFailed": "Nie udało się zapisać. Spróbuj ponownie.",
@@ -115,6 +114,7 @@ export const pl: Record<MessageKey, Message> = {
   "booking.cancelConfirm": "Anulować zgłoszenie?",
   "booking.cancelFailed": "Nie udało się anulować. Spróbuj ponownie.",
   "booking.statusChanged": "Status rezerwacji już się zmienił.",
+  "booking.reason": "Powód",
 
   "steps.title": "Co dalej",
   "steps.sent": "Zgłoszenie wysłane",
@@ -180,10 +180,14 @@ export const pl: Record<MessageKey, Message> = {
   "adminSettings.hoursInvalid":
     "Pierwsze wydanie nie może być później niż ostatnie",
   "adminSettings.contact": "Kontakt dla klientów",
-  "adminSettings.contactHint":
-    "Nazwa użytkownika w Telegramie. Do niej piszą klienci przyciskiem „Napisz do administratora”. Puste — przycisku nie ma.",
   "adminSettings.contactInvalid":
     "To nie wygląda na nazwę użytkownika: litery łacińskie, cyfry i _, od 4 znaków",
+  "adminSettings.telegram": "Nazwa użytkownika w Telegramie",
+  "adminSettings.phone": "Telefon",
+  "adminSettings.contactHint":
+    "Klienci widzą to na stronie głównej, w ustawieniach i w karcie rezerwacji. Puste pole nie jest pokazywane.",
+  "adminSettings.phoneInvalid":
+    "To nie wygląda na numer telefonu: same cyfry, można z + na początku",
 
   "adminBookings.title": "Rezerwacje",
   "adminBookings.newestFirst": "Najnowsze zgłoszenia na górze",
@@ -223,15 +227,17 @@ export const pl: Record<MessageKey, Message> = {
   "adminBooking.priceInvalid": "Podaj cenę liczbą, np. 70 lub 70,50",
   "adminBooking.depositInvalid": "Podaj kaucję liczbą albo zostaw pole puste",
   "adminBooking.noUsername": "brak nazwy użytkownika w Telegramie",
-  "adminBooking.confirmReject":
-    "Odrzucić zgłoszenie? Klient dostanie wiadomość.",
-  "adminBooking.confirmCancel":
-    "Anulować rezerwację? Klient dostanie wiadomość.",
   "adminBooking.errorDatesTaken":
     "W tym terminie jest już potwierdzona rezerwacja.",
   "adminBooking.errorStatusChanged":
     "Status rezerwacji już się zmienił — dane odświeżone.",
   "adminBooking.errorGeneric": "Nie udało się. Spróbuj ponownie.",
+  "adminBooking.rejectTitle": "Odrzucić zgłoszenie?",
+  "adminBooking.cancelTitle": "Anulować rezerwację?",
+  "adminBooking.reasonPlaceholder": "Powód dla klienta (opcjonalnie)",
+  "adminBooking.reasonHint":
+    "Klient dostanie wiadomość. Powód zobaczy w niej i w karcie rezerwacji.",
+  "adminBooking.back": "Wróć",
 
   "payment.cash": "Gotówka",
   "payment.blik": "BLIK",
@@ -326,6 +332,12 @@ export const pl: Record<MessageKey, Message> = {
   "notify.cancelledByAdmin":
     "Twoja rezerwacja została anulowana przez administratora",
   "notify.priceChanged": "Cena Twojej rezerwacji została zmieniona",
+  "notify.reason": "Powód: {reason}",
+
+  "contact.title": "Kontakt",
+  "contact.write": "Napisz w Telegramie",
+  "contact.writeHint": "Pytania o wynajem i rezerwacje",
+  "contact.call": "Zadzwoń",
 
   "bot.welcome": "Cześć! To WroRent — wypożyczalnia rowerów we Wrocławiu 🚲",
   "bot.openApp": "Otwórz aplikację",

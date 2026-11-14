@@ -59,14 +59,14 @@ isOneToOne: false
                   ]
                 },"bookings": {
                   Row: {
-                    "admin_note": string | null,"bike_id": string,"comment": string | null,"created_at": string,"deposit": number | null,"ends_at": string,"id": string,"paid_at": string | null,"payment_method": Database["public"]['Enums']["payment_method"] | null,"picked_up_at": string | null,"plan_id": string | null,"price": number,"returned_at": string | null,"starts_at": string,"status": Database["public"]['Enums']["booking_status"],"updated_at": string,"user_id": string
+                    "admin_note": string | null,"bike_id": string,"comment": string | null,"created_at": string,"decline_reason": string | null,"deposit": number | null,"ends_at": string,"id": string,"paid_at": string | null,"payment_method": Database["public"]['Enums']["payment_method"] | null,"picked_up_at": string | null,"plan_id": string | null,"price": number,"returned_at": string | null,"starts_at": string,"status": Database["public"]['Enums']["booking_status"],"updated_at": string,"user_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "admin_note"?: string | null,"bike_id": string,"comment"?: string | null,"created_at"?: string,"deposit"?: number | null,"ends_at": string,"id"?: string,"paid_at"?: string | null,"payment_method"?: Database["public"]['Enums']["payment_method"] | null,"picked_up_at"?: string | null,"plan_id"?: string | null,"price": number,"returned_at"?: string | null,"starts_at": string,"status"?: Database["public"]['Enums']["booking_status"],"updated_at"?: string,"user_id": string
+                    "admin_note"?: string | null,"bike_id": string,"comment"?: string | null,"created_at"?: string,"decline_reason"?: string | null,"deposit"?: number | null,"ends_at": string,"id"?: string,"paid_at"?: string | null,"payment_method"?: Database["public"]['Enums']["payment_method"] | null,"picked_up_at"?: string | null,"plan_id"?: string | null,"price": number,"returned_at"?: string | null,"starts_at": string,"status"?: Database["public"]['Enums']["booking_status"],"updated_at"?: string,"user_id": string
                   }
                   Update: {
-                    "admin_note"?: string | null,"bike_id"?: string,"comment"?: string | null,"created_at"?: string,"deposit"?: number | null,"ends_at"?: string,"id"?: string,"paid_at"?: string | null,"payment_method"?: Database["public"]['Enums']["payment_method"] | null,"picked_up_at"?: string | null,"plan_id"?: string | null,"price"?: number,"returned_at"?: string | null,"starts_at"?: string,"status"?: Database["public"]['Enums']["booking_status"],"updated_at"?: string,"user_id"?: string
+                    "admin_note"?: string | null,"bike_id"?: string,"comment"?: string | null,"created_at"?: string,"decline_reason"?: string | null,"deposit"?: number | null,"ends_at"?: string,"id"?: string,"paid_at"?: string | null,"payment_method"?: Database["public"]['Enums']["payment_method"] | null,"picked_up_at"?: string | null,"plan_id"?: string | null,"price"?: number,"returned_at"?: string | null,"starts_at"?: string,"status"?: Database["public"]['Enums']["booking_status"],"updated_at"?: string,"user_id"?: string
                   }
                   Relationships: [
                     {
@@ -105,14 +105,14 @@ isOneToOne: false
                   ]
                 },"rental_settings": {
                   Row: {
-                    "first_start_minute": number,"id": boolean,"is_round_the_clock": boolean,"last_start_minute": number,"support_username": string | null,"updated_at": string
+                    "first_start_minute": number,"id": boolean,"is_round_the_clock": boolean,"last_start_minute": number,"support_phone": string | null,"support_username": string | null,"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "first_start_minute"?: number,"id"?: boolean,"is_round_the_clock"?: boolean,"last_start_minute"?: number,"support_username"?: string | null,"updated_at"?: string
+                    "first_start_minute"?: number,"id"?: boolean,"is_round_the_clock"?: boolean,"last_start_minute"?: number,"support_phone"?: string | null,"support_username"?: string | null,"updated_at"?: string
                   }
                   Update: {
-                    "first_start_minute"?: number,"id"?: boolean,"is_round_the_clock"?: boolean,"last_start_minute"?: number,"support_username"?: string | null,"updated_at"?: string
+                    "first_start_minute"?: number,"id"?: boolean,"is_round_the_clock"?: boolean,"last_start_minute"?: number,"support_phone"?: string | null,"support_username"?: string | null,"updated_at"?: string
                   }
                   Relationships: [
                     

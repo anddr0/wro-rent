@@ -3,13 +3,14 @@ import type { RentalSettings } from "@/lib/settings";
 import type { Supabase } from "@/server/supabase";
 
 const SETTINGS_FIELDS =
-  "first_start_minute, last_start_minute, is_round_the_clock, support_username";
+  "first_start_minute, last_start_minute, is_round_the_clock, support_username, support_phone";
 
 type SettingsRow = {
   first_start_minute: number;
   last_start_minute: number;
   is_round_the_clock: boolean;
   support_username: string | null;
+  support_phone: string | null;
 };
 
 function toRentalSettings(row: SettingsRow): RentalSettings {
@@ -18,6 +19,7 @@ function toRentalSettings(row: SettingsRow): RentalSettings {
     lastStartMinute: row.last_start_minute,
     isRoundTheClock: row.is_round_the_clock,
     supportUsername: row.support_username,
+    supportPhone: row.support_phone,
   };
 }
 
@@ -48,6 +50,7 @@ export async function updateRentalSettings(
       last_start_minute: settings.lastStartMinute,
       is_round_the_clock: settings.isRoundTheClock,
       support_username: settings.supportUsername,
+      support_phone: settings.supportPhone,
     })
     .eq("id", true)
     .select(SETTINGS_FIELDS)

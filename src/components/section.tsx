@@ -41,6 +41,8 @@ type RowProps = {
   icon?: LucideIcon;
   // When set, the whole row opens this page.
   href?: string;
+  // When set, the whole row is a button, e.g. it opens a Telegram chat.
+  onClick?: () => void;
 };
 
 export function Row({
@@ -51,6 +53,7 @@ export function Row({
   start,
   icon,
   href,
+  onClick,
 }: RowProps) {
   const content = (
     <>
@@ -71,7 +74,7 @@ export function Row({
         )}
       </div>
       {end}
-      {href && (
+      {(href || onClick) && (
         <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
       )}
     </>
@@ -86,6 +89,17 @@ export function Row({
       >
         {content}
       </Link>
+    );
+  }
+  if (onClick) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        className={`${classes} text-left transition-colors active:bg-muted`}
+      >
+        {content}
+      </button>
     );
   }
   return <div className={classes}>{content}</div>;
