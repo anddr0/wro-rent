@@ -123,6 +123,8 @@ export function MonthCalendar({
             isAvailable={availableDays.some((item) => isSameDay(item, day))}
             isSelected={selectedDay !== null && isSameDay(selectedDay, day)}
             rangePart={rangePartOf(day)}
+            isRowStart={day.day === 1 || mondayBasedWeekday(day) === 0}
+            isRowEnd={day.day === dayCount || mondayBasedWeekday(day) === 6}
             onSelect={onSelect}
           />
         ))}
@@ -136,42 +138,54 @@ type DayButtonProps = {
   isAvailable: boolean;
   isSelected: boolean;
   rangePart: RangePart;
+  // The first or the last day of its row in the grid: the band of the
+  // rental is rounded there, it continues on the next row.
+  isRowStart: boolean;
+  isRowEnd: boolean;
   onSelect: (day: CalendarDay) => void;
 };
 
-// The pale band behind the days of the rental. On the first day it starts
-// from the middle of the cell, on the last one it ends there, so the band
-// runs from one circle to the other.
-const RANGE_BAND_CLASSES: Record<RangePart, string> = {
-  none: "hidden",
-  start: "left-1/2 right-0",
-  middle: "inset-x-0",
-  end: "left-0 right-1/2",
-};
+// The band is as tall as a day's circle (size-10, 2.5rem). Where it begins
+// or ends it is rounded and hugs the circle of that day instead of filling
+// the whole cell, so the band looks like one long pill around the days.
+const BAND_LEFT_CAP = "left-[calc(50%-1.25rem)] rounded-l-full";
+const BAND_RIGHT_CAP = "right-[calc(50%-1.25rem)] rounded-r-full";
 
 function DayButton({
   day,
   isAvailable,
   isSelected,
   rangePart,
+  isRowStart,
+  isRowEnd,
   onSelect,
 }: DayButtonProps) {
   let colors = "text-foreground active:bg-muted";
   if (isSelected) {
     colors = "bg-primary font-semibold text-primary-foreground";
   } else if (rangePart === "end") {
-    // The last day of the rental: a pale circle that closes the band.
-    colors = "bg-muted-foreground/25 font-semibold text-foreground";
+    colors = "font-semibold text-foreground";
   } else if (!isAvailable && rangePart === "none") {
     colors = "text-muted-foreground/40";
   }
 
+  let bandLeft = "left-0";
+  if (rangePart === "start" || isRowStart) {
+    bandLeft = BAND_LEFT_CAP;
+  }
+  let bandRight = "right-0";
+  if (rangePart === "end" || isRowEnd) {
+    bandRight = BAND_RIGHT_CAP;
+  }
+
   return (
     <div className="relative flex justify-center">
-      <span
-        aria-hidden
-        className={`absolute inset-y-0 bg-muted-foreground/15 ${RANGE_BAND_CLASSES[rangePart]}`}
-      />
+      {rangePart !== "none" && (
+        <span
+          aria-hidden
+          className={`absolute inset-y-0 bg-muted-foreground/20 ${bandLeft} ${bandRight}`}
+        />
+      )}
       <button
         type="button"
         disabled={!isAvailable}
