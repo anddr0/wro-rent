@@ -1,5 +1,6 @@
 "use client";
 
+import { Check } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { MonthCalendar } from "@/components/booking/month-calendar";
@@ -9,7 +10,7 @@ import { Chip } from "@/components/chip";
 import { TextArea } from "@/components/form";
 import { FormError } from "@/components/form-error";
 import { PageTitle } from "@/components/page-title";
-import { DetailRow, Row, Section, SectionTitle } from "@/components/section";
+import { DetailRow, Section, SectionTitle } from "@/components/section";
 import { apiErrorCode, apiSendJson } from "@/lib/api";
 import type { ApiErrorCode } from "@/lib/api";
 import { BOOKING_RULES } from "@/lib/booking-rules";
@@ -153,27 +154,19 @@ export function BookingForm({
 
       {/* With a single plan there is nothing to choose (К-4). */}
       {plans.length > 1 && (
-        <Section title={t("common.plan")}>
-          {plans.map((item) => (
-            <label key={item.id} className="cursor-pointer">
-              <Row
-                start={
-                  <input
-                    type="radio"
-                    name="plan"
-                    checked={item.id === plan.id}
-                    onChange={() => setChosenPlanId(item.id)}
-                    className="accent-primary"
-                  />
-                }
-                title={item.name}
-                end={
-                  <span>{t("common.priceValue", { price: item.price })}</span>
-                }
+        <section className="flex flex-col gap-2">
+          <SectionTitle>{t("common.plan")}</SectionTitle>
+          <div role="radiogroup" className="flex flex-col gap-2">
+            {plans.map((item) => (
+              <PlanOption
+                key={item.id}
+                plan={item}
+                isSelected={item.id === plan.id}
+                onSelect={() => setChosenPlanId(item.id)}
               />
-            </label>
-          ))}
-        </Section>
+            ))}
+          </div>
+        </section>
       )}
 
       {day === null ? (
@@ -261,5 +254,44 @@ export function BookingForm({
         </Button>
       </BottomBar>
     </>
+  );
+}
+
+type PlanOptionProps = {
+  plan: CatalogPlan;
+  isSelected: boolean;
+  onSelect: () => void;
+};
+
+// A plan to pick. The picked one is filled like the picked day and time,
+// with a check mark on the left.
+function PlanOption({ plan, isSelected, onSelect }: PlanOptionProps) {
+  const t = useT();
+
+  let colors = "border bg-card shadow-sm";
+  if (isSelected) {
+    colors = "border border-primary bg-primary text-primary-foreground";
+  }
+
+  return (
+    <button
+      type="button"
+      role="radio"
+      aria-checked={isSelected}
+      onClick={onSelect}
+      className={`flex min-h-14 items-center gap-3 rounded-xl px-4 py-3 text-left transition-colors ${colors}`}
+    >
+      {isSelected ? (
+        <Check className="size-5 shrink-0" strokeWidth={2.5} />
+      ) : (
+        <span className="size-5 shrink-0 rounded-full border-2" />
+      )}
+      <span className="min-w-0 flex-1 font-medium wrap-anywhere">
+        {plan.name}
+      </span>
+      <span className="shrink-0 font-medium">
+        {t("common.priceValue", { price: plan.price })}
+      </span>
+    </button>
   );
 }

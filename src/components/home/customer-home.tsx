@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Bike } from "lucide-react";
+import { ArrowRight, Bike, CalendarCheck, MapPin } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { BikePhoto } from "@/components/bike-photo";
@@ -150,7 +150,7 @@ function HomeBikes({ catalog, hasFailed, onRetry }: HomeBikesProps) {
               className="flex flex-col gap-1 active:opacity-70"
             >
               <BikePhoto size="medium" url={bike.coverUrl} />
-              <span className="font-medium">{bike.name}</span>
+              <span className="font-medium wrap-anywhere">{bike.name}</span>
               {catalog.priceFrom !== null && (
                 <span className="text-sm text-muted-foreground">
                   {t("common.priceFrom", { price: catalog.priceFrom })}
@@ -169,33 +169,67 @@ function HomeBikes({ catalog, hasFailed, onRetry }: HomeBikesProps) {
   );
 }
 
-const STEPS: MessageKey[] = [
-  "home.stepChoose",
-  "home.stepRequest",
-  "home.stepPickUp",
+const STEPS: { icon: typeof Bike; title: MessageKey; hint: MessageKey }[] = [
+  { icon: Bike, title: "home.stepChoose", hint: "home.stepChooseHint" },
+  {
+    icon: CalendarCheck,
+    title: "home.stepRequest",
+    hint: "home.stepRequestHint",
+  },
+  { icon: MapPin, title: "home.stepPickUp", hint: "home.stepPickUpHint" },
 ];
 
 // For someone who has no bookings yet: what this is and how it works.
+// The card leads to the catalog, like the button at the bottom of the page:
+// a newcomer should be able to start choosing a bike from the first screen.
 function HowItWorks({ priceFrom }: { priceFrom: number | null }) {
   const t = useT();
 
-  let details = t("common.paymentOptions");
-  if (priceFrom !== null) {
-    details = t("home.pitchDetails", { price: priceFrom });
-  }
-
   return (
     <>
-      <div className="flex flex-col gap-1 rounded-xl border bg-card p-4 shadow-sm">
-        <span className="font-medium">{t("home.pitchTitle")}</span>
-        <span className="text-sm text-muted-foreground">{details}</span>
+      <div className="flex flex-col gap-4 rounded-xl border-2 border-foreground bg-card p-4 shadow-sm">
+        <div className="flex items-center gap-3">
+          <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+            <Bike className="size-6" />
+          </span>
+          <div className="flex min-w-0 flex-col gap-0.5">
+            <span className="text-lg leading-tight font-semibold">
+              {t("home.pitchTitle")}
+            </span>
+            <span className="text-sm text-muted-foreground">
+              {t("home.pitchPayment")}
+            </span>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between gap-3">
+          {/* Without an active plan there is no price to show. */}
+          {priceFrom === null ? (
+            <span />
+          ) : (
+            <span className="flex items-baseline gap-1.5">
+              <span className="text-sm text-muted-foreground">
+                {t("home.pitchFrom")}
+              </span>
+              <span className="text-2xl font-semibold tracking-tight">
+                {t("common.priceValue", { price: priceFrom })}
+              </span>
+            </span>
+          )}
+          <ButtonLink href="/bikes" size="small" className="h-10 px-4">
+            {t("home.pitchChoose")}
+            <ArrowRight />
+          </ButtonLink>
+        </div>
       </div>
+
       <Section title={t("home.howItWorks")}>
-        {STEPS.map((step, index) => (
+        {STEPS.map((step) => (
           <Row
-            key={step}
-            start={<span className="font-semibold">{index + 1}</span>}
-            title={t(step)}
+            key={step.title}
+            icon={step.icon}
+            title={t(step.title)}
+            subtitle={t(step.hint)}
           />
         ))}
       </Section>

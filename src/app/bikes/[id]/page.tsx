@@ -36,7 +36,11 @@ export default function BikePage() {
 
       <div className="flex flex-col gap-2">
         <PageTitle>{bike.name}</PageTitle>
-        {bike.description && <p>{bike.description}</p>}
+        {bike.description && (
+          <p className="wrap-anywhere whitespace-pre-line">
+            {bike.description}
+          </p>
+        )}
       </div>
 
       {plans.length > 0 && (

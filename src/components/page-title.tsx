@@ -12,10 +12,14 @@ export function PageTitle({ children, description, end }: PageTitleProps) {
   return (
     <div className="flex flex-col gap-1">
       <div className="flex items-center justify-between gap-3">
-        <h1 className="text-2xl font-semibold tracking-tight">{children}</h1>
+        <h1 className="min-w-0 text-2xl font-semibold tracking-tight wrap-anywhere">
+          {children}
+        </h1>
         {end}
       </div>
-      {description && <p className="text-muted-foreground">{description}</p>}
+      {description && (
+        <p className="text-muted-foreground wrap-anywhere">{description}</p>
+      )}
     </div>
   );
 }

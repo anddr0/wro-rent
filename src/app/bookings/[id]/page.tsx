@@ -4,6 +4,7 @@ import { MessageCircle } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { BikePhoto } from "@/components/bike-photo";
+import { BookingSteps } from "@/components/booking/booking-steps";
 import { BookingStatusBadge } from "@/components/booking-status-badge";
 import { Button } from "@/components/button";
 import { ErrorState } from "@/components/error-state";
@@ -114,19 +115,16 @@ function BookingCard({ booking }: { booking: CustomerBooking }) {
         )}
       </Section>
 
+      <BookingSteps booking={booking} />
+
       {booking.status === "pending" && (
-        <>
-          <p className="text-sm text-muted-foreground">
-            {t("booking.pendingNote")}
-          </p>
-          <Button
-            variant="destructive"
-            onClick={cancelRequest}
-            disabled={isCancelling}
-          >
-            {t("booking.cancel")}
-          </Button>
-        </>
+        <Button
+          variant="destructive"
+          onClick={cancelRequest}
+          disabled={isCancelling}
+        >
+          {t("booking.cancel")}
+        </Button>
       )}
 
       {errorKey !== null && <FormError>{t(errorKey)}</FormError>}

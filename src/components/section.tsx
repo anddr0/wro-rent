@@ -58,11 +58,16 @@ export function Row({
       {start}
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         <div className="flex items-center justify-between gap-2">
-          <span className="truncate font-medium">{title}</span>
+          {/* A long title takes two lines, then is cut with "…". */}
+          <span className="line-clamp-2 font-medium wrap-anywhere">
+            {title}
+          </span>
           {badge}
         </div>
         {subtitle && (
-          <span className="text-sm text-muted-foreground">{subtitle}</span>
+          <span className="text-sm text-muted-foreground wrap-anywhere">
+            {subtitle}
+          </span>
         )}
       </div>
       {end}
@@ -103,8 +108,12 @@ type DetailRowProps = {
 export function DetailRow({ label, value }: DetailRowProps) {
   return (
     <div className="flex items-baseline justify-between gap-4 px-4 py-3">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="text-right font-medium">{value}</span>
+      <span className="shrink-0 text-muted-foreground">{label}</span>
+      {/* wrap-anywhere: a long word without spaces breaks instead of
+          pushing the row wider than the screen. */}
+      <span className="min-w-0 text-right font-medium wrap-anywhere">
+        {value}
+      </span>
     </div>
   );
 }

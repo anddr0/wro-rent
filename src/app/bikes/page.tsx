@@ -67,7 +67,7 @@ function BikeCard({ bike, priceFrom }: BikeCardProps) {
         <BikePhoto size="medium" url={bike.coverUrl} />
       </Link>
       <div className="flex flex-col gap-0.5 px-1">
-        <span className="font-medium">{bike.name}</span>
+        <span className="font-medium wrap-anywhere">{bike.name}</span>
         {priceFrom !== null && (
           <span className="text-sm text-muted-foreground">
             {t("common.priceFrom", { price: priceFrom })}
