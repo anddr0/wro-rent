@@ -5,8 +5,10 @@ import { isStartAllowed, overlapsAny } from "@/lib/booking-slots";
 import type { Availability, Period } from "@/lib/booking-slots";
 import type { BookingStatus, CustomerBooking } from "@/lib/bookings";
 import { addDuration } from "@/lib/rental-time";
+import { effectiveOpeningHours } from "@/lib/settings";
 import { findVisibleBike } from "@/server/catalog";
 import { HttpError } from "@/server/http";
+import { getRentalSettings } from "@/server/settings";
 import type { Supabase } from "@/server/supabase";
 
 // The columns of a booking the customer sees, with its bike and plan.
@@ -80,21 +82,24 @@ export async function getBikeAvailability(
   userId: string,
   now: Date,
 ): Promise<Availability> {
-  const { data, error } = await supabase
-    .from("bookings")
-    .select("user_id, status, starts_at, ends_at")
-    .eq("bike_id", bikeId)
-    .in("status", ["pending", "confirmed", "active"])
-    .gt("ends_at", now.toISOString())
-    .order("starts_at");
+  const [bookings, settings] = await Promise.all([
+    supabase
+      .from("bookings")
+      .select("user_id, status, starts_at, ends_at")
+      .eq("bike_id", bikeId)
+      .in("status", ["pending", "confirmed", "active"])
+      .gt("ends_at", now.toISOString())
+      .order("starts_at"),
+    getRentalSettings(supabase),
+  ]);
 
-  if (error) {
-    throw error;
+  if (bookings.error) {
+    throw bookings.error;
   }
 
   const busy: Period[] = [];
   const pending: Period[] = [];
-  for (const booking of data) {
+  for (const booking of bookings.data) {
     const period = { startsAt: booking.starts_at, endsAt: booking.ends_at };
     if (booking.status === "pending") {
       if (booking.user_id !== userId) {
@@ -104,7 +109,7 @@ export async function getBikeAvailability(
       busy.push(period);
     }
   }
-  return { busy, pending };
+  return { busy, pending, hours: effectiveOpeningHours(settings) };
 }
 
 export type NewBooking = {
@@ -122,7 +127,9 @@ export async function createBooking(
   newBooking: NewBooking,
   now: Date,
 ): Promise<CustomerBooking> {
-  if (!isStartAllowed(newBooking.startsAt, now)) {
+  const settings = await getRentalSettings(supabase);
+  const hours = effectiveOpeningHours(settings);
+  if (!isStartAllowed(newBooking.startsAt, now, hours)) {
     throw new HttpError(
       400,
       "This start time can't be booked",

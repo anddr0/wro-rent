@@ -11,39 +11,74 @@ import type { Availability } from "./booking-slots";
 // Monday 7 December 2026, 12:10 in Warsaw (winter time, UTC+1).
 const NOW = new Date("2026-12-07T11:10:00Z");
 const ONE_DAY = { count: 1, unit: "day" } as const;
-const NOTHING_BOOKED: Availability = { busy: [], pending: [] };
+// 9:00–20:00.
+const HOURS = { firstStartMinute: 540, lastStartMinute: 1200 };
+const NOTHING_BOOKED: Availability = { busy: [], pending: [], hours: HOURS };
 
 describe("isStartAllowed", () => {
   it("accepts a time on the step, in opening hours, inside the window", () => {
-    assert.equal(isStartAllowed(new Date("2026-12-08T09:30:00Z"), NOW), true);
+    assert.equal(
+      isStartAllowed(new Date("2026-12-08T09:30:00Z"), NOW, HOURS),
+      true,
+    );
   });
 
   it("rejects a time off the 30-minute step", () => {
-    assert.equal(isStartAllowed(new Date("2026-12-08T09:15:00Z"), NOW), false);
-    assert.equal(isStartAllowed(new Date("2026-12-08T09:30:20Z"), NOW), false);
+    assert.equal(
+      isStartAllowed(new Date("2026-12-08T09:15:00Z"), NOW, HOURS),
+      false,
+    );
+    assert.equal(
+      isStartAllowed(new Date("2026-12-08T09:30:20Z"), NOW, HOURS),
+      false,
+    );
   });
 
   it("rejects a time outside the opening hours", () => {
     // 08:30 and 20:30 in Warsaw.
-    assert.equal(isStartAllowed(new Date("2026-12-08T07:30:00Z"), NOW), false);
-    assert.equal(isStartAllowed(new Date("2026-12-08T19:30:00Z"), NOW), false);
+    assert.equal(
+      isStartAllowed(new Date("2026-12-08T07:30:00Z"), NOW, HOURS),
+      false,
+    );
+    assert.equal(
+      isStartAllowed(new Date("2026-12-08T19:30:00Z"), NOW, HOURS),
+      false,
+    );
   });
 
   it("accepts the first and the last start time of a day", () => {
     // 09:00 and 20:00 in Warsaw.
-    assert.equal(isStartAllowed(new Date("2026-12-08T08:00:00Z"), NOW), true);
-    assert.equal(isStartAllowed(new Date("2026-12-08T19:00:00Z"), NOW), true);
+    assert.equal(
+      isStartAllowed(new Date("2026-12-08T08:00:00Z"), NOW, HOURS),
+      true,
+    );
+    assert.equal(
+      isStartAllowed(new Date("2026-12-08T19:00:00Z"), NOW, HOURS),
+      true,
+    );
   });
 
   it("rejects a start sooner than in an hour", () => {
     // 13:00 in Warsaw is 50 minutes from now, 13:30 is 80 minutes.
-    assert.equal(isStartAllowed(new Date("2026-12-07T12:00:00Z"), NOW), false);
-    assert.equal(isStartAllowed(new Date("2026-12-07T12:30:00Z"), NOW), true);
+    assert.equal(
+      isStartAllowed(new Date("2026-12-07T12:00:00Z"), NOW, HOURS),
+      false,
+    );
+    assert.equal(
+      isStartAllowed(new Date("2026-12-07T12:30:00Z"), NOW, HOURS),
+      true,
+    );
   });
 
   it("rejects a start later than in 30 days", () => {
-    assert.equal(isStartAllowed(new Date("2027-01-06T09:00:00Z"), NOW), true);
-    assert.equal(isStartAllowed(new Date("2027-01-07T09:00:00Z"), NOW), false);
+    assert.equal(
+      isStartAllowed(new Date("2027-01-06T09:00:00Z"), NOW, HOURS),
+      true,
+    );
+    assert.equal(
+      isStartAllowed(new Date("2027-01-07T09:00:00Z"), NOW, HOURS),
+      false,
+    );
   });
 });
 
@@ -81,6 +116,7 @@ describe("listStartSlots", () => {
         { startsAt: "2026-12-09T11:00:00Z", endsAt: "2026-12-10T11:00:00Z" },
       ],
       pending: [],
+      hours: HOURS,
     };
     const slots = listStartSlots(tomorrow, ONE_DAY, availability, NOW);
 
@@ -103,10 +139,27 @@ describe("listStartSlots", () => {
       pending: [
         { startsAt: "2026-12-08T08:00:00Z", endsAt: "2026-12-09T08:00:00Z" },
       ],
+      hours: HOURS,
     };
     const slots = listStartSlots(tomorrow, ONE_DAY, availability, NOW);
     assert.equal(slots[0].isBusy, false);
     assert.equal(slots[0].hasPendingRequests, true);
+  });
+});
+
+describe("listStartSlots with other opening hours", () => {
+  it("offers the whole day when the rental works round the clock", () => {
+    const tomorrow = { year: 2026, month: 12, day: 8 };
+    const availability: Availability = {
+      busy: [],
+      pending: [],
+      hours: { firstStartMinute: 0, lastStartMinute: 1410 },
+    };
+    const slots = listStartSlots(tomorrow, ONE_DAY, availability, NOW);
+    // 00:00 … 23:30 in Warsaw.
+    assert.equal(slots.length, 48);
+    assert.equal(slots[0].startsAt.toISOString(), "2026-12-07T23:00:00.000Z");
+    assert.equal(slots[47].startsAt.toISOString(), "2026-12-08T22:30:00.000Z");
   });
 });
 

@@ -9,6 +9,7 @@ import {
   toWallTime,
 } from "@/lib/rental-time";
 import type { CalendarDay, PlanDuration } from "@/lib/rental-time";
+import type { OpeningHours } from "@/lib/settings";
 
 const MINUTE = 60 * 1000;
 const HOUR = 60 * MINUTE;
@@ -25,6 +26,8 @@ export type Availability = {
   busy: Period[];
   // Other customers' requests waiting for an answer: only a warning.
   pending: Period[];
+  // The hours of a day a rental can start in.
+  hours: OpeningHours;
 };
 
 export type StartSlot = {
@@ -73,7 +76,11 @@ export function listBookableDays(now: Date): CalendarDay[] {
 
 // Is this a start time we offer: on the time step, within the opening hours
 // and inside the booking window?
-export function isStartAllowed(startsAt: Date, now: Date): boolean {
+export function isStartAllowed(
+  startsAt: Date,
+  now: Date,
+  hours: OpeningHours,
+): boolean {
   const wallTime = toWallTime(startsAt);
   const hasSecondsOrMs = startsAt.getTime() % MINUTE !== 0;
   if (hasSecondsOrMs) {
@@ -84,10 +91,10 @@ export function isStartAllowed(startsAt: Date, now: Date): boolean {
   }
 
   const minutesOfDay = wallTime.hour * 60 + wallTime.minute;
-  if (minutesOfDay < BOOKING_RULES.firstStartHour * 60) {
+  if (minutesOfDay < hours.firstStartMinute) {
     return false;
   }
-  if (minutesOfDay > BOOKING_RULES.lastStartHour * 60) {
+  if (minutesOfDay > hours.lastStartMinute) {
     return false;
   }
 
@@ -103,13 +110,12 @@ export function listStartSlots(
   availability: Availability,
   now: Date,
 ): StartSlot[] {
-  const firstMinute = BOOKING_RULES.firstStartHour * 60;
-  const lastMinute = BOOKING_RULES.lastStartHour * 60;
+  const { hours } = availability;
 
   const slots: StartSlot[] = [];
   for (
-    let minutesOfDay = firstMinute;
-    minutesOfDay <= lastMinute;
+    let minutesOfDay = hours.firstStartMinute;
+    minutesOfDay <= hours.lastStartMinute;
     minutesOfDay += BOOKING_RULES.timeStepMinutes
   ) {
     const startsAt = fromWallTime({
@@ -117,7 +123,7 @@ export function listStartSlots(
       hour: Math.floor(minutesOfDay / 60),
       minute: minutesOfDay % 60,
     });
-    if (!isStartAllowed(startsAt, now)) {
+    if (!isStartAllowed(startsAt, now, hours)) {
       continue;
     }
 

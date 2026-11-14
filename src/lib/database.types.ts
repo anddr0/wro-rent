@@ -103,6 +103,20 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"rental_settings": {
+                  Row: {
+                    "first_start_minute": number,"id": boolean,"is_round_the_clock": boolean,"last_start_minute": number,"support_username": string | null,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "first_start_minute"?: number,"id"?: boolean,"is_round_the_clock"?: boolean,"last_start_minute"?: number,"support_username"?: string | null,"updated_at"?: string
+                  }
+                  Update: {
+                    "first_start_minute"?: number,"id"?: boolean,"is_round_the_clock"?: boolean,"last_start_minute"?: number,"support_username"?: string | null,"updated_at"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"users": {
                   Row: {
                     "created_at": string,"full_name": string,"id": string,"language_code": string | null,"locale": string | null,"phone": string | null,"photo_url": string | null,"role": Database["public"]['Enums']["user_role"],"telegram_id": number,"updated_at": string,"username": string | null

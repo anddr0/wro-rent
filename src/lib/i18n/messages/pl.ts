@@ -166,6 +166,24 @@ export const pl: Record<MessageKey, Message> = {
   "adminHome.bikesHint": "Rowery i ich zdjęcia",
   "adminHome.plans": "Taryfy",
   "adminHome.plansHint": "Ceny dla wszystkich rowerów",
+  "adminHome.settings": "Godziny i kontakt",
+  "adminHome.settingsHint": "Godziny pracy, kontakt dla klientów",
+
+  "adminSettings.title": "Ustawienia wypożyczalni",
+  "adminSettings.hours": "Godziny pracy",
+  "adminSettings.roundTheClock": "Całodobowo",
+  "adminSettings.roundTheClockHint": "Wynajem można zacząć o dowolnej porze",
+  "adminSettings.firstStart": "Pierwsze wydanie",
+  "adminSettings.lastStart": "Ostatnie wydanie",
+  "adminSettings.hoursHint":
+    "W tych godzinach klient może zacząć wynajem, codziennie. Czas warszawski. Istniejące rezerwacje się nie zmieniają.",
+  "adminSettings.hoursInvalid":
+    "Pierwsze wydanie nie może być później niż ostatnie",
+  "adminSettings.contact": "Kontakt dla klientów",
+  "adminSettings.contactHint":
+    "Nazwa użytkownika w Telegramie. Do niej piszą klienci przyciskiem „Napisz do administratora”. Puste — przycisku nie ma.",
+  "adminSettings.contactInvalid":
+    "To nie wygląda na nazwę użytkownika: litery łacińskie, cyfry i _, od 4 znaków",
 
   "adminBookings.title": "Rezerwacje",
   "adminBookings.newestFirst": "Najnowsze zgłoszenia na górze",

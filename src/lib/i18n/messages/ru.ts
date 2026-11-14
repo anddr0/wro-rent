@@ -175,6 +175,23 @@ export const ru = {
   "adminHome.bikesHint": "Велосипеды и их фото",
   "adminHome.plans": "Тарифы",
   "adminHome.plansHint": "Цены для всех велосипедов",
+  "adminHome.settings": "Часы и контакт",
+  "adminHome.settingsHint": "Часы работы, контакт для клиентов",
+
+  "adminSettings.title": "Настройки проката",
+  "adminSettings.hours": "Часы работы",
+  "adminSettings.roundTheClock": "Круглосуточно",
+  "adminSettings.roundTheClockHint": "Аренду можно начать в любое время суток",
+  "adminSettings.firstStart": "Первая выдача",
+  "adminSettings.lastStart": "Последняя выдача",
+  "adminSettings.hoursHint":
+    "В эти часы клиент может начать аренду, каждый день. Время варшавское. Уже созданные брони не меняются.",
+  "adminSettings.hoursInvalid": "Первая выдача не может быть позже последней",
+  "adminSettings.contact": "Контакт для клиентов",
+  "adminSettings.contactHint":
+    "Username в Telegram. Ему клиенты пишут по кнопке «Написать админу». Пусто — кнопки нет.",
+  "adminSettings.contactInvalid":
+    "Это не похоже на username: нужны латинские буквы, цифры и _, от 4 символов",
 
   "adminBookings.title": "Брони",
   "adminBookings.newestFirst": "Новые заявки — сверху",

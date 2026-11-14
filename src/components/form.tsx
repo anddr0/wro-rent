@@ -22,6 +22,11 @@ export function TextInput(props: ComponentProps<"input">) {
   return <input className={INPUT_CLASSES} {...props} />;
 }
 
+// A native drop-down: on a phone it opens the system's own picker.
+export function Select(props: ComponentProps<"select">) {
+  return <select className={INPUT_CLASSES} {...props} />;
+}
+
 export function TextArea(props: ComponentProps<"textarea">) {
   return <textarea className={`${INPUT_CLASSES} resize-none`} {...props} />;
 }

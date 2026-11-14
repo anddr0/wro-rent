@@ -18,10 +18,10 @@ import type { BookingResponse, CustomerBooking } from "@/lib/bookings";
 import type { MessageKey } from "@/lib/i18n/messages/ru";
 import { useLocale, useT } from "@/lib/i18n/use-t";
 import { formatDateTime } from "@/lib/rental-time";
-import { SUPPORT_USERNAME } from "@/lib/support";
 import { confirmInTelegram, openTelegramChat } from "@/lib/telegram/dialogs";
 import { useTelegram } from "@/lib/telegram/use-telegram";
 import { isNotFound, refreshApi, useApi } from "@/lib/use-api";
+import { useSupportUsername } from "@/lib/use-settings";
 
 export default function BookingPage() {
   const t = useT();
@@ -50,7 +50,7 @@ function BookingCard({ booking }: { booking: CustomerBooking }) {
   const { webApp } = useTelegram();
   const [isCancelling, setIsCancelling] = useState(false);
   const [errorKey, setErrorKey] = useState<MessageKey | null>(null);
-  const supportUsername = SUPPORT_USERNAME;
+  const supportUsername = useSupportUsername();
 
   async function cancelRequest() {
     const isConfirmed = await confirmInTelegram(

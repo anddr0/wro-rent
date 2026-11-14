@@ -1,6 +1,6 @@
 "use client";
 
-import { Bike, CalendarDays, Tags } from "lucide-react";
+import { Bike, CalendarDays, Clock, Tags } from "lucide-react";
 import { ErrorState } from "@/components/error-state";
 import { Greeting } from "@/components/home/greeting";
 import { Row, Section, SectionTitle } from "@/components/section";
@@ -34,6 +34,12 @@ const ADMIN_SECTIONS: {
     title: "adminHome.plans",
     subtitle: "adminHome.plansHint",
     icon: Tags,
+  },
+  {
+    href: "/admin/settings",
+    title: "adminHome.settings",
+    subtitle: "adminHome.settingsHint",
+    icon: Clock,
   },
 ];
 
