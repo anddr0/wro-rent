@@ -57,7 +57,6 @@ export const pl: Record<MessageKey, Message> = {
   "bike.prices": "Ceny",
 
   "book.startDate": "Data rozpoczęcia",
-  "book.calendarPlaceholder": "Tu będzie kalendarz",
   "book.startTime": "Godzina rozpoczęcia",
   "book.othersWaiting": "Ktoś już czeka na potwierdzenie w tym terminie",
   "book.summary": "Podsumowanie",
@@ -65,6 +64,45 @@ export const pl: Record<MessageKey, Message> = {
   "book.submit": "Wyślij zgłoszenie",
   "book.noPlans": "Rezerwacja jest teraz niedostępna",
 
+  "book.noFreeDates":
+    "Na razie nie ma wolnych terminów. Spróbuj innej taryfy lub roweru.",
+  "book.busyTimeHint": "Przekreślone godziny są zajęte",
+  "book.sending": "Wysyłanie…",
+  "book.errorDatesTaken": "Ten termin został właśnie zajęty. Wybierz inny.",
+  "book.errorStartNotAllowed":
+    "Tego terminu nie można już wybrać. Wybierz inny.",
+  "book.errorPlanUnavailable": "Ta taryfa nie jest już dostępna. Wybierz inną.",
+  "book.errorTooManyBookings":
+    "Masz już maksymalną liczbę aktywnych rezerwacji: {count}.",
+  "book.errorAlreadyRequested":
+    "Masz już zgłoszenie na ten rower w tym terminie.",
+  "book.errorWriteAccess":
+    "Pozwól botowi pisać do Ciebie: inaczej nie przekażemy odpowiedzi.",
+  "book.errorGeneric": "Nie udało się wysłać zgłoszenia. Spróbuj ponownie.",
+  "duration.hour": {
+    one: "{count} godzina",
+    few: "{count} godziny",
+    many: "{count} godzin",
+    other: "{count} godziny",
+  },
+  "duration.day": {
+    one: "{count} dzień",
+    few: "{count} dni",
+    many: "{count} dni",
+    other: "{count} dnia",
+  },
+  "duration.week": {
+    one: "{count} tydzień",
+    few: "{count} tygodnie",
+    many: "{count} tygodni",
+    other: "{count} tygodnia",
+  },
+  "duration.month": {
+    one: "{count} miesiąc",
+    few: "{count} miesiące",
+    many: "{count} miesięcy",
+    other: "{count} miesiąca",
+  },
   "booking.pendingNote":
     "Administrator jeszcze nie potwierdził zgłoszenia. Napiszemy do Ciebie w Telegramie.",
   "booking.cancel": "Anuluj zgłoszenie",
@@ -162,6 +200,17 @@ export const pl: Record<MessageKey, Message> = {
   "adminPlans.description":
     "Wspólne dla wszystkich rowerów. Nowa cena nie zmienia już utworzonych rezerwacji.",
   "adminPlans.add": "Dodaj taryfę",
+
+  "notify.newBooking": "🆕 Nowe zgłoszenie od {customer}",
+  "notify.comment": "Komentarz: {comment}",
+  "notify.open": "Otwórz",
+  "notify.confirmed": "✅ Twoje zgłoszenie zostało potwierdzone",
+  "notify.rejected": "Twoje zgłoszenie zostało odrzucone",
+  "notify.datesTaken":
+    "Rower w tym terminie jest już zajęty, zgłoszenie zostało odrzucone",
+  "notify.cancelledByAdmin":
+    "Twoja rezerwacja została anulowana przez administratora",
+  "notify.priceChanged": "Cena Twojej rezerwacji została zmieniona",
 
   "bot.welcome": "Cześć! To WroRent — wypożyczalnia rowerów we Wrocławiu 🚲",
   "bot.openApp": "Otwórz aplikację",

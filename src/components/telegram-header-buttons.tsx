@@ -23,7 +23,13 @@ export function TelegramHeaderButtons() {
     }
 
     function goBack() {
-      router.back();
+      // Opened straight on this page (a button under a bot message):
+      // there is nothing to go back to, so go to the home page.
+      if (window.history.length <= 1) {
+        router.replace("/");
+      } else {
+        router.back();
+      }
     }
 
     webApp.BackButton.show();

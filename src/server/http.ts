@@ -1,14 +1,22 @@
 import "server-only";
 import { unstable_rethrow } from "next/navigation";
+import type { ApiErrorCode } from "@/lib/api";
 
 // An error that should reach the client with this HTTP status and message.
 // Any other error is a bug and becomes a generic 500.
 export class HttpError extends Error {
   status: number;
+  // Set when the mini app shows its own translated text for this error.
+  code: ApiErrorCode | null;
 
-  constructor(status: number, message: string) {
+  constructor(
+    status: number,
+    message: string,
+    code: ApiErrorCode | null = null,
+  ) {
     super(message);
     this.status = status;
+    this.code = code;
   }
 }
 
@@ -31,7 +39,7 @@ export function withErrorHandling<Context>(
       unstable_rethrow(error);
       if (error instanceof HttpError) {
         return Response.json(
-          { error: error.message },
+          { error: error.message, code: error.code },
           { status: error.status },
         );
       } else {

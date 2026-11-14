@@ -70,7 +70,6 @@ export const ru = {
   "bike.prices": "Цены",
 
   "book.startDate": "Дата начала",
-  "book.calendarPlaceholder": "Здесь будет календарь",
   "book.startTime": "Время начала",
   "book.othersWaiting": "Кто-то уже ждёт подтверждения на это время",
   "book.summary": "Итого",
@@ -78,6 +77,43 @@ export const ru = {
   "book.submit": "Отправить заявку",
   "book.noPlans": "Сейчас бронирование недоступно",
 
+  "book.noFreeDates":
+    "Свободного времени пока нет. Попробуйте другой тариф или велосипед.",
+  "book.busyTimeHint": "Зачёркнутое время занято",
+  "book.sending": "Отправляем…",
+  "book.errorDatesTaken": "Это время только что заняли. Выберите другое.",
+  "book.errorStartNotAllowed": "Это время уже нельзя выбрать. Выберите другое.",
+  "book.errorPlanUnavailable": "Этот тариф больше недоступен. Выберите другой.",
+  "book.errorTooManyBookings": "У вас уже максимум активных броней: {count}.",
+  "book.errorAlreadyRequested":
+    "Вы уже оставили заявку на этот велосипед на эти даты.",
+  "book.errorWriteAccess":
+    "Разрешите боту писать вам: иначе мы не сможем сообщить ответ.",
+  "book.errorGeneric": "Не удалось отправить заявку. Попробуйте ещё раз.",
+  "duration.hour": {
+    one: "{count} час",
+    few: "{count} часа",
+    many: "{count} часов",
+    other: "{count} часа",
+  },
+  "duration.day": {
+    one: "{count} день",
+    few: "{count} дня",
+    many: "{count} дней",
+    other: "{count} дня",
+  },
+  "duration.week": {
+    one: "{count} неделя",
+    few: "{count} недели",
+    many: "{count} недель",
+    other: "{count} недели",
+  },
+  "duration.month": {
+    one: "{count} месяц",
+    few: "{count} месяца",
+    many: "{count} месяцев",
+    other: "{count} месяца",
+  },
   "booking.pendingNote":
     "Админ ещё не подтвердил заявку. Мы напишем вам в Telegram.",
   "booking.cancel": "Отменить заявку",
@@ -174,6 +210,15 @@ export const ru = {
   "adminPlans.description":
     "Общие для всех велосипедов. Новая цена не меняет уже созданные брони.",
   "adminPlans.add": "Добавить тариф",
+
+  "notify.newBooking": "🆕 Новая заявка от {customer}",
+  "notify.comment": "Комментарий: {comment}",
+  "notify.open": "Открыть",
+  "notify.confirmed": "✅ Ваша заявка подтверждена",
+  "notify.rejected": "Вашу заявку отклонили",
+  "notify.datesTaken": "Велосипед на эти даты уже заняли, заявка отклонена",
+  "notify.cancelledByAdmin": "Вашу бронь отменил администратор",
+  "notify.priceChanged": "Цена вашей брони изменилась",
 
   "bot.welcome": "Привет! Это WroRent — прокат велосипедов во Вроцлаве 🚲",
   "bot.openApp": "Открыть приложение",

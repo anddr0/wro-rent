@@ -3,11 +3,15 @@
 import { Check } from "lucide-react";
 import { useParams } from "next/navigation";
 import { ButtonLink } from "@/components/button";
+import { ErrorState } from "@/components/error-state";
 import { NotFoundText } from "@/components/not-found-text";
 import { DetailRow, Row, Section } from "@/components/section";
-import { findDemoBooking } from "@/lib/demo-data";
+import { Skeleton } from "@/components/skeleton";
+import type { BookingResponse } from "@/lib/bookings";
 import type { MessageKey } from "@/lib/i18n/messages/ru";
-import { useT } from "@/lib/i18n/use-t";
+import { useLocale, useT } from "@/lib/i18n/use-t";
+import { formatPeriod } from "@/lib/rental-time";
+import { isNotFound, useApi } from "@/lib/use-api";
 
 const NEXT_STEPS: { title: MessageKey; isDone: boolean }[] = [
   { title: "sent.stepSent", isDone: true },
@@ -17,13 +21,23 @@ const NEXT_STEPS: { title: MessageKey; isDone: boolean }[] = [
 
 export default function BookingSentPage() {
   const t = useT();
+  const locale = useLocale();
   const { id } = useParams<{ id: string }>();
-  // TODO(slice 2.3): the booking from the API.
-  const booking = findDemoBooking(id);
+  const { data, error, mutate } = useApi<BookingResponse>(
+    `/api/bookings/${id}`,
+  );
 
-  if (!booking) {
+  if (isNotFound(error)) {
     return <NotFoundText>{t("common.bookingNotFound")}</NotFoundText>;
   }
+  if (error && !data) {
+    return <ErrorState onRetry={() => mutate()} />;
+  }
+  if (!data) {
+    return <Skeleton className="h-96 rounded-xl" />;
+  }
+
+  const { booking } = data;
 
   return (
     <>
@@ -48,11 +62,13 @@ export default function BookingSentPage() {
       </Section>
 
       <Section title={t("sent.yourRequest")}>
-        <DetailRow label={t("common.bike")} value={booking.bikeName} />
-        <DetailRow label={t("common.plan")} value={booking.planName} />
+        <DetailRow label={t("common.bike")} value={booking.bike.name} />
+        {booking.planName && (
+          <DetailRow label={t("common.plan")} value={booking.planName} />
+        )}
         <DetailRow
           label={t("common.dates")}
-          value={`${booking.startsAt} → ${booking.endsAt}`}
+          value={formatPeriod(booking.startsAt, booking.endsAt, locale)}
         />
         <DetailRow
           label={t("common.price")}

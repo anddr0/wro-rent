@@ -16,7 +16,7 @@ const SIZE_CLASSES: Record<Size, string> = {
 };
 
 function buttonClasses(variant: Variant, size: Size, className = "") {
-  return `inline-flex shrink-0 items-center justify-center gap-2 font-semibold transition-opacity active:opacity-70 [&_svg]:size-[18px] ${VARIANT_CLASSES[variant]} ${SIZE_CLASSES[size]} ${className}`;
+  return `inline-flex shrink-0 items-center justify-center gap-2 font-semibold transition-opacity active:opacity-70 disabled:opacity-50 [&_svg]:size-[18px] ${VARIANT_CLASSES[variant]} ${SIZE_CLASSES[size]} ${className}`;
 }
 
 type ButtonProps = ComponentProps<"button"> & {
