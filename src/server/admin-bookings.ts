@@ -1,4 +1,5 @@
 import "server-only";
+import { after } from "next/server";
 import type {
   AdminBooking,
   AdminSummaryResponse,
@@ -175,7 +176,10 @@ export async function performBookingAction(
 
   const booking = toAdminBooking(row);
   if (notice !== null) {
-    await notifyCustomer(row.users, notice, booking);
+    const customerNotice = notice;
+    // The message is sent after the admin already has the answer,
+    // so the button doesn't wait for Telegram.
+    after(() => notifyCustomer(row.users, customerNotice, booking));
   }
   return booking;
 }
@@ -253,8 +257,10 @@ async function confirmBooking(
 
   const row = await getAdminBookingRow(supabase, bookingId);
   const booking = toAdminBooking(row);
-  await notifyCustomer(row.users, "confirmed", booking);
-  await notifyAboutTakenDates(supabase, rejectedIds);
+  after(async () => {
+    await notifyCustomer(row.users, "confirmed", booking);
+    await notifyAboutTakenDates(supabase, rejectedIds);
+  });
   return booking;
 }
 
@@ -325,7 +331,7 @@ export async function updateBookingDetails(
 
   const booking = toAdminBooking(data);
   if (data.price !== current.price) {
-    await notifyCustomer(data.users, "priceChanged", booking);
+    after(() => notifyCustomer(data.users, "priceChanged", booking));
   }
   return booking;
 }

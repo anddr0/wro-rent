@@ -1,3 +1,4 @@
+import { after } from "next/server";
 import { BOOKING_RULES } from "@/lib/booking-rules";
 import type { BookingResponse, BookingsResponse } from "@/lib/bookings";
 import { requireUser } from "@/server/auth";
@@ -42,7 +43,9 @@ export const POST = withErrorHandling(async (req) => {
     newBooking,
     new Date(),
   );
-  await notifyAdminsAboutNewBooking(supabase, booking, user);
+  // Admins get the message after the customer already has the answer,
+  // so "Send" doesn't wait for Telegram.
+  after(() => notifyAdminsAboutNewBooking(supabase, booking, user));
 
   const response: BookingResponse = { booking };
   return Response.json(response, { status: 201 });

@@ -2,7 +2,7 @@
 
 import { Check } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { MonthCalendar } from "@/components/booking/month-calendar";
 import { BottomBar } from "@/components/bottom-bar";
 import { Button } from "@/components/button";
@@ -65,7 +65,7 @@ export function BookingForm({
 
   // The moment the form was opened. Start times are counted from it; the
   // server checks them again against its own clock.
-  const [now] = useState(() => new Date());
+  const [now, setNow] = useState(() => new Date());
   const [chosenPlanId, setChosenPlanId] = useState<string | null>(null);
   const [chosenDay, setChosenDay] = useState<CalendarDay | null>(null);
   // The picked start time as an ISO string.
@@ -79,11 +79,26 @@ export function BookingForm({
   const duration = { count: plan.duration_count, unit: plan.duration_unit };
 
   // The calendar offers only the days that still have a free start time.
-  const bookableDays = listBookableDays(now);
-  const freeDays = bookableDays.filter((day) => {
-    const slots = listStartSlots(day, duration, availability, now);
-    return slots.some((slot) => !slot.isBusy);
-  });
+  // Finding them means checking every start time of every day of the month
+  // ahead: too slow to repeat on each typed letter of the comment. useMemo
+  // repeats it only when the plan, the busy times or "now" change.
+  const bookableDays = useMemo(() => listBookableDays(now), [now]);
+  const freeDays = useMemo(() => {
+    const planDuration = {
+      count: plan.duration_count,
+      unit: plan.duration_unit,
+    };
+    return bookableDays.filter((day) => {
+      const slots = listStartSlots(day, planDuration, availability, now);
+      return slots.some((slot) => !slot.isBusy);
+    });
+  }, [
+    bookableDays,
+    plan.duration_count,
+    plan.duration_unit,
+    availability,
+    now,
+  ]);
 
   // The picked day, if it is still free with this plan; otherwise the first free one.
   let day: CalendarDay | null = freeDays[0] ?? null;
@@ -155,6 +170,9 @@ export function BookingForm({
       }
       setErrorKey(messageKey);
       if (code === "dates_taken" || code === "start_not_allowed") {
+        // The form may have been open for a long time: count the start
+        // times from the current moment again and reload the busy ones.
+        setNow(new Date());
         onAvailabilityOutdated();
       }
     } finally {

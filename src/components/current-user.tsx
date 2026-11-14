@@ -43,6 +43,15 @@ export function CurrentUserProvider({ children }: { children: ReactNode }) {
     document.documentElement.lang = locale;
   }, [locale]);
 
+  // Once, when the mini app opens: tell Telegram the page is ready to be
+  // shown and ask for the full height of the screen.
+  useEffect(() => {
+    if (webApp) {
+      webApp.ready();
+      webApp.expand();
+    }
+  }, [webApp]);
+
   useEffect(() => {
     if (!webApp || !webApp.initData) {
       return;

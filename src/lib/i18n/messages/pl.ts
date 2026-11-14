@@ -26,6 +26,8 @@ export const pl: Record<MessageKey, Message> = {
   "common.retry": "Spróbuj ponownie",
   "common.saveFailed": "Nie udało się zapisać. Spróbuj ponownie.",
 
+  "common.pageCrashed": "Coś poszło nie tak",
+  "common.pageNotFound": "Nie ma takiej strony",
   "status.pending": "Oczekuje",
   "status.confirmed": "Potwierdzona",
   "status.active": "Rower u klienta",

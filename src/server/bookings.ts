@@ -129,7 +129,13 @@ export async function createBooking(
   newBooking: NewBooking,
   now: Date,
 ): Promise<CustomerBooking> {
-  const settings = await getRentalSettings(supabase);
+  // Three independent lookups, so they go to the database together.
+  const [settings, bike, plan] = await Promise.all([
+    getRentalSettings(supabase),
+    findVisibleBike(supabase, newBooking.bikeId),
+    findActivePlan(supabase, newBooking.planId),
+  ]);
+
   const hours = effectiveOpeningHours(settings);
   if (!isStartAllowed(newBooking.startsAt, now, hours)) {
     throw new HttpError(
@@ -139,12 +145,9 @@ export async function createBooking(
     );
   }
 
-  const bike = await findVisibleBike(supabase, newBooking.bikeId);
   if (!bike) {
     throw new HttpError(404, "Bike not found");
   }
-
-  const plan = await findActivePlan(supabase, newBooking.planId);
   if (!plan) {
     throw new HttpError(409, "This plan is not offered", "plan_unavailable");
   }
@@ -155,8 +158,10 @@ export async function createBooking(
     unit: plan.duration_unit,
   });
 
-  await checkCustomerCanBook(supabase, userId, bike.id, startsAt, endsAt);
-  await checkDatesAreFree(supabase, bike.id, startsAt, endsAt);
+  await Promise.all([
+    checkCustomerCanBook(supabase, userId, bike.id, startsAt, endsAt),
+    checkDatesAreFree(supabase, bike.id, startsAt, endsAt),
+  ]);
 
   const { data, error } = await supabase
     .from("bookings")

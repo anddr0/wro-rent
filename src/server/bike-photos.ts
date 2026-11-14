@@ -60,6 +60,9 @@ export async function addBikePhoto(
 
   const { error: uploadError } = await bucket.upload(path, file, {
     contentType: file.type,
+    // A year, in seconds. The name is random and the file never changes,
+    // so phones can keep it and not download the photo again.
+    cacheControl: "31536000",
   });
   if (uploadError) {
     throw uploadError;

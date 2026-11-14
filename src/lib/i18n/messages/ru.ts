@@ -39,6 +39,8 @@ export const ru = {
   "common.retry": "Повторить",
   "common.saveFailed": "Не удалось сохранить. Попробуйте ещё раз.",
 
+  "common.pageCrashed": "Что-то пошло не так",
+  "common.pageNotFound": "Такой страницы нет",
   "status.pending": "Ожидает",
   "status.confirmed": "Подтверждена",
   "status.active": "Велосипед у клиента",
