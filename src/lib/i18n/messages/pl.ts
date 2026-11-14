@@ -31,6 +31,7 @@ export const pl: Record<MessageKey, Message> = {
   "status.active": "Rower u klienta",
   "status.completed": "Zakończona",
   "status.cancelled": "Anulowana",
+  "status.rejected": "Odrzucona",
 
   "home.greeting": "Cześć, {name}!",
   "home.phrase1": "Potrzebujesz roweru?",

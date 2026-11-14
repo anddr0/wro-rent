@@ -91,14 +91,14 @@ isOneToOne: false
                   ]
                 },"rental_plans": {
                   Row: {
-                    "created_at": string,"duration": string,"id": string,"is_active": boolean,"name": string,"price": number,"sort_order": number,"updated_at": string
+                    "created_at": string,"duration_count": number,"duration_unit": Database["public"]['Enums']["duration_unit"],"id": string,"is_active": boolean,"name": string,"price": number,"sort_order": number,"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "created_at"?: string,"duration": string,"id"?: string,"is_active"?: boolean,"name": string,"price": number,"sort_order"?: number,"updated_at"?: string
+                    "created_at"?: string,"duration_count": number,"duration_unit": Database["public"]['Enums']["duration_unit"],"id"?: string,"is_active"?: boolean,"name": string,"price": number,"sort_order"?: number,"updated_at"?: string
                   }
                   Update: {
-                    "created_at"?: string,"duration"?: string,"id"?: string,"is_active"?: boolean,"name"?: string,"price"?: number,"sort_order"?: number,"updated_at"?: string
+                    "created_at"?: string,"duration_count"?: number,"duration_unit"?: Database["public"]['Enums']["duration_unit"],"id"?: string,"is_active"?: boolean,"name"?: string,"price"?: number,"sort_order"?: number,"updated_at"?: string
                   }
                   Relationships: [
                     
@@ -126,7 +126,7 @@ isOneToOne: false
             [_ in never]: never
           }
           Enums: {
-            "booking_status": "pending"|"confirmed"|"active"|"completed"|"cancelled","payment_method": "cash"|"card"|"blik","user_role": "customer"|"admin"
+            "booking_status": "pending"|"confirmed"|"active"|"completed"|"cancelled"|"rejected","duration_unit": "hour"|"day"|"week"|"month","payment_method": "cash"|"card"|"blik","user_role": "customer"|"admin"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -246,7 +246,7 @@ export const Constants = {
           }
         },"public": {
           Enums: {
-            "booking_status": ["pending", "confirmed", "active", "completed", "cancelled"],"payment_method": ["cash", "card", "blik"],"user_role": ["customer", "admin"]
+            "booking_status": ["pending", "confirmed", "active", "completed", "cancelled", "rejected"],"duration_unit": ["hour", "day", "week", "month"],"payment_method": ["cash", "card", "blik"],"user_role": ["customer", "admin"]
           }
         }
 } as const

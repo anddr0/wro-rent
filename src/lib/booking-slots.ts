@@ -1,0 +1,150 @@
+// Which start times a customer can pick (К-3). Used by the calendar in the
+// mini app and by the server when it checks a new request.
+import { BOOKING_RULES } from "@/lib/booking-rules";
+import {
+  addDuration,
+  fromWallTime,
+  isSameDay,
+  toCalendarDay,
+  toWallTime,
+} from "@/lib/rental-time";
+import type { CalendarDay, PlanDuration } from "@/lib/rental-time";
+
+const MINUTE = 60 * 1000;
+const HOUR = 60 * MINUTE;
+const DAY = 24 * HOUR;
+
+// A stretch of time, as ISO strings: the way it comes from the API.
+export type Period = {
+  startsAt: string;
+  endsAt: string;
+};
+
+export type Availability = {
+  // Confirmed and active bookings: a rental can't overlap them.
+  busy: Period[];
+  // Other customers' requests waiting for an answer: only a warning.
+  pending: Period[];
+};
+
+export type StartSlot = {
+  startsAt: Date;
+  endsAt: Date;
+  // The rental would overlap a confirmed or active booking.
+  isBusy: boolean;
+  // Someone else already asked for this time.
+  hasPendingRequests: boolean;
+};
+
+// The earliest and the latest moment a rental can start, counted from now.
+export function bookingWindow(now: Date): { earliest: Date; latest: Date } {
+  return {
+    earliest: new Date(
+      now.getTime() + BOOKING_RULES.minHoursBeforeStart * HOUR,
+    ),
+    latest: new Date(now.getTime() + BOOKING_RULES.maxDaysAhead * DAY),
+  };
+}
+
+// Every day the calendar can offer: from today to the last day of the window.
+export function listBookableDays(now: Date): CalendarDay[] {
+  const { earliest, latest } = bookingWindow(now);
+  const lastDay = toCalendarDay(latest);
+
+  const days: CalendarDay[] = [];
+  let current = toCalendarDay(earliest);
+  // The window is about a month, the limit only guards against an endless loop.
+  while (days.length < 400) {
+    days.push(current);
+    if (isSameDay(current, lastDay)) {
+      break;
+    }
+    // Noon, so a clock change can't move the next day's date.
+    const nextNoon = fromWallTime({
+      ...current,
+      day: current.day + 1,
+      hour: 12,
+      minute: 0,
+    });
+    current = toCalendarDay(nextNoon);
+  }
+  return days;
+}
+
+// Is this a start time we offer: on the time step, within the opening hours
+// and inside the booking window?
+export function isStartAllowed(startsAt: Date, now: Date): boolean {
+  const wallTime = toWallTime(startsAt);
+  const hasSecondsOrMs = startsAt.getTime() % MINUTE !== 0;
+  if (hasSecondsOrMs) {
+    return false;
+  }
+  if (wallTime.minute % BOOKING_RULES.timeStepMinutes !== 0) {
+    return false;
+  }
+
+  const minutesOfDay = wallTime.hour * 60 + wallTime.minute;
+  if (minutesOfDay < BOOKING_RULES.firstStartHour * 60) {
+    return false;
+  }
+  if (minutesOfDay > BOOKING_RULES.lastStartHour * 60) {
+    return false;
+  }
+
+  const { earliest, latest } = bookingWindow(now);
+  return startsAt >= earliest && startsAt <= latest;
+}
+
+// The start times of one day for a plan of this duration, in order.
+// Times outside the booking window are left out; busy ones are marked.
+export function listStartSlots(
+  day: CalendarDay,
+  duration: PlanDuration,
+  availability: Availability,
+  now: Date,
+): StartSlot[] {
+  const firstMinute = BOOKING_RULES.firstStartHour * 60;
+  const lastMinute = BOOKING_RULES.lastStartHour * 60;
+
+  const slots: StartSlot[] = [];
+  for (
+    let minutesOfDay = firstMinute;
+    minutesOfDay <= lastMinute;
+    minutesOfDay += BOOKING_RULES.timeStepMinutes
+  ) {
+    const startsAt = fromWallTime({
+      ...day,
+      hour: Math.floor(minutesOfDay / 60),
+      minute: minutesOfDay % 60,
+    });
+    if (!isStartAllowed(startsAt, now)) {
+      continue;
+    }
+
+    const endsAt = addDuration(startsAt, duration);
+    slots.push({
+      startsAt,
+      endsAt,
+      isBusy: overlapsAny(startsAt, endsAt, availability.busy),
+      hasPendingRequests: overlapsAny(startsAt, endsAt, availability.pending),
+    });
+  }
+  return slots;
+}
+
+// Two periods overlap when each starts before the other ends. Touching ones
+// don't: a rental may start at the minute the previous one ends.
+export function overlapsAny(
+  startsAt: Date,
+  endsAt: Date,
+  periods: Period[],
+): boolean {
+  for (const period of periods) {
+    const periodStart = new Date(period.startsAt);
+    const periodEnd = new Date(period.endsAt);
+    if (startsAt < periodEnd && periodStart < endsAt) {
+      return true;
+    }
+  }
+  return false;
+}

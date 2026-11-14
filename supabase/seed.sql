@@ -1,9 +1,9 @@
 -- Local seed data, applied by `npm run db:reset`
 
-insert into public.rental_plans (id, name, duration, price, sort_order) values
-  ('00000000-0000-0000-0000-000000000101', '1 день', '1 day', 50, 1),
-  ('00000000-0000-0000-0000-000000000102', '3 дня', '3 days', 120, 2),
-  ('00000000-0000-0000-0000-000000000103', 'Неделя', '7 days', 250, 3);
+insert into public.rental_plans (id, name, duration_count, duration_unit, price, sort_order) values
+  ('00000000-0000-0000-0000-000000000101', '1 день', 1, 'day', 50, 1),
+  ('00000000-0000-0000-0000-000000000102', '3 дня', 3, 'day', 120, 2),
+  ('00000000-0000-0000-0000-000000000103', 'Неделя', 1, 'week', 250, 3);
 
 insert into public.bikes (id, name, description) values
   ('00000000-0000-0000-0000-000000000201', 'Городской #1', 'Прогулочный, корзина спереди'),

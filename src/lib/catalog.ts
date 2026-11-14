@@ -9,7 +9,10 @@ export type CatalogBike = BikeFields & { coverUrl: string | null };
 // A bike on its own page, with all its photos in order.
 export type BikeDetails = BikeFields & { photoUrls: string[] };
 
-export type CatalogPlan = Pick<Tables<"rental_plans">, "id" | "name" | "price">;
+export type CatalogPlan = Pick<
+  Tables<"rental_plans">,
+  "id" | "name" | "price" | "duration_count" | "duration_unit"
+>;
 
 // GET /api/bikes
 export type BikesResponse = {

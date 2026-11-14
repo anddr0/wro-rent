@@ -44,6 +44,7 @@ export const ru = {
   "status.active": "Велосипед у клиента",
   "status.completed": "Завершена",
   "status.cancelled": "Отменена",
+  "status.rejected": "Отклонена",
 
   "home.greeting": "Привет, {name}!",
   "home.phrase1": "Нужен велосипед?",

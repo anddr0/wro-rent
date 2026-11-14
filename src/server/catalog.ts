@@ -70,7 +70,7 @@ export async function listActivePlans(
 ): Promise<CatalogPlan[]> {
   const { data, error } = await supabase
     .from("rental_plans")
-    .select("id, name, price")
+    .select("id, name, price, duration_count, duration_unit")
     .eq("is_active", true)
     .order("sort_order");
 
@@ -80,7 +80,7 @@ export async function listActivePlans(
   return data;
 }
 
-export function cheapestPrice(plans: CatalogPlan[]): number | null {
+export function cheapestPrice(plans: { price: number }[]): number | null {
   if (plans.length === 0) {
     return null;
   }

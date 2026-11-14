@@ -12,6 +12,7 @@ const STATUS_LABELS: Record<BookingStatus, MessageKey> = {
   active: "status.active",
   completed: "status.completed",
   cancelled: "status.cancelled",
+  rejected: "status.rejected",
 };
 
 const STATUS_CLASSES: Record<BookingStatus, string> = {
@@ -20,6 +21,7 @@ const STATUS_CLASSES: Record<BookingStatus, string> = {
   active: "bg-sky-500/15 text-sky-700 dark:text-sky-400",
   completed: "bg-muted text-muted-foreground",
   cancelled: "bg-destructive/15 text-destructive",
+  rejected: "bg-destructive/15 text-destructive",
 };
 
 export function BookingStatusBadge({ status }: { status: BookingStatus }) {

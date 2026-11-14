@@ -4,11 +4,7 @@ import { cheapestPrice } from "./catalog";
 
 describe("cheapestPrice", () => {
   it("returns the lowest plan price", () => {
-    const plans = [
-      { id: "week", name: "Week", price: 250 },
-      { id: "day", name: "Day", price: 50 },
-      { id: "three-days", name: "3 days", price: 120 },
-    ];
+    const plans = [{ price: 250 }, { price: 50 }, { price: 120 }];
     assert.equal(cheapestPrice(plans), 50);
   });
 
