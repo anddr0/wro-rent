@@ -38,8 +38,8 @@ export const ru = {
   "common.contactAdmin": "Написать админу",
   "common.loadFailed": "Не удалось загрузить",
   "common.retry": "Повторить",
-
   "common.saveFailed": "Не удалось сохранить. Попробуйте ещё раз.",
+
   "status.pending": "Ожидает",
   "status.confirmed": "Подтверждена",
   "status.active": "Велосипед у клиента",
@@ -68,6 +68,7 @@ export const ru = {
   "bikes.empty": "Велосипедов пока нет",
   "bikes.emptyHint": "Загляните чуть позже.",
   "bikes.details": "Подробнее",
+
   "bike.prices": "Цены",
 
   "book.startDate": "Дата начала",
@@ -77,7 +78,6 @@ export const ru = {
   "book.commentPlaceholder": "Комментарий для админа (необязательно)",
   "book.submit": "Отправить заявку",
   "book.noPlans": "Сейчас бронирование недоступно",
-
   "book.noFreeDates":
     "Свободного времени пока нет. Попробуйте другой тариф или велосипед.",
   "book.busyTimeHint": "Зачёркнутое время занято",
@@ -91,6 +91,7 @@ export const ru = {
   "book.errorWriteAccess":
     "Разрешите боту писать вам: иначе мы не сможем сообщить ответ.",
   "book.errorGeneric": "Не удалось отправить заявку. Попробуйте ещё раз.",
+
   "duration.hour": {
     one: "{count} час",
     few: "{count} часа",
@@ -115,13 +116,14 @@ export const ru = {
     many: "{count} месяцев",
     other: "{count} месяца",
   },
+
   "booking.pendingNote":
     "Админ ещё не подтвердил заявку. Мы напишем вам в Telegram.",
   "booking.cancel": "Отменить заявку",
-
   "booking.cancelConfirm": "Отменить заявку?",
   "booking.cancelFailed": "Не удалось отменить. Попробуйте ещё раз.",
   "booking.statusChanged": "Статус брони уже изменился.",
+
   "sent.title": "Заявка отправлена",
   "sent.thanks": "Спасибо! Мы подтвердим заявку и напишем вам в Telegram.",
   "sent.whatNext": "Что дальше",
@@ -183,7 +185,6 @@ export const ru = {
   "adminBooking.handedOut": "Выдал велосипед",
   "adminBooking.cancel": "Отменить бронь",
   "adminBooking.returned": "Принял велосипед",
-
   "adminBooking.edit": "Цена, оплата, заметка",
   "adminBooking.pickedUpAt": "Выдан",
   "adminBooking.returnedAt": "Возвращён",
@@ -205,9 +206,11 @@ export const ru = {
   "adminBooking.errorStatusChanged":
     "Статус брони уже изменился — данные обновлены.",
   "adminBooking.errorGeneric": "Не получилось. Попробуйте ещё раз.",
+
   "payment.cash": "Наличные",
   "payment.blik": "BLIK",
   "payment.card": "Карта",
+
   "adminBikes.title": "Автопарк",
   "adminBikes.summary": "В парке: {total} · скрыто: {hidden}",
   "adminBikes.clientView": "Каталог глазами клиента",
@@ -218,18 +221,17 @@ export const ru = {
   "adminBikes.busyUntil": "У клиента до {date}",
   "adminBikes.free": "Свободен",
   "adminBikes.hidden": "Скрыт",
+  "adminBikes.emptyHint": "Добавьте первый велосипед.",
 
   "adminArchive.title": "Архив",
   "adminArchive.empty": "Архив пуст",
   "adminArchive.emptyHint":
     "Сюда попадают велосипеды, которые больше не сдаются. Их история броней сохраняется.",
-
   "adminArchive.openToRestore": "Откройте, чтобы вернуть",
-  "adminBikes.emptyHint": "Добавьте первый велосипед.",
+
   "adminBike.new": "Новый велосипед",
   "adminBike.create": "Добавить",
   "adminBike.toArchive": "В архив",
-
   "adminBike.archived": "В архиве",
   "adminBike.restore": "Вернуть из архива",
   "adminBike.delete": "Удалить велосипед",
@@ -239,6 +241,7 @@ export const ru = {
   "adminBike.hasBookingsHint":
     "У велосипеда есть брони, поэтому удалить его нельзя — только убрать в архив.",
   "adminBike.actionFailed": "Не получилось. Попробуйте ещё раз.",
+
   "bikeForm.photos": "Фото",
   "bikeForm.photosHint": "Первое фото — обложка в каталоге.",
   "bikeForm.name": "Название",
@@ -247,7 +250,6 @@ export const ru = {
   "bikeForm.descriptionPlaceholder": "Скорости, рост, что в комплекте",
   "bikeForm.visible": "Видно клиентам",
   "bikeForm.visibleHint": "Скрытый велосипед не показывается в каталоге",
-
   "bikeForm.nameRequired": "Введите название",
   "bikeForm.photosAfterCreate":
     "Фото добавите на следующем шаге, после создания.",
@@ -260,10 +262,31 @@ export const ru = {
   "bikeForm.tooManyPhotos": "У велосипеда может быть не больше {count} фото.",
   "bikeForm.badPhoto": "Этот файл не подходит. Нужно фото JPEG, PNG или WebP.",
   "bikeForm.photoFailed": "Не получилось. Попробуйте ещё раз.",
+
   "adminPlans.title": "Тарифы",
   "adminPlans.description":
     "Общие для всех велосипедов. Новая цена не меняет уже созданные брони.",
   "adminPlans.add": "Добавить тариф",
+  "adminPlans.new": "Новый тариф",
+  "adminPlans.create": "Добавить",
+  "adminPlans.hidden": "Скрыт",
+  "adminPlans.empty": "Тарифов пока нет",
+  "adminPlans.emptyHint": "Без тарифа клиенты не могут оставить заявку.",
+  "adminPlans.notFound": "Тариф не найден",
+
+  "planForm.name": "Название",
+  "planForm.namePlaceholder": "Например: 3 дня",
+  "planForm.duration": "Длительность",
+  "planForm.unitHour": "Часы",
+  "planForm.unitDay": "Дни",
+  "planForm.unitWeek": "Недели",
+  "planForm.unitMonth": "Месяцы",
+  "planForm.price": "Цена, zł",
+  "planForm.active": "Доступен клиентам",
+  "planForm.activeHint": "Скрытый тариф нельзя выбрать в новой заявке",
+  "planForm.nameRequired": "Введите название",
+  "planForm.durationInvalid": "Длительность — целое число от 1 до {count}",
+  "planForm.priceInvalid": "Введите цену числом, например 50 или 49,90",
 
   "notify.newBooking": "🆕 Новая заявка от {customer}",
   "notify.comment": "Комментарий: {comment}",

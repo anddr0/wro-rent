@@ -6,7 +6,7 @@ import { useState } from "react";
 
 type BikePhotoProps = {
   size: "small" | "medium" | "large";
-  // TODO(blocks 3–5): pass it on the screens that still use demo data.
+  // Null or missing: the bike has no photo.
   url?: string | null;
 };
 

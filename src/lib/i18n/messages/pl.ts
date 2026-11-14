@@ -25,8 +25,8 @@ export const pl: Record<MessageKey, Message> = {
   "common.contactAdmin": "Napisz do administratora",
   "common.loadFailed": "Nie udało się wczytać",
   "common.retry": "Spróbuj ponownie",
-
   "common.saveFailed": "Nie udało się zapisać. Spróbuj ponownie.",
+
   "status.pending": "Oczekuje",
   "status.confirmed": "Potwierdzona",
   "status.active": "Rower u klienta",
@@ -55,6 +55,7 @@ export const pl: Record<MessageKey, Message> = {
   "bikes.empty": "Na razie nie ma rowerów",
   "bikes.emptyHint": "Zajrzyj trochę później.",
   "bikes.details": "Szczegóły",
+
   "bike.prices": "Ceny",
 
   "book.startDate": "Data rozpoczęcia",
@@ -64,7 +65,6 @@ export const pl: Record<MessageKey, Message> = {
   "book.commentPlaceholder": "Komentarz dla administratora (opcjonalnie)",
   "book.submit": "Wyślij zgłoszenie",
   "book.noPlans": "Rezerwacja jest teraz niedostępna",
-
   "book.noFreeDates":
     "Na razie nie ma wolnych terminów. Spróbuj innej taryfy lub roweru.",
   "book.busyTimeHint": "Przekreślone godziny są zajęte",
@@ -80,6 +80,7 @@ export const pl: Record<MessageKey, Message> = {
   "book.errorWriteAccess":
     "Pozwól botowi pisać do Ciebie: inaczej nie przekażemy odpowiedzi.",
   "book.errorGeneric": "Nie udało się wysłać zgłoszenia. Spróbuj ponownie.",
+
   "duration.hour": {
     one: "{count} godzina",
     few: "{count} godziny",
@@ -104,13 +105,14 @@ export const pl: Record<MessageKey, Message> = {
     many: "{count} miesięcy",
     other: "{count} miesiąca",
   },
+
   "booking.pendingNote":
     "Administrator jeszcze nie potwierdził zgłoszenia. Napiszemy do Ciebie w Telegramie.",
   "booking.cancel": "Anuluj zgłoszenie",
-
   "booking.cancelConfirm": "Anulować zgłoszenie?",
   "booking.cancelFailed": "Nie udało się anulować. Spróbuj ponownie.",
   "booking.statusChanged": "Status rezerwacji już się zmienił.",
+
   "sent.title": "Zgłoszenie wysłane",
   "sent.thanks":
     "Dziękujemy! Potwierdzimy zgłoszenie i napiszemy do Ciebie w Telegramie.",
@@ -173,7 +175,6 @@ export const pl: Record<MessageKey, Message> = {
   "adminBooking.handedOut": "Rower wydany",
   "adminBooking.cancel": "Anuluj rezerwację",
   "adminBooking.returned": "Rower zwrócony",
-
   "adminBooking.edit": "Cena, płatność, notatka",
   "adminBooking.pickedUpAt": "Wydany",
   "adminBooking.returnedAt": "Zwrócony",
@@ -198,9 +199,11 @@ export const pl: Record<MessageKey, Message> = {
   "adminBooking.errorStatusChanged":
     "Status rezerwacji już się zmienił — dane odświeżone.",
   "adminBooking.errorGeneric": "Nie udało się. Spróbuj ponownie.",
+
   "payment.cash": "Gotówka",
   "payment.blik": "BLIK",
   "payment.card": "Karta",
+
   "adminBikes.title": "Flota",
   "adminBikes.summary": "We flocie: {total} · ukrytych: {hidden}",
   "adminBikes.clientView": "Katalog oczami klienta",
@@ -211,18 +214,17 @@ export const pl: Record<MessageKey, Message> = {
   "adminBikes.busyUntil": "U klienta do {date}",
   "adminBikes.free": "Wolny",
   "adminBikes.hidden": "Ukryty",
+  "adminBikes.emptyHint": "Dodaj pierwszy rower.",
 
   "adminArchive.title": "Archiwum",
   "adminArchive.empty": "Archiwum jest puste",
   "adminArchive.emptyHint":
     "Trafiają tu rowery, które nie są już wynajmowane. Ich historia rezerwacji zostaje.",
-
   "adminArchive.openToRestore": "Otwórz, aby przywrócić",
-  "adminBikes.emptyHint": "Dodaj pierwszy rower.",
+
   "adminBike.new": "Nowy rower",
   "adminBike.create": "Dodaj",
   "adminBike.toArchive": "Do archiwum",
-
   "adminBike.archived": "W archiwum",
   "adminBike.restore": "Przywróć z archiwum",
   "adminBike.delete": "Usuń rower",
@@ -232,6 +234,7 @@ export const pl: Record<MessageKey, Message> = {
   "adminBike.hasBookingsHint":
     "Rower ma rezerwacje, więc nie można go usunąć — tylko przenieść do archiwum.",
   "adminBike.actionFailed": "Nie udało się. Spróbuj ponownie.",
+
   "bikeForm.photos": "Zdjęcia",
   "bikeForm.photosHint": "Pierwsze zdjęcie to okładka w katalogu.",
   "bikeForm.name": "Nazwa",
@@ -240,7 +243,6 @@ export const pl: Record<MessageKey, Message> = {
   "bikeForm.descriptionPlaceholder": "Przerzutki, wzrost, co w zestawie",
   "bikeForm.visible": "Widoczny dla klientów",
   "bikeForm.visibleHint": "Ukryty rower nie jest pokazywany w katalogu",
-
   "bikeForm.nameRequired": "Podaj nazwę",
   "bikeForm.photosAfterCreate":
     "Zdjęcia dodasz w następnym kroku, po utworzeniu.",
@@ -254,10 +256,32 @@ export const pl: Record<MessageKey, Message> = {
   "bikeForm.badPhoto":
     "Ten plik nie pasuje. Potrzebne zdjęcie JPEG, PNG lub WebP.",
   "bikeForm.photoFailed": "Nie udało się. Spróbuj ponownie.",
+
   "adminPlans.title": "Taryfy",
   "adminPlans.description":
     "Wspólne dla wszystkich rowerów. Nowa cena nie zmienia już utworzonych rezerwacji.",
   "adminPlans.add": "Dodaj taryfę",
+  "adminPlans.new": "Nowa taryfa",
+  "adminPlans.create": "Dodaj",
+  "adminPlans.hidden": "Ukryta",
+  "adminPlans.empty": "Na razie nie ma taryf",
+  "adminPlans.emptyHint": "Bez taryfy klienci nie mogą wysłać zgłoszenia.",
+  "adminPlans.notFound": "Nie znaleziono taryfy",
+
+  "planForm.name": "Nazwa",
+  "planForm.namePlaceholder": "Na przykład: 3 dni",
+  "planForm.duration": "Czas trwania",
+  "planForm.unitHour": "Godziny",
+  "planForm.unitDay": "Dni",
+  "planForm.unitWeek": "Tygodnie",
+  "planForm.unitMonth": "Miesiące",
+  "planForm.price": "Cena, zł",
+  "planForm.active": "Dostępna dla klientów",
+  "planForm.activeHint": "Ukrytej taryfy nie można wybrać w nowym zgłoszeniu",
+  "planForm.nameRequired": "Podaj nazwę",
+  "planForm.durationInvalid":
+    "Czas trwania to liczba całkowita od 1 do {count}",
+  "planForm.priceInvalid": "Podaj cenę liczbą, np. 50 lub 49,90",
 
   "notify.newBooking": "🆕 Nowe zgłoszenie od {customer}",
   "notify.comment": "Komentarz: {comment}",
