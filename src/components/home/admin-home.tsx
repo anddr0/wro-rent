@@ -1,11 +1,15 @@
 "use client";
 
 import { Bike, CalendarDays, Tags } from "lucide-react";
+import { ErrorState } from "@/components/error-state";
 import { Greeting } from "@/components/home/greeting";
 import { Row, Section, SectionTitle } from "@/components/section";
-import { DEMO_BOOKINGS } from "@/lib/demo-data";
+import { Skeleton } from "@/components/skeleton";
+import type { AdminSummaryResponse } from "@/lib/admin-bookings";
 import type { MessageKey } from "@/lib/i18n/messages/ru";
-import { useT } from "@/lib/i18n/use-t";
+import { useLocale, useT } from "@/lib/i18n/use-t";
+import { formatDateTime } from "@/lib/rental-time";
+import { useApi } from "@/lib/use-api";
 
 const ADMIN_SECTIONS: {
   href: string;
@@ -36,48 +40,12 @@ const ADMIN_SECTIONS: {
 // А-0: what needs attention today, right on opening the app.
 export function AdminHome() {
   const t = useT();
-  // TODO(slice 4.6): the summary from the API.
-  const pendingBookings = DEMO_BOOKINGS.filter(
-    (booking) => booking.status === "pending",
-  );
-  const toHandOut = 2;
-  const toTakeBack = 1;
 
   return (
     <>
       <Greeting subtitle={t("adminHome.role")} />
 
-      <section className="flex flex-col gap-2">
-        <SectionTitle>{t("adminHome.today")}</SectionTitle>
-        <div className="grid grid-cols-3 gap-2">
-          <SummaryTile
-            count={pendingBookings.length}
-            label={t("adminHome.newRequests", {
-              count: pendingBookings.length,
-            })}
-          />
-          <SummaryTile count={toHandOut} label={t("adminHome.toHandOut")} />
-          <SummaryTile count={toTakeBack} label={t("adminHome.toTakeBack")} />
-        </div>
-      </section>
-
-      {pendingBookings.length > 0 && (
-        <Section title={t("adminHome.awaitingReply")}>
-          {pendingBookings.map((booking) => (
-            <Row
-              key={booking.id}
-              href={`/admin/bookings/${booking.id}`}
-              title={booking.bikeName}
-              subtitle={`${booking.customerName} · ${booking.startsAt}`}
-              end={
-                <span className="font-semibold">
-                  {t("common.priceValue", { price: booking.price })}
-                </span>
-              }
-            />
-          ))}
-        </Section>
-      )}
+      <TodaySummary />
 
       <Section title={t("adminHome.manage")}>
         {ADMIN_SECTIONS.map((section) => (
@@ -90,6 +58,63 @@ export function AdminHome() {
           />
         ))}
       </Section>
+    </>
+  );
+}
+
+// "Today" in numbers and the requests that wait for an answer.
+function TodaySummary() {
+  const t = useT();
+  const locale = useLocale();
+  const { data, error, mutate } =
+    useApi<AdminSummaryResponse>("/api/admin/summary");
+
+  if (error && !data) {
+    return <ErrorState onRetry={() => mutate()} />;
+  }
+  if (!data) {
+    return <Skeleton className="h-28 rounded-xl" />;
+  }
+
+  const pendingCount = data.pendingBookings.length;
+
+  return (
+    <>
+      <section className="flex flex-col gap-2">
+        <SectionTitle>{t("adminHome.today")}</SectionTitle>
+        <div className="grid grid-cols-3 gap-2">
+          <SummaryTile
+            count={pendingCount}
+            label={t("adminHome.newRequests", { count: pendingCount })}
+          />
+          <SummaryTile
+            count={data.toHandOutCount}
+            label={t("adminHome.toHandOut")}
+          />
+          <SummaryTile
+            count={data.toTakeBackCount}
+            label={t("adminHome.toTakeBack")}
+          />
+        </div>
+      </section>
+
+      {pendingCount > 0 && (
+        <Section title={t("adminHome.awaitingReply")}>
+          {data.pendingBookings.map((booking) => (
+            <Row
+              key={booking.id}
+              href={`/admin/bookings/${booking.id}`}
+              title={booking.bike.name}
+              subtitle={`${booking.customer.fullName} · ${formatDateTime(booking.startsAt, locale)}`}
+              end={
+                <span className="font-semibold">
+                  {t("common.priceValue", { price: booking.price })}
+                </span>
+              }
+            />
+          ))}
+        </Section>
+      )}
     </>
   );
 }

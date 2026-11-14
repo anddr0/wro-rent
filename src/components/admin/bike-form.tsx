@@ -53,7 +53,8 @@ export function BikeForm({ bike }: BikeFormProps) {
       <Switch
         label={t("bikeForm.visible")}
         description={t("bikeForm.visibleHint")}
-        defaultChecked={bike?.isVisible ?? true}
+        isOn={bike?.isVisible ?? true}
+        onChange={() => {}}
       />
     </>
   );

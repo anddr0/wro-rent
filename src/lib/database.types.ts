@@ -123,7 +123,9 @@ isOneToOne: false
             [_ in never]: never
           }
           Functions: {
-            [_ in never]: never
+            "confirm_booking":
+{ Args: { "p_booking_id": string }; Returns: string[]
+                           }
           }
           Enums: {
             "booking_status": "pending"|"confirmed"|"active"|"completed"|"cancelled"|"rejected","duration_unit": "hour"|"day"|"week"|"month","payment_method": "cash"|"card"|"blik","user_role": "customer"|"admin"

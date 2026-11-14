@@ -137,6 +137,23 @@ export function toCalendarDay(date: Date): CalendarDay {
   return { year: wallTime.year, month: wallTime.month, day: wallTime.day };
 }
 
+// Reads "2026-12-07", the value of <input type="date">. Null if it isn't a date.
+export function parseCalendarDay(text: string): CalendarDay | null {
+  // Four digits, two digits, two digits, with dashes between.
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(text);
+  if (!match) {
+    return null;
+  }
+
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  if (month < 1 || month > 12 || day < 1 || day > daysInMonth(year, month)) {
+    return null;
+  }
+  return { year, month, day };
+}
+
 export function isSameDay(a: CalendarDay, b: CalendarDay): boolean {
   return a.year === b.year && a.month === b.month && a.day === b.day;
 }

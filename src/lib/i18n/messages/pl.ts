@@ -26,6 +26,7 @@ export const pl: Record<MessageKey, Message> = {
   "common.loadFailed": "Nie udało się wczytać",
   "common.retry": "Spróbuj ponownie",
 
+  "common.saveFailed": "Nie udało się zapisać. Spróbuj ponownie.",
   "status.pending": "Oczekuje",
   "status.confirmed": "Potwierdzona",
   "status.active": "Rower u klienta",
@@ -156,6 +157,9 @@ export const pl: Record<MessageKey, Message> = {
   "adminBookings.filterActive": "U klientów",
   "adminBookings.filterAll": "Wszystkie",
   "adminBookings.anyDates": "Dowolne daty",
+  "adminBookings.byDates": "Według dat",
+  "adminBookings.from": "Od",
+  "adminBookings.to": "Do",
   "adminBookings.empty": "Tu jest pusto",
 
   "adminBooking.customer": "Klient",
@@ -170,6 +174,33 @@ export const pl: Record<MessageKey, Message> = {
   "adminBooking.cancel": "Anuluj rezerwację",
   "adminBooking.returned": "Rower zwrócony",
 
+  "adminBooking.edit": "Cena, płatność, notatka",
+  "adminBooking.pickedUpAt": "Wydany",
+  "adminBooking.returnedAt": "Zwrócony",
+  "adminBooking.paid": "Opłacone",
+  "adminBooking.paidAt": "opłacone {date}",
+  "adminBooking.paymentMethod": "Sposób płatności",
+  "adminBooking.priceField": "Cena, zł",
+  "adminBooking.depositField": "Kaucja, zł",
+  "adminBooking.depositPlaceholder": "Bez kaucji",
+  "adminBooking.notePlaceholder":
+    "Tylko dla administratorów, klient jej nie widzi",
+  "adminBooking.priceChangeHint": "Klient dostanie wiadomość o nowej cenie",
+  "adminBooking.priceInvalid": "Podaj cenę liczbą, np. 70 lub 70,50",
+  "adminBooking.depositInvalid": "Podaj kaucję liczbą albo zostaw pole puste",
+  "adminBooking.noUsername": "brak nazwy użytkownika w Telegramie",
+  "adminBooking.confirmReject":
+    "Odrzucić zgłoszenie? Klient dostanie wiadomość.",
+  "adminBooking.confirmCancel":
+    "Anulować rezerwację? Klient dostanie wiadomość.",
+  "adminBooking.errorDatesTaken":
+    "W tym terminie jest już potwierdzona rezerwacja.",
+  "adminBooking.errorStatusChanged":
+    "Status rezerwacji już się zmienił — dane odświeżone.",
+  "adminBooking.errorGeneric": "Nie udało się. Spróbuj ponownie.",
+  "payment.cash": "Gotówka",
+  "payment.blik": "BLIK",
+  "payment.card": "Karta",
   "adminBikes.title": "Flota",
   "adminBikes.summary": "We flocie: {total} · ukrytych: {hidden}",
   "adminBikes.clientView": "Katalog oczami klienta",
