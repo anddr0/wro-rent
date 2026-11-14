@@ -2,39 +2,112 @@
 
 import { MessageCircle } from "lucide-react";
 import { useParams } from "next/navigation";
+import { useState } from "react";
 import { BikePhoto } from "@/components/bike-photo";
 import { BookingStatusBadge } from "@/components/booking-status-badge";
 import { Button } from "@/components/button";
+import { ErrorState } from "@/components/error-state";
+import { FormError } from "@/components/form-error";
 import { NotFoundText } from "@/components/not-found-text";
 import { PageTitle } from "@/components/page-title";
 import { DetailRow, Section } from "@/components/section";
-import { findDemoBooking } from "@/lib/demo-data";
-import { useT } from "@/lib/i18n/use-t";
+import { Skeleton } from "@/components/skeleton";
+import { apiErrorCode, apiSendJson } from "@/lib/api";
+import type { BookingResponse, CustomerBooking } from "@/lib/bookings";
+import type { MessageKey } from "@/lib/i18n/messages/ru";
+import { useLocale, useT } from "@/lib/i18n/use-t";
+import { formatDateTime } from "@/lib/rental-time";
+import { SUPPORT_USERNAME } from "@/lib/support";
+import { confirmInTelegram, openTelegramChat } from "@/lib/telegram/dialogs";
+import { useTelegram } from "@/lib/telegram/use-telegram";
+import { isNotFound, refreshApi, useApi } from "@/lib/use-api";
 
 export default function BookingPage() {
   const t = useT();
   const { id } = useParams<{ id: string }>();
-  // TODO(slice 3.2): the booking from the API.
-  const booking = findDemoBooking(id);
+  const { data, error, mutate } = useApi<BookingResponse>(
+    `/api/bookings/${id}`,
+  );
 
-  if (!booking) {
+  if (isNotFound(error)) {
     return <NotFoundText>{t("common.bookingNotFound")}</NotFoundText>;
+  }
+  if (error && !data) {
+    return <ErrorState onRetry={() => mutate()} />;
+  }
+  if (!data) {
+    return <Skeleton className="h-96 rounded-xl" />;
+  }
+
+  return <BookingCard booking={data.booking} />;
+}
+
+// The customer's booking with what they can do about it (К-7).
+function BookingCard({ booking }: { booking: CustomerBooking }) {
+  const t = useT();
+  const locale = useLocale();
+  const { webApp } = useTelegram();
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [errorKey, setErrorKey] = useState<MessageKey | null>(null);
+  const supportUsername = SUPPORT_USERNAME;
+
+  async function cancelRequest() {
+    const isConfirmed = await confirmInTelegram(
+      webApp,
+      t("booking.cancelConfirm"),
+    );
+    if (!isConfirmed) {
+      return;
+    }
+
+    setIsCancelling(true);
+    setErrorKey(null);
+    try {
+      await apiSendJson<BookingResponse>(
+        "POST",
+        `/api/bookings/${booking.id}/cancel`,
+      );
+    } catch (error) {
+      console.error(error);
+      if (apiErrorCode(error) === "status_changed") {
+        // E.g. the admin confirmed it a moment ago.
+        setErrorKey("booking.statusChanged");
+      } else {
+        setErrorKey("booking.cancelFailed");
+      }
+    } finally {
+      // Reload even after an error: the status may have changed meanwhile.
+      await refreshApi("/api/bookings");
+      setIsCancelling(false);
+    }
   }
 
   return (
     <>
       <PageTitle end={<BookingStatusBadge status={booking.status} />}>
-        {booking.bikeName}
+        {booking.bike.name}
       </PageTitle>
-      <BikePhoto size="medium" />
+      <BikePhoto size="medium" url={booking.bike.coverUrl} />
 
       <Section>
-        <DetailRow label={t("common.start")} value={booking.startsAt} />
-        <DetailRow label={t("common.end")} value={booking.endsAt} />
-        <DetailRow label={t("common.plan")} value={booking.planName} />
+        <DetailRow
+          label={t("common.start")}
+          value={formatDateTime(booking.startsAt, locale)}
+        />
+        <DetailRow
+          label={t("common.end")}
+          value={formatDateTime(booking.endsAt, locale)}
+        />
+        {booking.planName && (
+          <DetailRow label={t("common.plan")} value={booking.planName} />
+        )}
         <DetailRow
           label={t("common.price")}
           value={t("common.priceValue", { price: booking.price })}
+        />
+        <DetailRow
+          label={t("common.payment")}
+          value={t("common.paymentOptions")}
         />
         {booking.comment && (
           <DetailRow label={t("common.comment")} value={booking.comment} />
@@ -46,17 +119,28 @@ export default function BookingPage() {
           <p className="text-sm text-muted-foreground">
             {t("booking.pendingNote")}
           </p>
-          {/* TODO(slice 3.2): cancel after Telegram's native confirm. */}
-          <Button variant="destructive">{t("booking.cancel")}</Button>
+          <Button
+            variant="destructive"
+            onClick={cancelRequest}
+            disabled={isCancelling}
+          >
+            {t("booking.cancel")}
+          </Button>
         </>
       )}
 
-      {/* A confirmed booking is cancelled only by an admin (К-7).
-          TODO(slice 3.2): open a chat with the admin. */}
-      <Button variant="secondary">
-        <MessageCircle />
-        {t("common.contactAdmin")}
-      </Button>
+      {errorKey !== null && <FormError>{t(errorKey)}</FormError>}
+
+      {/* A confirmed booking is cancelled only by an admin (К-7). */}
+      {supportUsername !== null && (
+        <Button
+          variant="secondary"
+          onClick={() => openTelegramChat(webApp, supportUsername)}
+        >
+          <MessageCircle />
+          {t("common.contactAdmin")}
+        </Button>
+      )}
     </>
   );
 }

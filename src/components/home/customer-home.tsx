@@ -4,7 +4,7 @@ import { ArrowRight, Bike } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { BikePhoto } from "@/components/bike-photo";
-import { BookingStatusBadge } from "@/components/booking-status-badge";
+import { BookingRow } from "@/components/booking/booking-row";
 import { ButtonLink } from "@/components/button";
 import { EmptyState } from "@/components/empty-state";
 import { ErrorState } from "@/components/error-state";
@@ -12,7 +12,8 @@ import { Greeting } from "@/components/home/greeting";
 import { Row, Section, SectionTitle } from "@/components/section";
 import { Skeleton } from "@/components/skeleton";
 import type { BikesResponse } from "@/lib/catalog";
-import { DEMO_BOOKINGS, isCurrentBooking } from "@/lib/demo-data";
+import { isOpenStatus } from "@/lib/bookings";
+import type { BookingsResponse } from "@/lib/bookings";
 import type { MessageKey } from "@/lib/i18n/messages/ru";
 import { useT } from "@/lib/i18n/use-t";
 import { useApi } from "@/lib/use-api";
@@ -37,30 +38,18 @@ export function CustomerHome() {
   const t = useT();
   const [phrase] = useState(pickRandomPhrase);
   const catalog = useApi<BikesResponse>("/api/bikes");
-  // TODO(slice 3.1): the user's bookings from the API.
-  const currentBookings = DEMO_BOOKINGS.filter(isCurrentBooking).slice(0, 3);
+  const bookings = useApi<BookingsResponse>("/api/bookings");
 
   return (
     <>
       <Greeting subtitle={t(phrase)} />
 
-      {currentBookings.length === 0 ? (
-        <HowItWorks priceFrom={catalog.data?.priceFrom ?? null} />
-      ) : (
-        <Section title={t("home.myBookings")}>
-          {currentBookings.map((booking) => (
-            <Row
-              key={booking.id}
-              href={`/bookings/${booking.id}`}
-              start={<BikePhoto size="small" />}
-              title={booking.bikeName}
-              subtitle={t("home.until", { date: booking.endsAt })}
-              badge={<BookingStatusBadge status={booking.status} />}
-            />
-          ))}
-          <Row href="/history" title={t("home.history")} />
-        </Section>
-      )}
+      <MyBookings
+        bookings={bookings.data}
+        hasFailed={bookings.error !== undefined}
+        onRetry={() => bookings.mutate()}
+        priceFrom={catalog.data?.priceFrom ?? null}
+      />
 
       <HomeBikes
         catalog={catalog.data}
@@ -68,6 +57,49 @@ export function CustomerHome() {
         onRetry={() => catalog.mutate()}
       />
     </>
+  );
+}
+
+type MyBookingsProps = {
+  bookings: BookingsResponse | undefined;
+  hasFailed: boolean;
+  onRetry: () => void;
+  // For the "how it works" block shown to a newcomer.
+  priceFrom: number | null;
+};
+
+// The bookings that are going on now and the way to the history (К-6).
+// Someone who never booked sees how the rental works instead.
+function MyBookings({
+  bookings,
+  hasFailed,
+  onRetry,
+  priceFrom,
+}: MyBookingsProps) {
+  const t = useT();
+
+  if (hasFailed && !bookings) {
+    return <ErrorState onRetry={onRetry} />;
+  }
+  if (!bookings) {
+    return <Skeleton className="h-32 rounded-xl" />;
+  }
+  if (bookings.bookings.length === 0) {
+    return <HowItWorks priceFrom={priceFrom} />;
+  }
+
+  const openBookings = bookings.bookings.filter((booking) =>
+    isOpenStatus(booking.status),
+  );
+  const hasHistory = openBookings.length < bookings.bookings.length;
+
+  return (
+    <Section title={t("home.myBookings")}>
+      {openBookings.map((booking) => (
+        <BookingRow key={booking.id} booking={booking} />
+      ))}
+      {hasHistory && <Row href="/history" title={t("home.history")} />}
+    </Section>
   );
 }
 

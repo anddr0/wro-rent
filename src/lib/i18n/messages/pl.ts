@@ -107,6 +107,9 @@ export const pl: Record<MessageKey, Message> = {
     "Administrator jeszcze nie potwierdził zgłoszenia. Napiszemy do Ciebie w Telegramie.",
   "booking.cancel": "Anuluj zgłoszenie",
 
+  "booking.cancelConfirm": "Anulować zgłoszenie?",
+  "booking.cancelFailed": "Nie udało się anulować. Spróbuj ponownie.",
+  "booking.statusChanged": "Status rezerwacji już się zmienił.",
   "sent.title": "Zgłoszenie wysłane",
   "sent.thanks":
     "Dziękujemy! Potwierdzimy zgłoszenie i napiszemy do Ciebie w Telegramie.",

@@ -118,6 +118,9 @@ export const ru = {
     "Админ ещё не подтвердил заявку. Мы напишем вам в Telegram.",
   "booking.cancel": "Отменить заявку",
 
+  "booking.cancelConfirm": "Отменить заявку?",
+  "booking.cancelFailed": "Не удалось отменить. Попробуйте ещё раз.",
+  "booking.statusChanged": "Статус брони уже изменился.",
   "sent.title": "Заявка отправлена",
   "sent.thanks": "Спасибо! Мы подтвердим заявку и напишем вам в Telegram.",
   "sent.whatNext": "Что дальше",

@@ -1,40 +1,53 @@
 "use client";
 
 import { History } from "lucide-react";
-import { BikePhoto } from "@/components/bike-photo";
-import { BookingStatusBadge } from "@/components/booking-status-badge";
+import { BookingRow } from "@/components/booking/booking-row";
 import { EmptyState } from "@/components/empty-state";
+import { ErrorState } from "@/components/error-state";
 import { PageTitle } from "@/components/page-title";
-import { Row, Section } from "@/components/section";
-import { DEMO_BOOKINGS, isCurrentBooking } from "@/lib/demo-data";
+import { Section } from "@/components/section";
+import { Skeleton } from "@/components/skeleton";
+import { isOpenStatus } from "@/lib/bookings";
+import type { BookingsResponse } from "@/lib/bookings";
 import { useT } from "@/lib/i18n/use-t";
+import { useApi } from "@/lib/use-api";
 
 export default function HistoryPage() {
   const t = useT();
-  // TODO(slice 3.1): the user's past bookings from the API.
-  const pastBookings = DEMO_BOOKINGS.filter(
-    (booking) => !isCurrentBooking(booking),
-  );
 
   return (
     <>
       <PageTitle>{t("history.title")}</PageTitle>
-      {pastBookings.length === 0 ? (
-        <EmptyState icon={History} title={t("history.empty")} />
-      ) : (
-        <Section>
-          {pastBookings.map((booking) => (
-            <Row
-              key={booking.id}
-              href={`/bookings/${booking.id}`}
-              start={<BikePhoto size="small" />}
-              title={booking.bikeName}
-              subtitle={`${booking.startsAt} → ${booking.endsAt}`}
-              badge={<BookingStatusBadge status={booking.status} />}
-            />
-          ))}
-        </Section>
-      )}
+      <PastBookings />
     </>
+  );
+}
+
+// Finished, cancelled and rejected bookings (К-6).
+function PastBookings() {
+  const t = useT();
+  // Same path as the home page, so coming from there it's already loaded.
+  const { data, error, mutate } = useApi<BookingsResponse>("/api/bookings");
+
+  if (error && !data) {
+    return <ErrorState onRetry={() => mutate()} />;
+  }
+  if (!data) {
+    return <Skeleton className="h-40 rounded-xl" />;
+  }
+
+  const pastBookings = data.bookings.filter(
+    (booking) => !isOpenStatus(booking.status),
+  );
+  if (pastBookings.length === 0) {
+    return <EmptyState icon={History} title={t("history.empty")} />;
+  }
+
+  return (
+    <Section>
+      {pastBookings.map((booking) => (
+        <BookingRow key={booking.id} booking={booking} />
+      ))}
+    </Section>
   );
 }
