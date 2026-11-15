@@ -11,6 +11,7 @@ import { Row, Section } from "@/components/section";
 import { Skeleton } from "@/components/skeleton";
 import type { BikeResponse } from "@/lib/catalog";
 import { useT } from "@/lib/i18n/use-t";
+import { formatDuration } from "@/lib/plans";
 import { isNotFound, useApi } from "@/lib/use-api";
 
 export default function BikePage() {
@@ -49,6 +50,10 @@ export default function BikePage() {
             <Row
               key={plan.id}
               title={plan.name}
+              subtitle={formatDuration(
+                { count: plan.duration_count, unit: plan.duration_unit },
+                t,
+              )}
               end={
                 <span className="font-semibold">
                   {t("common.priceValue", { price: plan.price })}

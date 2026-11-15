@@ -20,6 +20,7 @@ import type { BookingResponse, NewBookingRequest } from "@/lib/bookings";
 import type { BikeDetails, CatalogPlan } from "@/lib/catalog";
 import type { MessageKey } from "@/lib/i18n/messages/ru";
 import { useLocale, useT } from "@/lib/i18n/use-t";
+import { formatDuration } from "@/lib/plans";
 import {
   formatDateTime,
   formatTime,
@@ -302,8 +303,12 @@ function PlanOption({ plan, isSelected, onSelect }: PlanOptionProps) {
   const t = useT();
 
   let colors = "border bg-card shadow-sm";
+  // The duration under the name is muted; on the filled row "muted" is
+  // the row's own text colour made lighter.
+  let durationColor = "text-muted-foreground";
   if (isSelected) {
     colors = "border border-primary bg-primary text-primary-foreground";
+    durationColor = "text-primary-foreground/70";
   }
 
   return (
@@ -319,8 +324,14 @@ function PlanOption({ plan, isSelected, onSelect }: PlanOptionProps) {
       ) : (
         <span className="size-5 shrink-0 rounded-full border-2" />
       )}
-      <span className="min-w-0 flex-1 font-medium wrap-anywhere">
-        {plan.name}
+      <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <span className="font-medium wrap-anywhere">{plan.name}</span>
+        <span className={`text-sm ${durationColor}`}>
+          {formatDuration(
+            { count: plan.duration_count, unit: plan.duration_unit },
+            t,
+          )}
+        </span>
       </span>
       <span className="shrink-0 font-medium">
         {t("common.priceValue", { price: plan.price })}
