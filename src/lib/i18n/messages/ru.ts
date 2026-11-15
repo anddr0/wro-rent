@@ -101,10 +101,8 @@ export const ru = {
   "book.limitTitle": "Незакрытых броней уже {count} — это максимум",
   "book.limitHint":
     "Новую заявку можно оставить, когда одна из них завершится или вы её отмените.",
-  "book.night": "Ночь",
-  "book.morning": "Утро",
-  "book.afternoon": "День",
-  "book.evening": "Вечер",
+  "book.earlierTimes": "Раньше",
+  "book.laterTimes": "Позже",
 
   "duration.hour": {
     one: "{count} час",

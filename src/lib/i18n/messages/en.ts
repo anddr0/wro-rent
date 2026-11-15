@@ -91,10 +91,8 @@ export const en: Record<MessageKey, Message> = {
     "You already have {count} open bookings — that's the maximum",
   "book.limitHint":
     "You can send a new request when one of them is over or you cancel it.",
-  "book.night": "Night",
-  "book.morning": "Morning",
-  "book.afternoon": "Afternoon",
-  "book.evening": "Evening",
+  "book.earlierTimes": "Earlier",
+  "book.laterTimes": "Later",
 
   "duration.hour": {
     one: "{count} hour",

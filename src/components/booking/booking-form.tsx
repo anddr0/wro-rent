@@ -236,6 +236,8 @@ export function BookingForm({
           </Section>
 
           <TimePicker
+            // A new day or plan opens the picker on its own start page.
+            key={`${toDateInputValue(day)}-${plan.id}`}
             slots={slots}
             selectedSlot={slot}
             onSelect={(picked) => setChosenStart(picked.startsAt.toISOString())}

@@ -89,10 +89,8 @@ export const uk: Record<MessageKey, Message> = {
   "book.limitTitle": "Незакритих бронювань уже {count} — це максимум",
   "book.limitHint":
     "Нову заявку можна залишити, коли одне з них завершиться або ви його скасуєте.",
-  "book.night": "Ніч",
-  "book.morning": "Ранок",
-  "book.afternoon": "День",
-  "book.evening": "Вечір",
+  "book.earlierTimes": "Раніше",
+  "book.laterTimes": "Пізніше",
 
   "duration.hour": {
     one: "{count} година",

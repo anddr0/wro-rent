@@ -90,10 +90,8 @@ export const pl: Record<MessageKey, Message> = {
   "book.limitTitle": "Masz już {count} otwarte rezerwacje — to maksimum",
   "book.limitHint":
     "Nowe zgłoszenie wyślesz, gdy jedna z nich się zakończy albo ją anulujesz.",
-  "book.night": "Noc",
-  "book.morning": "Rano",
-  "book.afternoon": "Popołudnie",
-  "book.evening": "Wieczór",
+  "book.earlierTimes": "Wcześniej",
+  "book.laterTimes": "Później",
 
   "duration.hour": {
     one: "{count} godzina",
