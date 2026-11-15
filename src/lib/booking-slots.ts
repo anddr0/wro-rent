@@ -25,7 +25,7 @@ export type Availability = {
   // Confirmed and active bookings: a rental can't overlap them.
   busy: Period[];
   // Times an admin closed the bike for by hand (repair and the like).
-  // A rental can't overlap them either; they are only drawn differently.
+  // A rental can't overlap them either.
   unavailable: Period[];
   // Other customers' requests waiting for an answer: only a warning.
   pending: Period[];
@@ -36,11 +36,8 @@ export type Availability = {
 export type StartSlot = {
   startsAt: Date;
   endsAt: Date;
-  // The rental would overlap a confirmed or active booking.
-  isRented: boolean;
-  // The rental would overlap a time the admin closed the bike for.
-  isClosed: boolean;
-  // Either of the two: this start can't be picked.
+  // The rental would overlap a confirmed or active booking, or a time the
+  // admin closed the bike for: this start can't be picked.
   isBusy: boolean;
   // Someone else already asked for this time.
   hasPendingRequests: boolean;
@@ -135,14 +132,13 @@ export function listStartSlots(
     }
 
     const endsAt = addDuration(startsAt, duration);
-    const isRented = overlapsAny(startsAt, endsAt, availability.busy);
-    const isClosed = overlapsAny(startsAt, endsAt, availability.unavailable);
+    const isBusy =
+      overlapsAny(startsAt, endsAt, availability.busy) ||
+      overlapsAny(startsAt, endsAt, availability.unavailable);
     slots.push({
       startsAt,
       endsAt,
-      isRented,
-      isClosed,
-      isBusy: isRented || isClosed,
+      isBusy,
       hasPendingRequests: overlapsAny(startsAt, endsAt, availability.pending),
     });
   }
@@ -151,10 +147,9 @@ export function listStartSlots(
 
 // How a day looks in the calendar:
 // free — at least one start time can be picked;
-// rented — nothing is free, and bookings are (at least part of) the reason;
-// closed — nothing is free only because the admin closed the bike;
+// busy — every start time is taken (by bookings or by the admin);
 // none — no start times at all (the day is over, or outside the window).
-export type DayState = "free" | "rented" | "closed" | "none";
+export type DayState = "free" | "busy" | "none";
 
 export function dayState(slots: StartSlot[]): DayState {
   if (slots.length === 0) {
@@ -163,10 +158,7 @@ export function dayState(slots: StartSlot[]): DayState {
   if (slots.some((slot) => !slot.isBusy)) {
     return "free";
   }
-  if (slots.some((slot) => slot.isRented)) {
-    return "rented";
-  }
-  return "closed";
+  return "busy";
 }
 
 // Two periods overlap when each starts before the other ends. Touching ones

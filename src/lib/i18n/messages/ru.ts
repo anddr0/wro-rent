@@ -101,6 +101,10 @@ export const ru = {
   "book.limitTitle": "Незакрытых броней уже {count} — это максимум",
   "book.limitHint":
     "Новую заявку можно оставить, когда одна из них завершится или вы её отмените.",
+  "book.night": "Ночь",
+  "book.morning": "Утро",
+  "book.afternoon": "День",
+  "book.evening": "Вечер",
 
   "duration.hour": {
     one: "{count} час",
@@ -406,10 +410,6 @@ export const ru = {
   "unavailable.clashHint":
     "Период можно сохранить, брони при этом не изменятся.",
   "unavailable.pastDate": "Период не может быть в прошлом",
-
-  "calendar.free": "Свободно",
-  "calendar.rented": "В аренде",
-  "calendar.closed": "Недоступен",
 
   "bot.welcome": "Привет! Это WroRent — прокат велосипедов во Вроцлаве 🚲",
   "bot.openApp": "Открыть приложение",

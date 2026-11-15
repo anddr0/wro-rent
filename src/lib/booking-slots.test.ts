@@ -193,17 +193,29 @@ describe("dayState", () => {
     assert.equal(stateWith([], []), "free");
   });
 
-  it("is closed when only the admin's period takes the day", () => {
-    assert.equal(stateWith([], [wholeDay]), "closed");
-  });
-
-  it("is rented when bookings take the day, even together with a period", () => {
-    assert.equal(stateWith([wholeDay], []), "rented");
-    assert.equal(stateWith([wholeDay], [wholeDay]), "rented");
+  it("is busy when bookings or the admin's period take the whole day", () => {
+    assert.equal(stateWith([wholeDay], []), "busy");
+    assert.equal(stateWith([], [wholeDay]), "busy");
   });
 
   it("is none for a day without start times", () => {
     assert.equal(dayState([]), "none");
+  });
+});
+
+describe("listStartSlots with a period the admin closed", () => {
+  it("marks the starts that would overlap it as busy", () => {
+    const tomorrow = { year: 2026, month: 12, day: 8 };
+    const availability: Availability = {
+      ...NOTHING_BOOKED,
+      // 8 December 12:00–14:00 in Warsaw.
+      unavailable: [
+        { startsAt: "2026-12-08T11:00:00Z", endsAt: "2026-12-08T13:00:00Z" },
+      ],
+    };
+    const slots = listStartSlots(tomorrow, ONE_DAY, availability, NOW);
+    // A day from 9:00 runs into the closed time.
+    assert.equal(slots[0].isBusy, true);
   });
 });
 

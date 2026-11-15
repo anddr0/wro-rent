@@ -89,6 +89,10 @@ export const uk: Record<MessageKey, Message> = {
   "book.limitTitle": "Незакритих бронювань уже {count} — це максимум",
   "book.limitHint":
     "Нову заявку можна залишити, коли одне з них завершиться або ви його скасуєте.",
+  "book.night": "Ніч",
+  "book.morning": "Ранок",
+  "book.afternoon": "День",
+  "book.evening": "Вечір",
 
   "duration.hour": {
     one: "{count} година",
@@ -396,10 +400,6 @@ export const uk: Record<MessageKey, Message> = {
   "unavailable.clashHint":
     "Період можна зберегти, бронювання при цьому не зміняться.",
   "unavailable.pastDate": "Період не може бути в минулому",
-
-  "calendar.free": "Вільно",
-  "calendar.rented": "В оренді",
-  "calendar.closed": "Недоступний",
 
   "bot.welcome": "Привіт! Це WroRent — прокат велосипедів у Вроцлаві 🚲",
   "bot.openApp": "Відкрити застосунок",

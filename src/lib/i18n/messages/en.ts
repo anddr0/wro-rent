@@ -91,6 +91,10 @@ export const en: Record<MessageKey, Message> = {
     "You already have {count} open bookings — that's the maximum",
   "book.limitHint":
     "You can send a new request when one of them is over or you cancel it.",
+  "book.night": "Night",
+  "book.morning": "Morning",
+  "book.afternoon": "Afternoon",
+  "book.evening": "Evening",
 
   "duration.hour": {
     one: "{count} hour",
@@ -395,10 +399,6 @@ export const en: Record<MessageKey, Message> = {
   "unavailable.clashHint":
     "You can save the period; the bookings won't change.",
   "unavailable.pastDate": "The period can't be in the past",
-
-  "calendar.free": "Free",
-  "calendar.rented": "Rented",
-  "calendar.closed": "Unavailable",
 
   "bot.welcome": "Hi! This is WroRent — bike rental in Wrocław 🚲",
   "bot.openApp": "Open the app",

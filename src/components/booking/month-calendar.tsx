@@ -3,7 +3,7 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import type { DayState } from "@/lib/booking-slots";
-import { useLocale, useT } from "@/lib/i18n/use-t";
+import { useLocale } from "@/lib/i18n/use-t";
 import { daysInMonth, isDayBefore, isSameDay } from "@/lib/rental-time";
 import type { CalendarDay } from "@/lib/rental-time";
 
@@ -129,31 +129,6 @@ export function MonthCalendar({
           />
         ))}
       </div>
-
-      <CalendarLegend />
-    </div>
-  );
-}
-
-// What the three looks of a day mean, under the grid.
-function CalendarLegend() {
-  const t = useT();
-  const mark = "flex size-5 items-center justify-center rounded-md text-[10px]";
-
-  return (
-    <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-      <span className="flex items-center gap-1.5">
-        <span className={`${mark} border-[1.5px] border-foreground`} />
-        {t("calendar.free")}
-      </span>
-      <span className="flex items-center gap-1.5">
-        <span className={`${mark} line-through`}>18</span>
-        {t("calendar.rented")}
-      </span>
-      <span className="flex items-center gap-1.5">
-        <span className={`${mark} ${CLOSED_LOOK}`}>18</span>
-        {t("calendar.closed")}
-      </span>
     </div>
   );
 }
@@ -170,20 +145,17 @@ type DayButtonProps = {
   onSelect: (day: CalendarDay) => void;
 };
 
-// A day the admin closed the bike for: a pale fill and outline, crossed out.
-const CLOSED_LOOK =
-  "border border-muted-foreground/25 bg-muted-foreground/10 text-muted-foreground/70 line-through";
-
 const DAY_LOOKS: Record<DayState, string> = {
+  // Can be picked: an outline that catches the eye.
   free: "border-[1.5px] border-foreground text-foreground active:bg-muted",
-  rented: "text-muted-foreground line-through",
-  closed: CLOSED_LOOK,
+  // Taken, whatever the reason: a pale fill, crossed out.
+  busy: "bg-muted-foreground/10 text-muted-foreground/70 line-through",
   none: "text-muted-foreground/40",
 };
 
-// Days are rounded squares (size-10, 2.5rem; corners 10px). The band of the
-// rental is as tall as a day; where it begins or ends it hugs that day's
-// square instead of filling the whole cell, with the same rounded corners.
+// Days are rounded squares (size-10, 2.5rem; corners 10px). The days of the
+// rental are one white band as tall as a day; where it begins or ends it
+// hugs that day's square instead of filling the whole cell.
 const BAND_LEFT_CAP = "left-[calc(50%-1.25rem)] rounded-l-[10px]";
 const BAND_RIGHT_CAP = "right-[calc(50%-1.25rem)] rounded-r-[10px]";
 
@@ -200,11 +172,10 @@ function DayButton({
   if (isSelected) {
     look = "bg-primary font-semibold text-primary-foreground";
   } else if (rangePart === "end") {
-    // The day the bike comes back.
-    look = "font-semibold text-foreground";
+    // The day the bike comes back: on the white band, in bold.
+    look = "font-semibold text-primary-foreground";
   } else if (rangePart === "middle") {
-    // Inside the band the outlines would only make ripples.
-    look = "text-foreground";
+    look = "text-primary-foreground";
   }
 
   let bandLeft = "left-0";
@@ -221,7 +192,7 @@ function DayButton({
       {rangePart !== "none" && (
         <span
           aria-hidden
-          className={`absolute inset-y-0 bg-muted-foreground/20 ${bandLeft} ${bandRight}`}
+          className={`absolute inset-y-0 bg-primary ${bandLeft} ${bandRight}`}
         />
       )}
       <button

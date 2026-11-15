@@ -4,9 +4,9 @@ import { Check } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { MonthCalendar } from "@/components/booking/month-calendar";
+import { TimePicker } from "@/components/booking/time-picker";
 import { BottomBar } from "@/components/bottom-bar";
 import { Button } from "@/components/button";
-import { Chip } from "@/components/chip";
 import { TextArea } from "@/components/form";
 import { FormError } from "@/components/form-error";
 import { PageTitle } from "@/components/page-title";
@@ -27,7 +27,6 @@ import { useLocale, useT } from "@/lib/i18n/use-t";
 import { formatDuration } from "@/lib/plans";
 import {
   formatDateTime,
-  formatTime,
   isSameDay,
   toCalendarDay,
   toDateInputValue,
@@ -135,7 +134,6 @@ export function BookingForm({
     slots.find(
       (item) => item.startsAt.toISOString() === chosenStart && !item.isBusy,
     ) ?? null;
-  const hasBusySlots = slots.some((item) => item.isBusy);
 
   // The calendar tints the days of the rental. Before a time is picked the
   // end is counted from the first time of the day: it gives the same day
@@ -237,26 +235,11 @@ export function BookingForm({
             />
           </Section>
 
-          <section className="flex flex-col gap-2">
-            <SectionTitle>{t("book.startTime")}</SectionTitle>
-            <div className="flex flex-wrap gap-2">
-              {slots.map((item) => (
-                <Chip
-                  key={item.startsAt.toISOString()}
-                  label={formatTime(item.startsAt, locale)}
-                  isSelected={item === slot}
-                  isDisabled={item.isRented}
-                  isClosed={item.isClosed && !item.isRented}
-                  onSelect={() => setChosenStart(item.startsAt.toISOString())}
-                />
-              ))}
-            </div>
-            {hasBusySlots && (
-              <p className="px-1 text-sm text-muted-foreground">
-                {t("book.busyTimeHint")}
-              </p>
-            )}
-          </section>
+          <TimePicker
+            slots={slots}
+            selectedSlot={slot}
+            onSelect={(picked) => setChosenStart(picked.startsAt.toISOString())}
+          />
         </>
       )}
 
