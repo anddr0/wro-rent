@@ -3,7 +3,7 @@
 import { createContext, use, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { LoadingScreen, StatusScreen } from "@/components/status-screen";
-import { apiFetch } from "@/lib/api";
+import { apiErrorCode, apiFetch } from "@/lib/api";
 import type { Tables } from "@/lib/database.types";
 import { resolveLocale } from "@/lib/i18n/locales";
 import { createTranslate } from "@/lib/i18n/translate";
@@ -13,7 +13,11 @@ import { useTelegram } from "@/lib/telegram/use-telegram";
 type User = Tables<"users">;
 
 type LoadState =
-  { status: "loading" } | { status: "ready"; user: User } | { status: "error" };
+  | { status: "loading" }
+  | { status: "ready"; user: User }
+  | { status: "error" }
+  // The bot has an allow list and this user isn't on it.
+  | { status: "denied" };
 
 type CurrentUserContextValue = {
   user: User;
@@ -63,7 +67,11 @@ export function CurrentUserProvider({ children }: { children: ReactNode }) {
         setState({ status: "ready", user });
       } catch (error) {
         console.error(error);
-        setState({ status: "error" });
+        if (apiErrorCode(error) === "access_denied") {
+          setState({ status: "denied" });
+        } else {
+          setState({ status: "error" });
+        }
       }
     }
 
@@ -77,6 +85,9 @@ export function CurrentUserProvider({ children }: { children: ReactNode }) {
   }
   if (state.status === "loading") {
     return <LoadingScreen />;
+  }
+  if (state.status === "denied") {
+    return <StatusScreen>{t("common.accessDenied")}</StatusScreen>;
   }
   if (state.status === "error") {
     return <StatusScreen>{t("common.profileLoadFailed")}</StatusScreen>;

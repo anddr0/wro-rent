@@ -10,6 +10,8 @@ export type ApiErrorCode =
   | "write_access_required"
   // Someone changed the booking in the meantime, e.g. it's already cancelled.
   | "status_changed"
+  // The bot has an allow list and this user isn't on it.
+  | "access_denied"
   // A review: the rental isn't completed, or it already has a review.
   | "review_not_allowed"
   | "already_reviewed"

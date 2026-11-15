@@ -1,4 +1,5 @@
 import "server-only";
+import { isTelegramUserAllowed } from "@/server/access";
 import { createSupabaseClient } from "@/server/supabase";
 import { upsertUserFromTelegram } from "@/server/users";
 import { env } from "@/server/env";
@@ -28,7 +29,8 @@ export function getInitDataFromRequest(req: Request): string | null {
 }
 
 // Returns the signed-in user (created on first sign-in).
-// Throws HttpError 401 if the request isn't from our mini app.
+// Throws HttpError 401 if the request isn't from our mini app,
+// 403 if the user isn't on the allow list (see access.ts).
 export async function requireUser(req: Request) {
   const initData = getInitDataFromRequest(req);
 
@@ -40,6 +42,12 @@ export async function requireUser(req: Request) {
 
   if (!validInitData || !validInitData.user) {
     throw new HttpError(401, "No valid data");
+  }
+
+  // On a bot with an allow list (the dev bot) strangers get no further:
+  // not even a row in the users table.
+  if (!isTelegramUserAllowed(validInitData.user.id)) {
+    throw new HttpError(403, "This account has no access", "access_denied");
   }
 
   return await upsertUserFromTelegram(

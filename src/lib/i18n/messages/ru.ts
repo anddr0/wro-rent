@@ -40,6 +40,7 @@ export const ru = {
   "common.saveFailed": "Не удалось сохранить. Попробуйте ещё раз.",
   "common.pageCrashed": "Что-то пошло не так",
   "common.pageNotFound": "Такой страницы нет",
+  "common.accessDenied": "Доступ закрыт",
 
   "status.pending": "Ожидает",
   "status.confirmed": "Подтверждена",

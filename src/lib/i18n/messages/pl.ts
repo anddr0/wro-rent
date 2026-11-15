@@ -27,6 +27,7 @@ export const pl: Record<MessageKey, Message> = {
   "common.saveFailed": "Nie udało się zapisać. Spróbuj ponownie.",
   "common.pageCrashed": "Coś poszło nie tak",
   "common.pageNotFound": "Nie ma takiej strony",
+  "common.accessDenied": "Brak dostępu",
 
   "status.pending": "Oczekuje",
   "status.confirmed": "Potwierdzona",

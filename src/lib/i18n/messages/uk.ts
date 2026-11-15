@@ -27,6 +27,7 @@ export const uk: Record<MessageKey, Message> = {
   "common.saveFailed": "Не вдалося зберегти. Спробуйте ще раз.",
   "common.pageCrashed": "Щось пішло не так",
   "common.pageNotFound": "Такої сторінки немає",
+  "common.accessDenied": "Доступ закрито",
 
   "status.pending": "Очікує",
   "status.confirmed": "Підтверджено",

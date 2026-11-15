@@ -1,5 +1,6 @@
 import { BotError, webhookCallback } from "grammy";
 import { createBot } from "@/bot";
+import { isTelegramUserAllowed } from "@/server/access";
 import { env } from "@/server/env";
 import { createSupabaseClient } from "@/server/supabase";
 
@@ -14,6 +15,7 @@ function getUpdateHandler(): UpdateHandler {
       token: env.botToken(),
       miniAppUrl: env.appUrl(),
       supabase: createSupabaseClient(),
+      isAllowed: isTelegramUserAllowed,
     });
     // Rejects requests without the secret header, so only Telegram can call us.
     handleUpdate = webhookCallback(bot, "std/http", {

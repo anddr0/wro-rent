@@ -10,11 +10,27 @@ export type BotConfig = {
   token: string;
   miniAppUrl: string;
   supabase: SupabaseClient<Database>;
+  // False for a user the bot must ignore (the allow list, see access.ts).
+  isAllowed: (telegramId: number) => boolean;
 };
 
 // Transport-agnostic bot: the web app feeds it updates via webhook.
-export function createBot({ token, miniAppUrl, supabase }: BotConfig) {
+export function createBot({
+  token,
+  miniAppUrl,
+  supabase,
+  isAllowed,
+}: BotConfig) {
   const bot = new Bot(token);
+
+  // Goes first, so it runs before every command: a user who isn't allowed
+  // gets no answer at all, as if the bot was switched off.
+  bot.use(async (ctx, next) => {
+    if (ctx.from && !isAllowed(ctx.from.id)) {
+      return;
+    }
+    await next();
+  });
 
   async function checkSupabase(): Promise<string> {
     const { error } = await supabase.auth.admin.listUsers({ perPage: 1 });
