@@ -1,13 +1,15 @@
 import Link from "next/link";
 import type { ComponentProps } from "react";
 
-type Variant = "primary" | "secondary" | "destructive";
+type Variant = "primary" | "secondary" | "destructive" | "destructiveText";
 type Size = "default" | "small";
 
 const VARIANT_CLASSES: Record<Variant, string> = {
   primary: "bg-primary text-primary-foreground shadow-sm",
   secondary: "bg-muted text-foreground",
   destructive: "bg-destructive/10 text-destructive",
+  // Only red text, no fill: a dangerous action that shouldn't catch the eye.
+  destructiveText: "text-destructive",
 };
 
 const SIZE_CLASSES: Record<Size, string> = {

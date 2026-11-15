@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useState } from "react";
 import { BottomBar } from "@/components/bottom-bar";
 import { Button } from "@/components/button";
@@ -17,6 +18,9 @@ type BikeFormProps = {
   submitLabel: string;
   // Saves the bike. Throws when saving failed: the form shows the error.
   onSubmit: (fields: BikeFields) => Promise<void>;
+  // Shown under the fields, above the pinned "Save" button: on the edit
+  // page these are the bike's reviews and the "archive" button.
+  children?: ReactNode;
 };
 
 // The text fields of a bike with the button that saves them (А-2, А-3).
@@ -25,6 +29,7 @@ export function BikeForm({
   initialFields,
   submitLabel,
   onSubmit,
+  children,
 }: BikeFormProps) {
   const t = useT();
   const [name, setName] = useState(initialFields.name);
@@ -82,6 +87,8 @@ export function BikeForm({
         isOn={isAvailable}
         onChange={setIsAvailable}
       />
+
+      {children}
 
       <BottomBar>
         {errorKey !== null && <FormError>{t(errorKey)}</FormError>}

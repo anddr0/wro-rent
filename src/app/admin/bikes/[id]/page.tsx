@@ -123,43 +123,8 @@ function BikeEditor({ bike }: { bike: AdminBikeDetails }) {
         onChanged={refreshBikes}
       />
 
-      <div className="flex flex-col gap-2">
-        {bike.isArchived ? (
-          <Button variant="secondary" disabled={isBusy} onClick={restoreBike}>
-            <ArchiveRestore />
-            {t("adminBike.restore")}
-          </Button>
-        ) : (
-          <Button variant="secondary" disabled={isBusy} onClick={archiveBike}>
-            <Archive />
-            {t("adminBike.toArchive")}
-          </Button>
-        )}
-
-        {bike.hasBookings ? (
-          <p className="px-1 text-sm text-muted-foreground">
-            {t("adminBike.hasBookingsHint")}
-          </p>
-        ) : (
-          <Button variant="destructive" disabled={isBusy} onClick={deleteBike}>
-            <Trash2 />
-            {t("adminBike.delete")}
-          </Button>
-        )}
-
-        {hasFailed && <FormError>{t("adminBike.actionFailed")}</FormError>}
-      </div>
-
-      <section className="flex flex-col gap-2">
-        <SectionTitle>{t("review.title")}</SectionTitle>
-        <AdminReviewList
-          query={`bikeId=${bike.id}`}
-          showBikeName={false}
-          emptyTitle={t("adminReviews.bikeEmpty")}
-        />
-      </section>
-
-      {/* Last: the form ends with the pinned "Save" button. */}
+      {/* The order on the page: photos, fields, reviews, then the dangerous
+          actions right above the pinned "Save" button. */}
       <BikeForm
         initialFields={{
           name: bike.name,
@@ -168,7 +133,51 @@ function BikeEditor({ bike }: { bike: AdminBikeDetails }) {
         }}
         submitLabel={t("common.save")}
         onSubmit={saveBike}
-      />
+      >
+        <section className="flex flex-col gap-2">
+          <SectionTitle>{t("review.title")}</SectionTitle>
+          <AdminReviewList
+            query={`bikeId=${bike.id}`}
+            showBikeName={false}
+            emptyTitle={t("adminReviews.bikeEmpty")}
+          />
+        </section>
+
+        <div className="flex flex-col gap-1">
+          {bike.isArchived ? (
+            <Button variant="secondary" disabled={isBusy} onClick={restoreBike}>
+              <ArchiveRestore />
+              {t("adminBike.restore")}
+            </Button>
+          ) : (
+            <Button
+              variant="destructiveText"
+              disabled={isBusy}
+              onClick={archiveBike}
+            >
+              <Archive />
+              {t("adminBike.toArchive")}
+            </Button>
+          )}
+
+          {bike.hasBookings ? (
+            <p className="px-1 text-center text-sm text-muted-foreground">
+              {t("adminBike.hasBookingsHint")}
+            </p>
+          ) : (
+            <Button
+              variant="destructiveText"
+              disabled={isBusy}
+              onClick={deleteBike}
+            >
+              <Trash2 />
+              {t("adminBike.delete")}
+            </Button>
+          )}
+
+          {hasFailed && <FormError>{t("adminBike.actionFailed")}</FormError>}
+        </div>
+      </BikeForm>
     </>
   );
 }
