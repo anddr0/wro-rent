@@ -1,9 +1,11 @@
 import type { Locale } from "./locales";
+import { en } from "./messages/en";
 import { pl } from "./messages/pl";
 import type { MessageKey, PluralForms } from "./messages/ru";
 import { ru } from "./messages/ru";
+import { uk } from "./messages/uk";
 
-const MESSAGES = { pl, ru };
+const MESSAGES = { pl, en, uk, ru };
 
 export type TranslateParams = Record<string, string | number>;
 export type Translate = (key: MessageKey, params?: TranslateParams) => string;

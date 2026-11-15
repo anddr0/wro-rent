@@ -149,7 +149,7 @@ export const ru = {
   "sent.yourRequest": "Ваша заявка",
   "sent.whereAndHow": "Где и как",
   "sent.address": "Адрес",
-  "sent.addressValue": "ул. Примерная 1, Вроцлав",
+  "sent.addressValue": "ul. Lubuska 54, 53-514 Wrocław (Api serwis)",
   "sent.toHome": "На главную",
 
   "history.title": "История броней",

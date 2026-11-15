@@ -140,7 +140,7 @@ export const pl: Record<MessageKey, Message> = {
   "sent.yourRequest": "Twoje zgłoszenie",
   "sent.whereAndHow": "Gdzie i jak",
   "sent.address": "Adres",
-  "sent.addressValue": "ul. Przykładowa 1, Wrocław",
+  "sent.addressValue": "ul. Lubuska 54, 53-514 Wrocław (Api serwis)",
   "sent.toHome": "Na stronę główną",
 
   "history.title": "Historia rezerwacji",

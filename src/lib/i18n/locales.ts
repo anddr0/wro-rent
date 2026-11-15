@@ -1,6 +1,7 @@
-// Languages the app has translations for. English and Ukrainian come before
-// launch (slice 7): add their dictionaries and list them here.
-export const LOCALES = ["pl", "ru"] as const;
+// Languages the app has translations for, in the order of the list in settings.
+// A new language: its dictionary in ./messages, then a line here and in
+// translate.ts, and the value in the check of users.locale in the database.
+export const LOCALES = ["pl", "en", "uk", "ru"] as const;
 
 export type Locale = (typeof LOCALES)[number];
 
@@ -9,6 +10,8 @@ export const DEFAULT_LOCALE: Locale = "pl";
 // Each language is named in itself, so anyone finds their own in the list.
 export const LOCALE_NAMES: Record<Locale, string> = {
   pl: "Polski",
+  en: "English",
+  uk: "Українська",
   ru: "Русский",
 };
 

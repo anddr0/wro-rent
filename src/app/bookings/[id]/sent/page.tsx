@@ -62,7 +62,6 @@ export default function BookingSentPage() {
         />
       </Section>
 
-      {/* TODO(К-5): the real address and what to bring — ask the client. */}
       <Section title={t("sent.whereAndHow")}>
         <DetailRow label={t("sent.address")} value={t("sent.addressValue")} />
         <DetailRow

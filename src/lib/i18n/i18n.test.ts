@@ -1,8 +1,10 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { resolveLocale } from "./locales";
+import { en } from "./messages/en";
 import { pl } from "./messages/pl";
 import { ru } from "./messages/ru";
+import { uk } from "./messages/uk";
 import { createTranslate } from "./translate";
 
 describe("resolveLocale", () => {
@@ -23,8 +25,14 @@ describe("resolveLocale", () => {
     assert.equal(resolveLocale(null, null), "pl");
   });
 
-  it("ignores a picked language that has no translation yet", () => {
-    assert.equal(resolveLocale("en", "ru"), "ru");
+  it("ignores a picked language the app doesn't have", () => {
+    assert.equal(resolveLocale("de", "ru"), "ru");
+  });
+
+  it("knows all four languages", () => {
+    assert.equal(resolveLocale(null, "en"), "en");
+    assert.equal(resolveLocale(null, "uk"), "uk");
+    assert.equal(resolveLocale("uk", "en"), "uk");
   });
 });
 
@@ -64,12 +72,62 @@ describe("createTranslate", () => {
 
 describe("dictionaries", () => {
   it("translate plural texts with plural forms in every language", () => {
-    for (const key of Object.keys(ru) as (keyof typeof ru)[]) {
-      assert.equal(
-        typeof pl[key],
-        typeof ru[key],
-        `"${key}" is plural in one language and plain in the other`,
-      );
+    const translations = { pl, en, uk };
+    for (const [language, messages] of Object.entries(translations)) {
+      for (const key of Object.keys(ru) as (keyof typeof ru)[]) {
+        assert.equal(
+          typeof messages[key],
+          typeof ru[key],
+          `"${key}" is plural in ru and plain in ${language}, or the other way`,
+        );
+      }
+    }
+  });
+
+  it("keep the same {params} as the Russian text", () => {
+    const translations = { pl, en, uk };
+    for (const [language, messages] of Object.entries(translations)) {
+      for (const key of Object.keys(ru) as (keyof typeof ru)[]) {
+        assert.deepEqual(
+          paramsOf(messages[key]),
+          paramsOf(ru[key]),
+          `"${key}" in ${language} has other {params} than in ru`,
+        );
+      }
     }
   });
 });
+
+describe("plural forms", () => {
+  it("picks English forms", () => {
+    const t = createTranslate("en");
+    assert.equal(t("duration.day", { count: 1 }), "1 day");
+    assert.equal(t("duration.day", { count: 3 }), "3 days");
+  });
+
+  it("picks Ukrainian forms", () => {
+    const t = createTranslate("uk");
+    assert.equal(t("duration.day", { count: 1 }), "1 день");
+    assert.equal(t("duration.day", { count: 3 }), "3 дні");
+    assert.equal(t("duration.day", { count: 5 }), "5 днів");
+  });
+});
+
+// The names in {braces} a text uses, sorted: "{date} · {address}" → address, date.
+// For a plural text — the names of all its forms together.
+function paramsOf(message: string | Record<string, string>): string[] {
+  let texts: string[] = [];
+  if (typeof message === "string") {
+    texts = [message];
+  } else {
+    texts = Object.values(message);
+  }
+
+  const names = new Set<string>();
+  for (const text of texts) {
+    for (const match of text.matchAll(/\{(\w+)\}/g)) {
+      names.add(match[1]);
+    }
+  }
+  return [...names].sort();
+}
