@@ -396,6 +396,10 @@ export const en: Record<MessageKey, Message> = {
     "You can save the period; the bookings won't change.",
   "unavailable.pastDate": "The period can't be in the past",
 
+  "calendar.free": "Free",
+  "calendar.rented": "Rented",
+  "calendar.closed": "Unavailable",
+
   "bot.welcome": "Hi! This is WroRent — bike rental in Wrocław 🚲",
   "bot.openApp": "Open the app",
 };

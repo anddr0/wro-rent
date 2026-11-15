@@ -3,6 +3,7 @@ import { describe, it } from "node:test";
 import {
   effectiveOpeningHours,
   formatMinuteOfDay,
+  formatPhone,
   isValidStartMinute,
   parsePhone,
   parseTelegramUsername,
@@ -80,5 +81,16 @@ describe("parsePhone", () => {
     assert.equal(parsePhone("12345"), null);
     assert.equal(parsePhone("call me"), null);
     assert.equal(parsePhone("+48 123 abc"), null);
+  });
+});
+
+describe("formatPhone", () => {
+  it("splits a Polish number in threes", () => {
+    assert.equal(formatPhone("+48722164925"), "+48 722 164 925");
+    assert.equal(formatPhone("722164925"), "722 164 925");
+  });
+
+  it("leaves other numbers as they are", () => {
+    assert.equal(formatPhone("+380501234567"), "+380501234567");
   });
 });

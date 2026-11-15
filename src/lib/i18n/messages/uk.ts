@@ -397,6 +397,10 @@ export const uk: Record<MessageKey, Message> = {
     "Період можна зберегти, бронювання при цьому не зміняться.",
   "unavailable.pastDate": "Період не може бути в минулому",
 
+  "calendar.free": "Вільно",
+  "calendar.rented": "В оренді",
+  "calendar.closed": "Недоступний",
+
   "bot.welcome": "Привіт! Це WroRent — прокат велосипедів у Вроцлаві 🚲",
   "bot.openApp": "Відкрити застосунок",
 };

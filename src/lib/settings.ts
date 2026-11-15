@@ -99,3 +99,20 @@ export function parsePhone(text: string): string | null {
   }
   return phone;
 }
+
+// A stored phone number written for reading: "+48722164925" → "+48 722 164 925".
+// Polish numbers (9 digits, with or without +48) are split in threes;
+// anything else is shown as it was stored.
+export function formatPhone(phone: string): string {
+  let prefix = "";
+  let digits = phone;
+  if (phone.startsWith("+48")) {
+    prefix = "+48 ";
+    digits = phone.slice(3);
+  }
+  // Exactly nine digits.
+  if (!/^\d{9}$/.test(digits)) {
+    return phone;
+  }
+  return `${prefix}${digits.slice(0, 3)} ${digits.slice(3, 6)} ${digits.slice(6)}`;
+}

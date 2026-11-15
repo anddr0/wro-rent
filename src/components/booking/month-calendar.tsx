@@ -2,16 +2,16 @@
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
-import { useLocale } from "@/lib/i18n/use-t";
+import type { DayState } from "@/lib/booking-slots";
+import { useLocale, useT } from "@/lib/i18n/use-t";
 import { daysInMonth, isDayBefore, isSameDay } from "@/lib/rental-time";
 import type { CalendarDay } from "@/lib/rental-time";
 
 type Month = { year: number; month: number };
 
 type MonthCalendarProps = {
-  // The days that can be picked, in order. The calendar shows the months
-  // they fall into; every other day is greyed out.
-  availableDays: CalendarDay[];
+  // How each day looks; only "free" days can be picked.
+  dayStateOf: (day: CalendarDay) => DayState;
   // The first and the last month to show.
   firstDay: CalendarDay;
   lastDay: CalendarDay;
@@ -27,7 +27,7 @@ type RangePart = "none" | "start" | "middle" | "end";
 
 // A month grid to pick a day from, weeks start on Monday.
 export function MonthCalendar({
-  availableDays,
+  dayStateOf,
   firstDay,
   lastDay,
   selectedDay,
@@ -120,7 +120,7 @@ export function MonthCalendar({
           <DayButton
             key={day.day}
             day={day}
-            isAvailable={availableDays.some((item) => isSameDay(item, day))}
+            state={dayStateOf(day)}
             isSelected={selectedDay !== null && isSameDay(selectedDay, day)}
             rangePart={rangePartOf(day)}
             isRowStart={day.day === 1 || mondayBasedWeekday(day) === 0}
@@ -129,13 +129,38 @@ export function MonthCalendar({
           />
         ))}
       </div>
+
+      <CalendarLegend />
+    </div>
+  );
+}
+
+// What the three looks of a day mean, under the grid.
+function CalendarLegend() {
+  const t = useT();
+  const mark = "flex size-5 items-center justify-center rounded-md text-[10px]";
+
+  return (
+    <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+      <span className="flex items-center gap-1.5">
+        <span className={`${mark} border-[1.5px] border-foreground`} />
+        {t("calendar.free")}
+      </span>
+      <span className="flex items-center gap-1.5">
+        <span className={`${mark} line-through`}>18</span>
+        {t("calendar.rented")}
+      </span>
+      <span className="flex items-center gap-1.5">
+        <span className={`${mark} ${CLOSED_LOOK}`}>18</span>
+        {t("calendar.closed")}
+      </span>
     </div>
   );
 }
 
 type DayButtonProps = {
   day: CalendarDay;
-  isAvailable: boolean;
+  state: DayState;
   isSelected: boolean;
   rangePart: RangePart;
   // The first or the last day of its row in the grid: the band of the
@@ -145,28 +170,41 @@ type DayButtonProps = {
   onSelect: (day: CalendarDay) => void;
 };
 
-// The band is as tall as a day's circle (size-10, 2.5rem). Where it begins
-// or ends it is rounded and hugs the circle of that day instead of filling
-// the whole cell, so the band looks like one long pill around the days.
-const BAND_LEFT_CAP = "left-[calc(50%-1.25rem)] rounded-l-full";
-const BAND_RIGHT_CAP = "right-[calc(50%-1.25rem)] rounded-r-full";
+// A day the admin closed the bike for: a pale fill and outline, crossed out.
+const CLOSED_LOOK =
+  "border border-muted-foreground/25 bg-muted-foreground/10 text-muted-foreground/70 line-through";
+
+const DAY_LOOKS: Record<DayState, string> = {
+  free: "border-[1.5px] border-foreground text-foreground active:bg-muted",
+  rented: "text-muted-foreground line-through",
+  closed: CLOSED_LOOK,
+  none: "text-muted-foreground/40",
+};
+
+// Days are rounded squares (size-10, 2.5rem; corners 10px). The band of the
+// rental is as tall as a day; where it begins or ends it hugs that day's
+// square instead of filling the whole cell, with the same rounded corners.
+const BAND_LEFT_CAP = "left-[calc(50%-1.25rem)] rounded-l-[10px]";
+const BAND_RIGHT_CAP = "right-[calc(50%-1.25rem)] rounded-r-[10px]";
 
 function DayButton({
   day,
-  isAvailable,
+  state,
   isSelected,
   rangePart,
   isRowStart,
   isRowEnd,
   onSelect,
 }: DayButtonProps) {
-  let colors = "text-foreground active:bg-muted";
+  let look = DAY_LOOKS[state];
   if (isSelected) {
-    colors = "bg-primary font-semibold text-primary-foreground";
+    look = "bg-primary font-semibold text-primary-foreground";
   } else if (rangePart === "end") {
-    colors = "font-semibold text-foreground";
-  } else if (!isAvailable && rangePart === "none") {
-    colors = "text-muted-foreground/40";
+    // The day the bike comes back.
+    look = "font-semibold text-foreground";
+  } else if (rangePart === "middle") {
+    // Inside the band the outlines would only make ripples.
+    look = "text-foreground";
   }
 
   let bandLeft = "left-0";
@@ -188,10 +226,10 @@ function DayButton({
       )}
       <button
         type="button"
-        disabled={!isAvailable}
+        disabled={state !== "free"}
         aria-pressed={isSelected}
         onClick={() => onSelect(day)}
-        className={`relative flex size-10 items-center justify-center rounded-full transition-colors ${colors}`}
+        className={`relative flex size-10 items-center justify-center rounded-[10px] transition-colors ${look}`}
       >
         {day.day}
       </button>

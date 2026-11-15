@@ -3,6 +3,7 @@
 import { MessageCircle, Phone } from "lucide-react";
 import { Row, Section } from "@/components/section";
 import { useT } from "@/lib/i18n/use-t";
+import { formatPhone } from "@/lib/settings";
 import { openTelegramChat } from "@/lib/telegram/dialogs";
 import { useTelegram } from "@/lib/telegram/use-telegram";
 import { useSupportContacts } from "@/lib/use-settings";
@@ -31,8 +32,12 @@ export function SupportContacts() {
       {phone !== null && (
         <Row
           icon={Phone}
-          title={t("contact.call")}
-          subtitle={phone}
+          // The number is what matters here, so it is the big line.
+          title={
+            <span className="text-lg tabular-nums">{formatPhone(phone)}</span>
+          }
+          subtitle={t("contact.call")}
+          hideChevron
           // A "tel:" address makes the phone offer to call the number.
           onClick={() => {
             window.location.href = `tel:${phone}`;

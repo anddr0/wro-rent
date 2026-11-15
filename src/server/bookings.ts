@@ -101,8 +101,7 @@ export async function getBikeAvailability(
     throw bookings.error;
   }
 
-  // Times an admin marked the bike unavailable for are busy too.
-  const busy: Period[] = [...unavailableTimes];
+  const busy: Period[] = [];
   const pending: Period[] = [];
   for (const booking of bookings.data) {
     const period = { startsAt: booking.starts_at, endsAt: booking.ends_at };
@@ -114,7 +113,12 @@ export async function getBikeAvailability(
       busy.push(period);
     }
   }
-  return { busy, pending, hours: effectiveOpeningHours(settings) };
+  return {
+    busy,
+    unavailable: unavailableTimes,
+    pending,
+    hours: effectiveOpeningHours(settings),
+  };
 }
 
 export type NewBooking = {

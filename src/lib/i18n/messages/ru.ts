@@ -407,6 +407,10 @@ export const ru = {
     "Период можно сохранить, брони при этом не изменятся.",
   "unavailable.pastDate": "Период не может быть в прошлом",
 
+  "calendar.free": "Свободно",
+  "calendar.rented": "В аренде",
+  "calendar.closed": "Недоступен",
+
   "bot.welcome": "Привет! Это WroRent — прокат велосипедов во Вроцлаве 🚲",
   "bot.openApp": "Открыть приложение",
 } satisfies Record<string, Message>;

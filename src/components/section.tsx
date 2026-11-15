@@ -43,6 +43,9 @@ type RowProps = {
   href?: string;
   // When set, the whole row is a button, e.g. it opens a Telegram chat.
   onClick?: () => void;
+  // The arrow on the right says "opens another screen". A button that does
+  // something else (makes a call) hides it.
+  hideChevron?: boolean;
 };
 
 export function Row({
@@ -54,6 +57,7 @@ export function Row({
   icon,
   href,
   onClick,
+  hideChevron = false,
 }: RowProps) {
   const content = (
     <>
@@ -74,7 +78,7 @@ export function Row({
         )}
       </div>
       {end}
-      {(href || onClick) && (
+      {(href || onClick) && !hideChevron && (
         <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
       )}
     </>

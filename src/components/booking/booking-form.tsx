@@ -14,8 +14,12 @@ import { DetailRow, Section, SectionTitle } from "@/components/section";
 import { apiErrorCode, apiSendJson } from "@/lib/api";
 import type { ApiErrorCode } from "@/lib/api";
 import { BOOKING_RULES } from "@/lib/booking-rules";
-import { listBookableDays, listStartSlots } from "@/lib/booking-slots";
-import type { Availability, StartSlot } from "@/lib/booking-slots";
+import {
+  dayState,
+  listBookableDays,
+  listStartSlots,
+} from "@/lib/booking-slots";
+import type { Availability, DayState, StartSlot } from "@/lib/booking-slots";
 import type { BookingResponse, NewBookingRequest } from "@/lib/bookings";
 import type { BikeDetails, CatalogPlan } from "@/lib/catalog";
 import type { MessageKey } from "@/lib/i18n/messages/ru";
@@ -26,6 +30,7 @@ import {
   formatTime,
   isSameDay,
   toCalendarDay,
+  toDateInputValue,
 } from "@/lib/rental-time";
 import type { CalendarDay } from "@/lib/rental-time";
 import { requestWriteAccess } from "@/lib/telegram/dialogs";
@@ -84,15 +89,23 @@ export function BookingForm({
   // ahead: too slow to repeat on each typed letter of the comment. useMemo
   // repeats it only when the plan, the busy times or "now" change.
   const bookableDays = useMemo(() => listBookableDays(now), [now]);
-  const freeDays = useMemo(() => {
+  // How every day of the window looks: free, rented, closed by the admin.
+  const dayStates = useMemo(() => {
     const planDuration = {
       count: plan.duration_count,
       unit: plan.duration_unit,
     };
-    return bookableDays.filter((day) => {
-      const slots = listStartSlots(day, planDuration, availability, now);
-      return slots.some((slot) => !slot.isBusy);
-    });
+    const states = new Map<string, DayState>();
+    for (const bookableDay of bookableDays) {
+      const daySlots = listStartSlots(
+        bookableDay,
+        planDuration,
+        availability,
+        now,
+      );
+      states.set(toDateInputValue(bookableDay), dayState(daySlots));
+    }
+    return states;
   }, [
     bookableDays,
     plan.duration_count,
@@ -100,6 +113,9 @@ export function BookingForm({
     availability,
     now,
   ]);
+  const freeDays = bookableDays.filter(
+    (bookableDay) => dayStates.get(toDateInputValue(bookableDay)) === "free",
+  );
 
   // The picked day, if it is still free with this plan; otherwise the first free one.
   let day: CalendarDay | null = freeDays[0] ?? null;
@@ -210,7 +226,9 @@ export function BookingForm({
         <>
           <Section title={t("book.startDate")}>
             <MonthCalendar
-              availableDays={freeDays}
+              dayStateOf={(calendarDay) =>
+                dayStates.get(toDateInputValue(calendarDay)) ?? "none"
+              }
               firstDay={bookableDays[0]}
               lastDay={bookableDays[bookableDays.length - 1]}
               selectedDay={day}
@@ -227,7 +245,8 @@ export function BookingForm({
                   key={item.startsAt.toISOString()}
                   label={formatTime(item.startsAt, locale)}
                   isSelected={item === slot}
-                  isDisabled={item.isBusy}
+                  isDisabled={item.isRented}
+                  isClosed={item.isClosed && !item.isRented}
                   onSelect={() => setChosenStart(item.startsAt.toISOString())}
                 />
               ))}

@@ -403,6 +403,10 @@ export const pl: Record<MessageKey, Message> = {
   "unavailable.clashHint": "Okres można zapisać, rezerwacje się nie zmienią.",
   "unavailable.pastDate": "Okres nie może być w przeszłości",
 
+  "calendar.free": "Wolne",
+  "calendar.rented": "Wynajęty",
+  "calendar.closed": "Niedostępny",
+
   "bot.welcome": "Cześć! To WroRent — wypożyczalnia rowerów we Wrocławiu 🚲",
   "bot.openApp": "Otwórz aplikację",
 };

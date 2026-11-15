@@ -7,6 +7,8 @@ type ChipProps = {
   icon?: LucideIcon;
   // Shown crossed out and can't be picked, e.g. a busy time.
   isDisabled?: boolean;
+  // Like isDisabled, but on a pale fill: a time the admin closed the bike for.
+  isClosed?: boolean;
 };
 
 // A small pill button for filters and quick choices (status, time).
@@ -16,9 +18,13 @@ export function Chip({
   onSelect,
   icon: Icon,
   isDisabled = false,
+  isClosed = false,
 }: ChipProps) {
   let colors = "bg-card text-foreground";
-  if (isDisabled) {
+  if (isClosed) {
+    colors =
+      "border-muted-foreground/25 bg-muted-foreground/10 text-muted-foreground/70 line-through";
+  } else if (isDisabled) {
     colors = "bg-muted text-muted-foreground line-through opacity-60";
   } else if (isSelected) {
     colors = "border-primary bg-primary text-primary-foreground";
@@ -28,7 +34,7 @@ export function Chip({
     <button
       type="button"
       onClick={onSelect}
-      disabled={isDisabled}
+      disabled={isDisabled || isClosed}
       className={`inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full border px-4 text-sm font-medium transition-colors ${colors}`}
     >
       {Icon && <Icon className="size-4" />}

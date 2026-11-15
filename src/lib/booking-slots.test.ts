@@ -4,6 +4,7 @@ import {
   isStartAllowed,
   listBookableDays,
   listStartSlots,
+  dayState,
   overlapsAny,
 } from "./booking-slots";
 import type { Availability } from "./booking-slots";
@@ -13,7 +14,12 @@ const NOW = new Date("2026-12-07T11:10:00Z");
 const ONE_DAY = { count: 1, unit: "day" } as const;
 // 9:00–20:00.
 const HOURS = { firstStartMinute: 540, lastStartMinute: 1200 };
-const NOTHING_BOOKED: Availability = { busy: [], pending: [], hours: HOURS };
+const NOTHING_BOOKED: Availability = {
+  busy: [],
+  unavailable: [],
+  pending: [],
+  hours: HOURS,
+};
 
 describe("isStartAllowed", () => {
   it("accepts a time on the step, in opening hours, inside the window", () => {
@@ -115,6 +121,7 @@ describe("listStartSlots", () => {
       busy: [
         { startsAt: "2026-12-09T11:00:00Z", endsAt: "2026-12-10T11:00:00Z" },
       ],
+      unavailable: [],
       pending: [],
       hours: HOURS,
     };
@@ -136,6 +143,7 @@ describe("listStartSlots", () => {
     const tomorrow = { year: 2026, month: 12, day: 8 };
     const availability: Availability = {
       busy: [],
+      unavailable: [],
       pending: [
         { startsAt: "2026-12-08T08:00:00Z", endsAt: "2026-12-09T08:00:00Z" },
       ],
@@ -152,6 +160,7 @@ describe("listStartSlots with other opening hours", () => {
     const tomorrow = { year: 2026, month: 12, day: 8 };
     const availability: Availability = {
       busy: [],
+      unavailable: [],
       pending: [],
       hours: { firstStartMinute: 0, lastStartMinute: 1410 },
     };
@@ -160,6 +169,41 @@ describe("listStartSlots with other opening hours", () => {
     assert.equal(slots.length, 48);
     assert.equal(slots[0].startsAt.toISOString(), "2026-12-07T23:00:00.000Z");
     assert.equal(slots[47].startsAt.toISOString(), "2026-12-08T22:30:00.000Z");
+  });
+});
+
+describe("dayState", () => {
+  const tomorrow = { year: 2026, month: 12, day: 8 };
+  // The whole of 8 December, Warsaw time.
+  const wholeDay = {
+    startsAt: "2026-12-07T23:00:00Z",
+    endsAt: "2026-12-08T23:00:00Z",
+  };
+  const twoHours = { count: 2, unit: "hour" } as const;
+
+  function stateWith(
+    busy: (typeof wholeDay)[],
+    unavailable: (typeof wholeDay)[],
+  ) {
+    const availability = { ...NOTHING_BOOKED, busy, unavailable };
+    return dayState(listStartSlots(tomorrow, twoHours, availability, NOW));
+  }
+
+  it("is free while some start time can be picked", () => {
+    assert.equal(stateWith([], []), "free");
+  });
+
+  it("is closed when only the admin's period takes the day", () => {
+    assert.equal(stateWith([], [wholeDay]), "closed");
+  });
+
+  it("is rented when bookings take the day, even together with a period", () => {
+    assert.equal(stateWith([wholeDay], []), "rented");
+    assert.equal(stateWith([wholeDay], [wholeDay]), "rented");
+  });
+
+  it("is none for a day without start times", () => {
+    assert.equal(dayState([]), "none");
   });
 });
 
