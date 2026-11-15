@@ -11,7 +11,7 @@ type FieldProps = {
 // A form field: a label and an input under it.
 export function Field({ label, children }: FieldProps) {
   return (
-    <label className="flex flex-col gap-2">
+    <label className="flex min-w-0 flex-col gap-2">
       <span className="text-sm font-medium">{label}</span>
       {children}
     </label>

@@ -1,6 +1,11 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { addDuration, fromWallTime, toWallTime } from "./rental-time";
+import {
+  addDuration,
+  fromWallTime,
+  toDateInputValue,
+  toWallTime,
+} from "./rental-time";
 
 describe("toWallTime", () => {
   it("reads winter time, one hour ahead of UTC", () => {
@@ -107,5 +112,12 @@ describe("addDuration", () => {
       unit: "month",
     });
     assert.equal(end.toISOString(), "2027-02-28T09:00:00.000Z");
+  });
+});
+
+describe("toDateInputValue", () => {
+  it("writes a day with leading zeros, as <input type=date> wants", () => {
+    const day = { year: 2026, month: 3, day: 7 };
+    assert.equal(toDateInputValue(day), "2026-03-07");
   });
 });

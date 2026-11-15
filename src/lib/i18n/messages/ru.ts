@@ -405,6 +405,7 @@ export const ru = {
   "unavailable.clashTitle": "На это время уже есть бронь",
   "unavailable.clashHint":
     "Период можно сохранить, брони при этом не изменятся.",
+  "unavailable.pastDate": "Период не может быть в прошлом",
 
   "bot.welcome": "Привет! Это WroRent — прокат велосипедов во Вроцлаве 🚲",
   "bot.openApp": "Открыть приложение",

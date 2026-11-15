@@ -74,9 +74,14 @@ export async function addUnavailablePeriod(
   bikeId: string,
   startsAt: Date,
   endsAt: Date,
+  now: Date,
 ): Promise<UnavailablePeriod> {
   if (endsAt <= startsAt) {
     throw new HttpError(400, "The end must be after the start");
+  }
+  // A period that is already over closes nothing.
+  if (endsAt <= now) {
+    throw new HttpError(400, "The period is in the past");
   }
   if (endsAt.getTime() - startsAt.getTime() > MAX_UNAVAILABLE_DAYS * DAY) {
     throw new HttpError(400, "The period is too long");

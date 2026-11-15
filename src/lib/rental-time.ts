@@ -137,6 +137,14 @@ export function toCalendarDay(date: Date): CalendarDay {
   return { year: wallTime.year, month: wallTime.month, day: wallTime.day };
 }
 
+// "2026-12-07": a day as the value of <input type="date">.
+// Such texts compare correctly as plain strings: "2026-12-07" < "2026-12-31".
+export function toDateInputValue(day: CalendarDay): string {
+  const month = String(day.month).padStart(2, "0");
+  const dayOfMonth = String(day.day).padStart(2, "0");
+  return `${day.year}-${month}-${dayOfMonth}`;
+}
+
 // Reads "2026-12-07", the value of <input type="date">. Null if it isn't a date.
 export function parseCalendarDay(text: string): CalendarDay | null {
   // Four digits, two digits, two digits, with dashes between.

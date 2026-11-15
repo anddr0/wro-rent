@@ -76,4 +76,15 @@
   body {
     @apply bg-background text-foreground;
   }
+  /* iOS draws date inputs at their own fixed width, wider than half a phone
+     screen, so two of them side by side ran out of the page. Without the
+     native look they take the width of their column like any other input. */
+  input[type="date"] {
+    appearance: none;
+    min-width: 0;
+  }
+  /* …and the date is centred by default; the other inputs start on the left. */
+  input[type="date"]::-webkit-date-and-time-value {
+    text-align: left;
+  }
 }

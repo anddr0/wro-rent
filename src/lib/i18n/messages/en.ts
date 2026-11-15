@@ -394,6 +394,7 @@ export const en: Record<MessageKey, Message> = {
   "unavailable.clashTitle": "There's already a booking for this time",
   "unavailable.clashHint":
     "You can save the period; the bookings won't change.",
+  "unavailable.pastDate": "The period can't be in the past",
 
   "bot.welcome": "Hi! This is WroRent — bike rental in Wrocław 🚲",
   "bot.openApp": "Open the app",

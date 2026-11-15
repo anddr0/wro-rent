@@ -395,6 +395,7 @@ export const uk: Record<MessageKey, Message> = {
   "unavailable.clashTitle": "На цей час уже є бронювання",
   "unavailable.clashHint":
     "Період можна зберегти, бронювання при цьому не зміняться.",
+  "unavailable.pastDate": "Період не може бути в минулому",
 
   "bot.welcome": "Привіт! Це WroRent — прокат велосипедів у Вроцлаві 🚲",
   "bot.openApp": "Відкрити застосунок",

@@ -12,7 +12,12 @@ import { apiSendJson } from "@/lib/api";
 import { overlapsAny } from "@/lib/booking-slots";
 import type { MessageKey } from "@/lib/i18n/messages/ru";
 import { useLocale, useT } from "@/lib/i18n/use-t";
-import { formatPeriod, parseCalendarDay } from "@/lib/rental-time";
+import {
+  formatPeriod,
+  parseCalendarDay,
+  toCalendarDay,
+  toDateInputValue,
+} from "@/lib/rental-time";
 import { formatMinuteOfDay, listMinutesOfDay } from "@/lib/settings";
 import { timedPeriod, wholeDaysPeriod } from "@/lib/unavailable";
 import type { NewUnavailablePeriod } from "@/lib/unavailable";
@@ -24,6 +29,8 @@ export function UnavailableForm({ bikeId }: { bikeId: string }) {
   const t = useT();
   const router = useRouter();
 
+  // Today in Warsaw: the earliest day a period can start on.
+  const [today] = useState(() => toDateInputValue(toCalendarDay(new Date())));
   // The values of <input type="date">: "2026-12-31", or "" when not set.
   const [fromDay, setFromDay] = useState("");
   const [toDay, setToDay] = useState("");
@@ -50,13 +57,33 @@ export function UnavailableForm({ bikeId }: { bikeId: string }) {
     }
   }
 
+  // "From" can't be in the past, and "to" can't be before "from": when the
+  // new "from" is later, "to" moves along. iPhone fills the field with today
+  // the moment its picker opens, so "to" got today and stayed behind.
+  function changeFromDay(value: string) {
+    setFromDay(value);
+    if (toDay === "" || toDay < value) {
+      setToDay(value);
+    }
+  }
+
   async function save() {
     if (firstDay === null || lastDay === null) {
       setErrorKey("unavailable.datesRequired");
       return;
     }
+    // The picker may not grey out past days on every phone: check here too.
+    if (fromDay < today) {
+      setErrorKey("unavailable.pastDate");
+      return;
+    }
     if (period === null) {
       setErrorKey("unavailable.endBeforeStart");
+      return;
+    }
+    // Today with times that are already over.
+    if (new Date(period.endsAt) <= new Date()) {
+      setErrorKey("unavailable.pastDate");
       return;
     }
 
@@ -89,20 +116,15 @@ export function UnavailableForm({ bikeId }: { bikeId: string }) {
           <TextInput
             type="date"
             value={fromDay}
-            onChange={(event) => {
-              setFromDay(event.target.value);
-              // One day is the usual case: fill "to" with the same date.
-              if (toDay === "") {
-                setToDay(event.target.value);
-              }
-            }}
+            min={today}
+            onChange={(event) => changeFromDay(event.target.value)}
           />
         </Field>
         <Field label={t("unavailable.to")}>
           <TextInput
             type="date"
             value={toDay}
-            min={fromDay}
+            min={fromDay === "" ? today : fromDay}
             onChange={(event) => setToDay(event.target.value)}
           />
         </Field>

@@ -45,6 +45,7 @@ export const POST = withErrorHandling(async (req, ctx: Context) => {
     id,
     readDate(body.startsAt, "startsAt"),
     readDate(body.endsAt, "endsAt"),
+    new Date(),
   );
 
   return Response.json({ period }, { status: 201 });

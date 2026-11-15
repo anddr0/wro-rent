@@ -401,6 +401,7 @@ export const pl: Record<MessageKey, Message> = {
   "unavailable.endBeforeStart": "Koniec musi być później niż początek",
   "unavailable.clashTitle": "W tym czasie jest już rezerwacja",
   "unavailable.clashHint": "Okres można zapisać, rezerwacje się nie zmienią.",
+  "unavailable.pastDate": "Okres nie może być w przeszłości",
 
   "bot.welcome": "Cześć! To WroRent — wypożyczalnia rowerów we Wrocławiu 🚲",
   "bot.openApp": "Otwórz aplikację",
