@@ -53,13 +53,9 @@ export function createBot({ token, miniAppUrl, supabase }: BotConfig) {
     ctx.reply(`Бот: ok\nSupabase: ${await checkSupabase()}`),
   );
 
-  // Log only the underlying error: the BotError's ctx contains the bot token.
-  bot.catch((err) =>
-    console.error(
-      `Bot error in update ${err.ctx.update.update_id}:`,
-      err.error,
-    ),
-  );
+  // Errors of the handlers above are caught in the webhook route
+  // (src/app/api/telegram/webhook/route.ts): bot.catch() works only with
+  // long polling, which we don't use.
 
   return bot;
 }
