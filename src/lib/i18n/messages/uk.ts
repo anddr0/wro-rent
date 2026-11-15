@@ -85,6 +85,9 @@ export const uk: Record<MessageKey, Message> = {
   "book.errorWriteAccess":
     "Дозвольте боту писати вам: інакше ми не зможемо повідомити відповідь.",
   "book.errorGeneric": "Не вдалося надіслати заявку. Спробуйте ще раз.",
+  "book.limitTitle": "Незакритих бронювань уже {count} — це максимум",
+  "book.limitHint":
+    "Нову заявку можна залишити, коли одне з них завершиться або ви його скасуєте.",
 
   "duration.hour": {
     one: "{count} година",
@@ -168,6 +171,7 @@ export const uk: Record<MessageKey, Message> = {
   "adminHome.plansHint": "Ціни для всіх велосипедів",
   "adminHome.settings": "Години й контакт",
   "adminHome.settingsHint": "Години роботи, контакт для клієнтів",
+  "adminHome.reviews": "Відгуки на перевірці",
 
   "adminSettings.title": "Налаштування прокату",
   "adminSettings.hours": "Години роботи",
@@ -328,11 +332,44 @@ export const uk: Record<MessageKey, Message> = {
   "notify.cancelledByAdmin": "Ваше бронювання скасував адміністратор",
   "notify.priceChanged": "Ціна вашого бронювання змінилася",
   "notify.reason": "Причина: {reason}",
+  "notify.completed": "Оренду завершено. Дякуємо, що обрали WroRent!",
+  "notify.reviewAsk": "Розкажіть, як вам велосипед?",
+  "notify.leaveReview": "Залишити відгук",
+  "notify.newReview": "⭐ Новий відгук від {customer}",
 
   "contact.title": "Зв'язатися з нами",
   "contact.write": "Написати в Telegram",
   "contact.writeHint": "Питання про оренду й бронювання",
   "contact.call": "Зателефонувати",
+
+  "review.title": "Відгуки",
+  "review.formTitle": "Як вам велосипед?",
+  "review.commentPlaceholder": "Розкажіть, як минула поїздка (необов'язково)",
+  "review.moderationHint":
+    "Відгук з'явиться на сторінці велосипеда після перевірки.",
+  "review.submit": "Надіслати відгук",
+  "review.ratingRequired": "Поставте оцінку від 1 до 5",
+  "review.sendFailed": "Не вдалося надіслати відгук. Спробуйте ще раз.",
+  "review.yours": "Ваш відгук",
+  "review.ownPending": "На перевірці",
+  "review.ownApproved": "Опубліковано",
+  "review.ownHidden": "Не опубліковано",
+  "review.readMore": "Читати повністю",
+  "review.readLess": "Згорнути",
+  "review.starLabel": "Оцінка {count} з 5",
+
+  "adminReviews.pendingTitle": "Відгуки на перевірці",
+  "adminReviews.pendingEmpty": "Нових відгуків немає",
+  "adminReviews.pendingEmptyHint":
+    "Усі відгуки про велосипед — на його сторінці в автопарку.",
+  "adminReviews.bikeEmpty": "Відгуків поки немає",
+  "adminReviews.approve": "Схвалити",
+  "adminReviews.hide": "Приховати",
+  "adminReviews.show": "Показати",
+  "adminReviews.statusPending": "На перевірці",
+  "adminReviews.statusApproved": "Видно",
+  "adminReviews.statusHidden": "Приховано",
+  "adminReviews.failed": "Не вийшло. Спробуйте ще раз.",
 
   "bot.welcome": "Привіт! Це WroRent — прокат велосипедів у Вроцлаві 🚲",
   "bot.openApp": "Відкрити застосунок",

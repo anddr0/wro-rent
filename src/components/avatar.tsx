@@ -34,6 +34,9 @@ export function Avatar({ photoUrl, name, size = 80 }: AvatarProps) {
       alt={name}
       width={size}
       height={size}
+      // Telegram's avatars are small already, and Vercel's image optimization
+      // has a monthly limit: with reviews there are many different avatars.
+      unoptimized
       className="rounded-full"
       onError={() => setHasFailed(true)}
     />

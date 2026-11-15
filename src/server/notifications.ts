@@ -7,6 +7,7 @@ import type { MessageKey } from "@/lib/i18n/messages/ru";
 import { createTranslate } from "@/lib/i18n/translate";
 import type { Translate } from "@/lib/i18n/translate";
 import { formatPeriod } from "@/lib/rental-time";
+import { ratingAsStars } from "@/lib/reviews";
 import type { Supabase } from "@/server/supabase";
 import { sendTelegramMessage } from "@/server/telegram";
 
@@ -26,16 +27,7 @@ export async function notifyAdminsAboutNewBooking(
   booking: CustomerBooking,
   customer: Pick<Tables<"users">, "full_name" | "username">,
 ): Promise<void> {
-  const { data: admins, error } = await supabase
-    .from("users")
-    .select("telegram_id, locale, language_code")
-    .eq("role", "admin");
-
-  if (error) {
-    // The request is saved and shows up in the admin's list anyway.
-    console.error("Could not load admins to notify:", error.message);
-    return;
-  }
+  const admins = await listAdmins(supabase);
 
   let customerName = customer.full_name;
   if (customer.username) {
@@ -71,7 +63,9 @@ export type CustomerNotice =
   // Another request for these dates was confirmed first.
   | "datesTaken"
   | "cancelledByAdmin"
-  | "priceChanged";
+  | "priceChanged"
+  // The bike is back: thanks, and an invitation to review it.
+  | "completed";
 
 const NOTICE_TITLES: Record<CustomerNotice, MessageKey> = {
   confirmed: "notify.confirmed",
@@ -79,6 +73,7 @@ const NOTICE_TITLES: Record<CustomerNotice, MessageKey> = {
   datesTaken: "notify.datesTaken",
   cancelledByAdmin: "notify.cancelledByAdmin",
   priceChanged: "notify.priceChanged",
+  completed: "notify.completed",
 };
 
 // Tells the customer what happened to their booking, in their language.
@@ -100,10 +95,67 @@ export async function notifyCustomer(
     lines.push("", t("notify.reason", { reason: booking.declineReason }));
   }
 
+  // The review is left in the booking card, so the button leads there too.
+  let buttonText = t("notify.open");
+  if (notice === "completed") {
+    lines.push("", t("notify.reviewAsk"));
+    buttonText = t("notify.leaveReview");
+  }
+
   await sendTelegramMessage(customer.telegram_id, lines.join("\n"), {
-    text: t("notify.open"),
+    text: buttonText,
     path: `/bookings/${booking.id}`,
   });
+}
+
+export type NewReviewNotice = {
+  customerName: string;
+  bikeName: string;
+  rating: number;
+  comment: string | null;
+};
+
+// Tells every admin about a review that waits for approval.
+export async function notifyAdminsAboutNewReview(
+  supabase: Supabase,
+  review: NewReviewNotice,
+): Promise<void> {
+  const admins = await listAdmins(supabase);
+
+  await Promise.all(
+    admins.map((admin) => {
+      const t = createTranslate(recipientLocale(admin));
+
+      const lines = [
+        t("notify.newReview", { customer: review.customerName }),
+        "",
+        `${review.bikeName} · ${ratingAsStars(review.rating)}`,
+      ];
+      if (review.comment) {
+        lines.push("", review.comment);
+      }
+
+      return sendTelegramMessage(admin.telegram_id, lines.join("\n"), {
+        text: t("notify.open"),
+        path: "/admin/reviews",
+      });
+    }),
+  );
+}
+
+// Everyone with the admin role. An empty list if they couldn't be loaded:
+// what the message is about is saved and shows up in the admin's lists anyway.
+async function listAdmins(supabase: Supabase): Promise<Recipient[]> {
+  const { data, error } = await supabase
+    .from("users")
+    .select("telegram_id, locale, language_code")
+    .eq("role", "admin");
+
+  if (error) {
+    console.error("Could not load admins to notify:", error.message);
+    return [];
+  }
+  return data;
 }
 
 // The booking in three lines: the bike, the dates, the plan and the price.

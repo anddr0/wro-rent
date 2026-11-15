@@ -70,6 +70,8 @@ export type AdminSummaryResponse = {
   // of today (Warsaw time), the overdue ones included.
   toHandOutCount: number;
   toTakeBackCount: number;
+  // Reviews no admin has looked at yet.
+  pendingReviewsCount: number;
   // Requests waiting for an answer, the oldest first.
   pendingBookings: AdminBooking[];
 };

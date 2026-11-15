@@ -38,9 +38,9 @@ export const ru = {
   "common.loadFailed": "Не удалось загрузить",
   "common.retry": "Повторить",
   "common.saveFailed": "Не удалось сохранить. Попробуйте ещё раз.",
-
   "common.pageCrashed": "Что-то пошло не так",
   "common.pageNotFound": "Такой страницы нет",
+
   "status.pending": "Ожидает",
   "status.confirmed": "Подтверждена",
   "status.active": "Велосипед у клиента",
@@ -97,6 +97,9 @@ export const ru = {
   "book.errorWriteAccess":
     "Разрешите боту писать вам: иначе мы не сможем сообщить ответ.",
   "book.errorGeneric": "Не удалось отправить заявку. Попробуйте ещё раз.",
+  "book.limitTitle": "Незакрытых броней уже {count} — это максимум",
+  "book.limitHint":
+    "Новую заявку можно оставить, когда одна из них завершится или вы её отмените.",
 
   "duration.hour": {
     one: "{count} час",
@@ -179,6 +182,7 @@ export const ru = {
   "adminHome.plansHint": "Цены для всех велосипедов",
   "adminHome.settings": "Часы и контакт",
   "adminHome.settingsHint": "Часы работы, контакт для клиентов",
+  "adminHome.reviews": "Отзывы на проверке",
 
   "adminSettings.title": "Настройки проката",
   "adminSettings.hours": "Часы работы",
@@ -338,11 +342,44 @@ export const ru = {
   "notify.cancelledByAdmin": "Вашу бронь отменил администратор",
   "notify.priceChanged": "Цена вашей брони изменилась",
   "notify.reason": "Причина: {reason}",
+  "notify.completed": "Аренда завершена. Спасибо, что выбрали WroRent!",
+  "notify.reviewAsk": "Расскажите, как вам велосипед?",
+  "notify.leaveReview": "Оставить отзыв",
+  "notify.newReview": "⭐ Новый отзыв от {customer}",
 
   "contact.title": "Связаться с нами",
   "contact.write": "Написать в Telegram",
   "contact.writeHint": "Вопросы про аренду и брони",
   "contact.call": "Позвонить",
+
+  "review.title": "Отзывы",
+  "review.formTitle": "Как вам велосипед?",
+  "review.commentPlaceholder": "Расскажите, как прошла поездка (необязательно)",
+  "review.moderationHint":
+    "Отзыв появится на странице велосипеда после проверки.",
+  "review.submit": "Отправить отзыв",
+  "review.ratingRequired": "Поставьте оценку от 1 до 5",
+  "review.sendFailed": "Не удалось отправить отзыв. Попробуйте ещё раз.",
+  "review.yours": "Ваш отзыв",
+  "review.ownPending": "На проверке",
+  "review.ownApproved": "Опубликован",
+  "review.ownHidden": "Не опубликован",
+  "review.readMore": "Читать полностью",
+  "review.readLess": "Свернуть",
+  "review.starLabel": "Оценка {count} из 5",
+
+  "adminReviews.pendingTitle": "Отзывы на проверке",
+  "adminReviews.pendingEmpty": "Новых отзывов нет",
+  "adminReviews.pendingEmptyHint":
+    "Все отзывы велосипеда — на его странице в автопарке.",
+  "adminReviews.bikeEmpty": "Отзывов пока нет",
+  "adminReviews.approve": "Одобрить",
+  "adminReviews.hide": "Скрыть",
+  "adminReviews.show": "Показать",
+  "adminReviews.statusPending": "На проверке",
+  "adminReviews.statusApproved": "Виден",
+  "adminReviews.statusHidden": "Скрыт",
+  "adminReviews.failed": "Не получилось. Попробуйте ещё раз.",
 
   "bot.welcome": "Привет! Это WroRent — прокат велосипедов во Вроцлаве 🚲",
   "bot.openApp": "Открыть приложение",

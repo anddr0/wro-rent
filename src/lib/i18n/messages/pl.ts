@@ -25,9 +25,9 @@ export const pl: Record<MessageKey, Message> = {
   "common.loadFailed": "Nie udało się wczytać",
   "common.retry": "Spróbuj ponownie",
   "common.saveFailed": "Nie udało się zapisać. Spróbuj ponownie.",
-
   "common.pageCrashed": "Coś poszło nie tak",
   "common.pageNotFound": "Nie ma takiej strony",
+
   "status.pending": "Oczekuje",
   "status.confirmed": "Potwierdzona",
   "status.active": "Rower u klienta",
@@ -86,6 +86,9 @@ export const pl: Record<MessageKey, Message> = {
   "book.errorWriteAccess":
     "Pozwól botowi pisać do Ciebie: inaczej nie przekażemy odpowiedzi.",
   "book.errorGeneric": "Nie udało się wysłać zgłoszenia. Spróbuj ponownie.",
+  "book.limitTitle": "Masz już {count} otwarte rezerwacje — to maksimum",
+  "book.limitHint":
+    "Nowe zgłoszenie wyślesz, gdy jedna z nich się zakończy albo ją anulujesz.",
 
   "duration.hour": {
     one: "{count} godzina",
@@ -170,6 +173,7 @@ export const pl: Record<MessageKey, Message> = {
   "adminHome.plansHint": "Ceny dla wszystkich rowerów",
   "adminHome.settings": "Godziny i kontakt",
   "adminHome.settingsHint": "Godziny pracy, kontakt dla klientów",
+  "adminHome.reviews": "Opinie do sprawdzenia",
 
   "adminSettings.title": "Ustawienia wypożyczalni",
   "adminSettings.hours": "Godziny pracy",
@@ -335,11 +339,44 @@ export const pl: Record<MessageKey, Message> = {
     "Twoja rezerwacja została anulowana przez administratora",
   "notify.priceChanged": "Cena Twojej rezerwacji została zmieniona",
   "notify.reason": "Powód: {reason}",
+  "notify.completed": "Wynajem zakończony. Dziękujemy za wybór WroRent!",
+  "notify.reviewAsk": "Jak Ci się jeździło? Zostaw opinię o rowerze.",
+  "notify.leaveReview": "Zostaw opinię",
+  "notify.newReview": "⭐ Nowa opinia od {customer}",
 
   "contact.title": "Kontakt",
   "contact.write": "Napisz w Telegramie",
   "contact.writeHint": "Pytania o wynajem i rezerwacje",
   "contact.call": "Zadzwoń",
+
+  "review.title": "Opinie",
+  "review.formTitle": "Jak Ci się podobał rower?",
+  "review.commentPlaceholder": "Opowiedz, jak minęła jazda (opcjonalnie)",
+  "review.moderationHint":
+    "Opinia pojawi się na stronie roweru po sprawdzeniu.",
+  "review.submit": "Wyślij opinię",
+  "review.ratingRequired": "Wybierz ocenę od 1 do 5",
+  "review.sendFailed": "Nie udało się wysłać opinii. Spróbuj ponownie.",
+  "review.yours": "Twoja opinia",
+  "review.ownPending": "W trakcie sprawdzania",
+  "review.ownApproved": "Opublikowana",
+  "review.ownHidden": "Nieopublikowana",
+  "review.readMore": "Czytaj całość",
+  "review.readLess": "Zwiń",
+  "review.starLabel": "Ocena {count} na 5",
+
+  "adminReviews.pendingTitle": "Opinie do sprawdzenia",
+  "adminReviews.pendingEmpty": "Brak nowych opinii",
+  "adminReviews.pendingEmptyHint":
+    "Wszystkie opinie o rowerze są na jego stronie we flocie.",
+  "adminReviews.bikeEmpty": "Na razie brak opinii",
+  "adminReviews.approve": "Zatwierdź",
+  "adminReviews.hide": "Ukryj",
+  "adminReviews.show": "Pokaż",
+  "adminReviews.statusPending": "Do sprawdzenia",
+  "adminReviews.statusApproved": "Widoczna",
+  "adminReviews.statusHidden": "Ukryta",
+  "adminReviews.failed": "Nie udało się. Spróbuj ponownie.",
 
   "bot.welcome": "Cześć! To WroRent — wypożyczalnia rowerów we Wrocławiu 🚲",
   "bot.openApp": "Otwórz aplikację",

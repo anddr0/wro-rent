@@ -10,6 +10,9 @@ export type ApiErrorCode =
   | "write_access_required"
   // Someone changed the booking in the meantime, e.g. it's already cancelled.
   | "status_changed"
+  // A review: the rental isn't completed, or it already has a review.
+  | "review_not_allowed"
+  | "already_reviewed"
   // Admin: the bike has bookings and can only be archived.
   | "bike_has_bookings"
   | "too_many_photos"

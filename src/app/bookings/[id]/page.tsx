@@ -10,14 +10,21 @@ import { ErrorState } from "@/components/error-state";
 import { FormError } from "@/components/form-error";
 import { NotFoundText } from "@/components/not-found-text";
 import { PageTitle } from "@/components/page-title";
+import { OwnReviewCard } from "@/components/reviews/own-review";
+import { ReviewForm } from "@/components/reviews/review-form";
 import { DetailRow, Section } from "@/components/section";
 import { Skeleton } from "@/components/skeleton";
 import { SupportContacts } from "@/components/support-contacts";
 import { apiErrorCode, apiSendJson } from "@/lib/api";
-import type { BookingResponse, CustomerBooking } from "@/lib/bookings";
+import type {
+  BookingCardResponse,
+  BookingResponse,
+  CustomerBooking,
+} from "@/lib/bookings";
 import type { MessageKey } from "@/lib/i18n/messages/ru";
 import { useLocale, useT } from "@/lib/i18n/use-t";
 import { formatDateTime } from "@/lib/rental-time";
+import type { OwnReview } from "@/lib/reviews";
 import { confirmInTelegram } from "@/lib/telegram/dialogs";
 import { useTelegram } from "@/lib/telegram/use-telegram";
 import { isNotFound, refreshApi, useApi } from "@/lib/use-api";
@@ -25,7 +32,7 @@ import { isNotFound, refreshApi, useApi } from "@/lib/use-api";
 export default function BookingPage() {
   const t = useT();
   const { id } = useParams<{ id: string }>();
-  const { data, error, mutate } = useApi<BookingResponse>(
+  const { data, error, mutate } = useApi<BookingCardResponse>(
     `/api/bookings/${id}`,
   );
 
@@ -39,11 +46,24 @@ export default function BookingPage() {
     return <Skeleton className="h-96 rounded-xl" />;
   }
 
-  return <BookingCard booking={data.booking} />;
+  return (
+    <BookingCard
+      booking={data.booking}
+      review={data.review}
+      onReviewSent={() => mutate()}
+    />
+  );
 }
 
+type BookingCardProps = {
+  booking: CustomerBooking;
+  // The review the customer left after the rental, if any.
+  review: OwnReview | null;
+  onReviewSent: () => Promise<unknown>;
+};
+
 // The customer's booking with what they can do about it (К-7).
-function BookingCard({ booking }: { booking: CustomerBooking }) {
+function BookingCard({ booking, review, onReviewSent }: BookingCardProps) {
   const t = useT();
   const locale = useLocale();
   const { webApp } = useTelegram();
@@ -125,6 +145,12 @@ function BookingCard({ booking }: { booking: CustomerBooking }) {
       )}
 
       <BookingSteps booking={booking} />
+
+      {/* A bike can be reviewed once the rental is completed. */}
+      {review !== null && <OwnReviewCard review={review} />}
+      {review === null && booking.status === "completed" && (
+        <ReviewForm bookingId={booking.id} onSent={onReviewSent} />
+      )}
 
       {booking.status === "pending" && (
         <Button

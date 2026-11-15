@@ -1,8 +1,9 @@
-import type { BookingResponse } from "@/lib/bookings";
+import type { BookingCardResponse } from "@/lib/bookings";
 import { requireUser } from "@/server/auth";
 import { findCustomerBooking } from "@/server/bookings";
 import { HttpError, withErrorHandling } from "@/server/http";
 import { isUuid } from "@/server/request";
+import { findOwnReview } from "@/server/reviews";
 import { createSupabaseClient } from "@/server/supabase";
 
 // One of the user's own bookings. Someone else's is "not found", like a missing one.
@@ -15,16 +16,16 @@ export const GET = withErrorHandling(
       throw new HttpError(404, "Booking not found");
     }
 
-    const booking = await findCustomerBooking(
-      createSupabaseClient(),
-      user.id,
-      id,
-    );
+    const supabase = createSupabaseClient();
+    const [booking, review] = await Promise.all([
+      findCustomerBooking(supabase, user.id, id),
+      findOwnReview(supabase, id),
+    ]);
     if (!booking) {
       throw new HttpError(404, "Booking not found");
     }
 
-    const response: BookingResponse = { booking };
+    const response: BookingCardResponse = { booking, review };
     return Response.json(response);
   },
 );

@@ -1,6 +1,7 @@
 "use client";
 
 import { Bike, CalendarDays, Clock, Tags } from "lucide-react";
+import Link from "next/link";
 import { ErrorState } from "@/components/error-state";
 import { Greeting } from "@/components/home/greeting";
 import { Row, Section, SectionTitle } from "@/components/section";
@@ -88,18 +89,27 @@ function TodaySummary() {
     <>
       <section className="flex flex-col gap-2">
         <SectionTitle>{t("adminHome.today")}</SectionTitle>
-        <div className="grid grid-cols-3 gap-2">
+        {/* Four tiles, two in a row: no empty corner. */}
+        <div className="grid grid-cols-2 gap-2">
           <SummaryTile
             count={pendingCount}
             label={t("adminHome.newRequests", { count: pendingCount })}
+            href="/admin/bookings"
+          />
+          <SummaryTile
+            count={data.pendingReviewsCount}
+            label={t("adminHome.reviews")}
+            href="/admin/reviews"
           />
           <SummaryTile
             count={data.toHandOutCount}
             label={t("adminHome.toHandOut")}
+            href="/admin/bookings"
           />
           <SummaryTile
             count={data.toTakeBackCount}
             label={t("adminHome.toTakeBack")}
+            href="/admin/bookings"
           />
         </div>
       </section>
@@ -128,15 +138,20 @@ function TodaySummary() {
 type SummaryTileProps = {
   count: number;
   label: string;
+  // The page where the things counted here are dealt with.
+  href: string;
 };
 
-function SummaryTile({ count, label }: SummaryTileProps) {
+function SummaryTile({ count, label, href }: SummaryTileProps) {
   return (
-    <div className="flex flex-col gap-1 rounded-xl border bg-card p-4 shadow-sm">
+    <Link
+      href={href}
+      className="flex flex-col gap-1 rounded-xl border bg-card p-4 shadow-sm transition-colors active:bg-muted"
+    >
       <span className="text-3xl font-semibold tracking-tight">{count}</span>
       <span className="text-sm leading-tight text-muted-foreground">
         {label}
       </span>
-    </div>
+    </Link>
   );
 }

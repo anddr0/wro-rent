@@ -86,6 +86,10 @@ export const en: Record<MessageKey, Message> = {
   "book.errorWriteAccess":
     "Let the bot write to you: otherwise we can't send you the answer.",
   "book.errorGeneric": "Couldn't send the request. Try again.",
+  "book.limitTitle":
+    "You already have {count} open bookings — that's the maximum",
+  "book.limitHint":
+    "You can send a new request when one of them is over or you cancel it.",
 
   "duration.hour": {
     one: "{count} hour",
@@ -160,6 +164,7 @@ export const en: Record<MessageKey, Message> = {
   "adminHome.plansHint": "Prices for all bikes",
   "adminHome.settings": "Hours and contact",
   "adminHome.settingsHint": "Opening hours, contact for customers",
+  "adminHome.reviews": "Reviews to check",
 
   "adminSettings.title": "Rental settings",
   "adminSettings.hours": "Opening hours",
@@ -326,11 +331,44 @@ export const en: Record<MessageKey, Message> = {
   "notify.cancelledByAdmin": "Your booking was cancelled by the administrator",
   "notify.priceChanged": "The price of your booking has changed",
   "notify.reason": "Reason: {reason}",
+  "notify.completed": "The rental is over. Thanks for choosing WroRent!",
+  "notify.reviewAsk": "How was the bike? Leave a review.",
+  "notify.leaveReview": "Leave a review",
+  "notify.newReview": "⭐ New review from {customer}",
 
   "contact.title": "Contact us",
   "contact.write": "Write in Telegram",
   "contact.writeHint": "Questions about rentals and bookings",
   "contact.call": "Call",
+
+  "review.title": "Reviews",
+  "review.formTitle": "How was the bike?",
+  "review.commentPlaceholder": "Tell us how the ride went (optional)",
+  "review.moderationHint":
+    "The review will appear on the bike's page after a check.",
+  "review.submit": "Send review",
+  "review.ratingRequired": "Pick a rating from 1 to 5",
+  "review.sendFailed": "Couldn't send the review. Try again.",
+  "review.yours": "Your review",
+  "review.ownPending": "Being checked",
+  "review.ownApproved": "Published",
+  "review.ownHidden": "Not published",
+  "review.readMore": "Read more",
+  "review.readLess": "Show less",
+  "review.starLabel": "Rating {count} out of 5",
+
+  "adminReviews.pendingTitle": "Reviews to check",
+  "adminReviews.pendingEmpty": "No new reviews",
+  "adminReviews.pendingEmptyHint":
+    "All reviews of a bike are on its page in the fleet.",
+  "adminReviews.bikeEmpty": "No reviews yet",
+  "adminReviews.approve": "Approve",
+  "adminReviews.hide": "Hide",
+  "adminReviews.show": "Show",
+  "adminReviews.statusPending": "To check",
+  "adminReviews.statusApproved": "Visible",
+  "adminReviews.statusHidden": "Hidden",
+  "adminReviews.failed": "That didn't work. Try again.",
 
   "bot.welcome": "Hi! This is WroRent — bike rental in Wrocław 🚲",
   "bot.openApp": "Open the app",

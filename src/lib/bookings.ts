@@ -1,6 +1,7 @@
 // What the bookings API sends to the mini app.
 import type { Availability } from "@/lib/booking-slots";
 import type { Enums } from "@/lib/database.types";
+import type { OwnReview } from "@/lib/reviews";
 
 export type BookingStatus = Enums<"booking_status">;
 
@@ -29,8 +30,15 @@ export type CustomerBooking = {
 // GET /api/bookings
 export type BookingsResponse = { bookings: CustomerBooking[] };
 
-// GET /api/bookings/[id], POST /api/bookings, POST /api/bookings/[id]/cancel
+// POST /api/bookings, POST /api/bookings/[id]/cancel
 export type BookingResponse = { booking: CustomerBooking };
+
+// GET /api/bookings/[id]: the booking and the review its customer left
+// after the rental, if any.
+export type BookingCardResponse = {
+  booking: CustomerBooking;
+  review: OwnReview | null;
+};
 
 // GET /api/bikes/[id]/availability
 export type AvailabilityResponse = Availability;

@@ -1,5 +1,6 @@
 // What the catalog API sends to the mini app: only the fields customers see.
 import type { Tables } from "@/lib/database.types";
+import type { BikeReviews } from "@/lib/reviews";
 
 type BikeFields = Pick<Tables<"bikes">, "id" | "name" | "description">;
 
@@ -25,4 +26,6 @@ export type BikesResponse = {
 export type BikeResponse = {
   bike: BikeDetails;
   plans: CatalogPlan[];
+  // Approved reviews and the average rating.
+  reviews: BikeReviews;
 };

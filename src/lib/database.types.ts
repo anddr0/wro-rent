@@ -43,6 +43,38 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"bike_reviews": {
+                  Row: {
+                    "bike_id": string,"booking_id": string,"comment": string | null,"created_at": string,"id": string,"rating": number,"status": Database["public"]['Enums']["review_status"],"updated_at": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "bike_id": string,"booking_id": string,"comment"?: string | null,"created_at"?: string,"id"?: string,"rating": number,"status"?: Database["public"]['Enums']["review_status"],"updated_at"?: string,"user_id": string
+                  }
+                  Update: {
+                    "bike_id"?: string,"booking_id"?: string,"comment"?: string | null,"created_at"?: string,"id"?: string,"rating"?: number,"status"?: Database["public"]['Enums']["review_status"],"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "bike_reviews_bike_id_fkey"
+      columns: ["bike_id"]
+isOneToOne: false
+      referencedRelation: "bikes"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "bike_reviews_booking_id_fkey"
+      columns: ["booking_id"]
+isOneToOne: true
+      referencedRelation: "bookings"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "bike_reviews_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "users"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"bikes": {
                   Row: {
                     "archived_at": string | null,"created_at": string,"description": string | null,"id": string,"is_available": boolean,"name": string,"updated_at": string
@@ -142,7 +174,7 @@ isOneToOne: false
                            }
           }
           Enums: {
-            "booking_status": "pending"|"confirmed"|"active"|"completed"|"cancelled"|"rejected","duration_unit": "hour"|"day"|"week"|"month","payment_method": "cash"|"card"|"blik","user_role": "customer"|"admin"
+            "booking_status": "pending"|"confirmed"|"active"|"completed"|"cancelled"|"rejected","duration_unit": "hour"|"day"|"week"|"month","payment_method": "cash"|"card"|"blik","review_status": "pending"|"approved"|"hidden","user_role": "customer"|"admin"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -262,7 +294,7 @@ export const Constants = {
           }
         },"public": {
           Enums: {
-            "booking_status": ["pending", "confirmed", "active", "completed", "cancelled", "rejected"],"duration_unit": ["hour", "day", "week", "month"],"payment_method": ["cash", "card", "blik"],"user_role": ["customer", "admin"]
+            "booking_status": ["pending", "confirmed", "active", "completed", "cancelled", "rejected"],"duration_unit": ["hour", "day", "week", "month"],"payment_method": ["cash", "card", "blik"],"review_status": ["pending", "approved", "hidden"],"user_role": ["customer", "admin"]
           }
         }
 } as const

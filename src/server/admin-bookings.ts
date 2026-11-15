@@ -15,6 +15,7 @@ import { toCustomerBooking } from "@/server/bookings";
 import type { BookingRow } from "@/server/bookings";
 import { HttpError } from "@/server/http";
 import { notifyCustomer } from "@/server/notifications";
+import { countPendingReviews } from "@/server/reviews";
 import type { CustomerNotice, Recipient } from "@/server/notifications";
 import type { Supabase } from "@/server/supabase";
 
@@ -172,6 +173,8 @@ export async function performBookingAction(
       status: "completed",
       returned_at: now,
     });
+    // The customer is thanked and asked for a review of the bike.
+    notice = "completed";
   }
 
   const booking = toAdminBooking(row);
@@ -350,25 +353,27 @@ export async function getAdminSummary(
     minute: 0,
   }).toISOString();
 
-  const [pending, toHandOut, toTakeBack] = await Promise.all([
-    supabase
-      .from("bookings")
-      .select(ADMIN_BOOKING_FIELDS)
-      .eq("status", "pending")
-      .order("created_at")
-      .limit(LIST_LIMIT),
-    // `head: true` asks only for the number of rows, not the rows.
-    supabase
-      .from("bookings")
-      .select("id", { count: "exact", head: true })
-      .eq("status", "confirmed")
-      .lt("starts_at", endOfToday),
-    supabase
-      .from("bookings")
-      .select("id", { count: "exact", head: true })
-      .eq("status", "active")
-      .lt("ends_at", endOfToday),
-  ]);
+  const [pending, toHandOut, toTakeBack, pendingReviewsCount] =
+    await Promise.all([
+      supabase
+        .from("bookings")
+        .select(ADMIN_BOOKING_FIELDS)
+        .eq("status", "pending")
+        .order("created_at")
+        .limit(LIST_LIMIT),
+      // `head: true` asks only for the number of rows, not the rows.
+      supabase
+        .from("bookings")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "confirmed")
+        .lt("starts_at", endOfToday),
+      supabase
+        .from("bookings")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "active")
+        .lt("ends_at", endOfToday),
+      countPendingReviews(supabase),
+    ]);
 
   if (pending.error) {
     throw pending.error;
@@ -383,6 +388,7 @@ export async function getAdminSummary(
   return {
     toHandOutCount: toHandOut.count ?? 0,
     toTakeBackCount: toTakeBack.count ?? 0,
+    pendingReviewsCount,
     pendingBookings: pending.data.map(toAdminBooking),
   };
 }

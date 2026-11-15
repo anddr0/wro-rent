@@ -7,6 +7,7 @@ import { ButtonLink } from "@/components/button";
 import { ErrorState } from "@/components/error-state";
 import { NotFoundText } from "@/components/not-found-text";
 import { PageTitle } from "@/components/page-title";
+import { ReviewCarousel } from "@/components/reviews/review-carousel";
 import { Row, Section } from "@/components/section";
 import { Skeleton } from "@/components/skeleton";
 import type { BikeResponse } from "@/lib/catalog";
@@ -63,6 +64,11 @@ export default function BikePage() {
           ))}
         </Section>
       )}
+
+      <ReviewCarousel
+        reviews={data.reviews.reviews}
+        averageRating={data.reviews.averageRating}
+      />
 
       {/* Without an active plan there is nothing to book. */}
       {plans.length > 0 && (

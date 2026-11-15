@@ -3,6 +3,7 @@
 import { Archive, ArchiveRestore, Trash2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
+import { AdminReviewList } from "@/components/admin/admin-review-list";
 import { BikeForm } from "@/components/admin/bike-form";
 import { BikePhotosEditor } from "@/components/admin/bike-photos-editor";
 import { HiddenBadge } from "@/components/admin/hidden-badge";
@@ -11,6 +12,7 @@ import { ErrorState } from "@/components/error-state";
 import { FormError } from "@/components/form-error";
 import { NotFoundText } from "@/components/not-found-text";
 import { PageTitle } from "@/components/page-title";
+import { SectionTitle } from "@/components/section";
 import { Skeleton } from "@/components/skeleton";
 import type {
   AdminBikeDetails,
@@ -147,6 +149,15 @@ function BikeEditor({ bike }: { bike: AdminBikeDetails }) {
 
         {hasFailed && <FormError>{t("adminBike.actionFailed")}</FormError>}
       </div>
+
+      <section className="flex flex-col gap-2">
+        <SectionTitle>{t("review.title")}</SectionTitle>
+        <AdminReviewList
+          query={`bikeId=${bike.id}`}
+          showBikeName={false}
+          emptyTitle={t("adminReviews.bikeEmpty")}
+        />
+      </section>
 
       {/* Last: the form ends with the pinned "Save" button. */}
       <BikeForm
