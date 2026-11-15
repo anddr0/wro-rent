@@ -10,6 +10,7 @@ import { findVisibleBike } from "@/server/catalog";
 import { HttpError } from "@/server/http";
 import { getRentalSettings } from "@/server/settings";
 import type { Supabase } from "@/server/supabase";
+import { isBikeUnavailable, listUnavailableTimes } from "@/server/unavailable";
 
 // The columns of a booking the customer sees, with its bike and plan.
 export const BOOKING_FIELDS =
@@ -84,7 +85,7 @@ export async function getBikeAvailability(
   userId: string,
   now: Date,
 ): Promise<Availability> {
-  const [bookings, settings] = await Promise.all([
+  const [bookings, settings, unavailableTimes] = await Promise.all([
     supabase
       .from("bookings")
       .select("user_id, status, starts_at, ends_at")
@@ -93,13 +94,15 @@ export async function getBikeAvailability(
       .gt("ends_at", now.toISOString())
       .order("starts_at"),
     getRentalSettings(supabase),
+    listUnavailableTimes(supabase, bikeId, now),
   ]);
 
   if (bookings.error) {
     throw bookings.error;
   }
 
-  const busy: Period[] = [];
+  // Times an admin marked the bike unavailable for are busy too.
+  const busy: Period[] = [...unavailableTimes];
   const pending: Period[] = [];
   for (const booking of bookings.data) {
     const period = { startsAt: booking.starts_at, endsAt: booking.ends_at };
@@ -260,6 +263,11 @@ async function checkDatesAreFree(
     throw error;
   }
   if (data.length > 0) {
+    throw new HttpError(409, "These dates are taken", "dates_taken");
+  }
+
+  // For the customer a time the admin closed is the same as a taken one.
+  if (await isBikeUnavailable(supabase, bikeId, startsAt, endsAt)) {
     throw new HttpError(409, "These dates are taken", "dates_taken");
   }
 }

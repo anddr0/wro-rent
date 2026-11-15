@@ -252,6 +252,8 @@ export const ru = {
   "adminBooking.reasonHint":
     "Клиент получит сообщение. Причину увидит в нём и в карточке брони.",
   "adminBooking.back": "Назад",
+  "adminBooking.errorBikeUnavailable":
+    "Велосипед отмечен недоступным на эти даты. Уберите период в карточке велосипеда или отклоните заявку.",
 
   "payment.cash": "Наличные",
   "payment.blik": "BLIK",
@@ -381,6 +383,28 @@ export const ru = {
   "adminReviews.statusApproved": "Виден",
   "adminReviews.statusHidden": "Скрыт",
   "adminReviews.failed": "Не получилось. Попробуйте ещё раз.",
+
+  "unavailable.title": "Недоступен",
+  "unavailable.formHint":
+    "На это время клиенты не смогут забронировать велосипед.",
+  "unavailable.empty":
+    "Периодов нет: велосипед можно бронировать в любое рабочее время.",
+  "unavailable.add": "Добавить период",
+  "unavailable.delete": "Убрать период",
+  "unavailable.deleteConfirm":
+    "Убрать период? Велосипед снова можно будет бронировать на это время.",
+  "unavailable.wholeDays": "Весь день",
+  "unavailable.from": "С",
+  "unavailable.to": "По",
+  "unavailable.withTime": "Указать время",
+  "unavailable.withTimeHint": "Иначе — дни целиком",
+  "unavailable.startTime": "Время начала",
+  "unavailable.endTime": "Время конца",
+  "unavailable.datesRequired": "Укажите обе даты",
+  "unavailable.endBeforeStart": "Конец должен быть позже начала",
+  "unavailable.clashTitle": "На это время уже есть бронь",
+  "unavailable.clashHint":
+    "Период можно сохранить, брони при этом не изменятся.",
 
   "bot.welcome": "Привет! Это WroRent — прокат велосипедов во Вроцлаве 🚲",
   "bot.openApp": "Открыть приложение",

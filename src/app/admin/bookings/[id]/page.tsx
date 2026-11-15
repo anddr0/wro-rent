@@ -92,6 +92,8 @@ function AdminBookingCard({ booking }: { booking: AdminBooking }) {
       const code = apiErrorCode(error);
       if (code === "dates_taken") {
         setErrorKey("adminBooking.errorDatesTaken");
+      } else if (code === "bike_unavailable") {
+        setErrorKey("adminBooking.errorBikeUnavailable");
       } else if (code === "status_changed") {
         setErrorKey("adminBooking.errorStatusChanged");
       } else {

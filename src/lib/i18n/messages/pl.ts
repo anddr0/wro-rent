@@ -245,6 +245,8 @@ export const pl: Record<MessageKey, Message> = {
   "adminBooking.reasonHint":
     "Klient dostanie wiadomość. Powód zobaczy w niej i w karcie rezerwacji.",
   "adminBooking.back": "Wróć",
+  "adminBooking.errorBikeUnavailable":
+    "Rower jest oznaczony jako niedostępny w tym terminie. Usuń okres na stronie roweru albo odrzuć zgłoszenie.",
 
   "payment.cash": "Gotówka",
   "payment.blik": "BLIK",
@@ -378,6 +380,27 @@ export const pl: Record<MessageKey, Message> = {
   "adminReviews.statusApproved": "Widoczna",
   "adminReviews.statusHidden": "Ukryta",
   "adminReviews.failed": "Nie udało się. Spróbuj ponownie.",
+
+  "unavailable.title": "Niedostępny",
+  "unavailable.formHint":
+    "W tym czasie klienci nie będą mogli zarezerwować roweru.",
+  "unavailable.empty":
+    "Brak okresów: rower można rezerwować w każdych godzinach pracy.",
+  "unavailable.add": "Dodaj okres",
+  "unavailable.delete": "Usuń okres",
+  "unavailable.deleteConfirm":
+    "Usunąć okres? Rower znów będzie można rezerwować w tym czasie.",
+  "unavailable.wholeDays": "Cały dzień",
+  "unavailable.from": "Od",
+  "unavailable.to": "Do",
+  "unavailable.withTime": "Podaj godziny",
+  "unavailable.withTimeHint": "W przeciwnym razie całe dni",
+  "unavailable.startTime": "Godzina rozpoczęcia",
+  "unavailable.endTime": "Godzina zakończenia",
+  "unavailable.datesRequired": "Podaj obie daty",
+  "unavailable.endBeforeStart": "Koniec musi być później niż początek",
+  "unavailable.clashTitle": "W tym czasie jest już rezerwacja",
+  "unavailable.clashHint": "Okres można zapisać, rezerwacje się nie zmienią.",
 
   "bot.welcome": "Cześć! To WroRent — wypożyczalnia rowerów we Wrocławiu 🚲",
   "bot.openApp": "Otwórz aplikację",

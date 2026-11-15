@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { AdminReviewList } from "@/components/admin/admin-review-list";
 import { BikeForm } from "@/components/admin/bike-form";
+import { BikeUnavailability } from "@/components/admin/bike-unavailability";
 import { BikePhotosEditor } from "@/components/admin/bike-photos-editor";
 import { HiddenBadge } from "@/components/admin/hidden-badge";
 import { Button } from "@/components/button";
@@ -123,7 +124,8 @@ function BikeEditor({ bike }: { bike: AdminBikeDetails }) {
         onChanged={refreshBikes}
       />
 
-      {/* The order on the page: photos, fields, reviews, then the dangerous
+      {/* The order on the page: photos, fields, unavailable times, reviews,
+          then the dangerous
           actions right above the pinned "Save" button. */}
       <BikeForm
         initialFields={{
@@ -134,6 +136,8 @@ function BikeEditor({ bike }: { bike: AdminBikeDetails }) {
         submitLabel={t("common.save")}
         onSubmit={saveBike}
       >
+        <BikeUnavailability bikeId={bike.id} />
+
         <section className="flex flex-col gap-2">
           <SectionTitle>{t("review.title")}</SectionTitle>
           <AdminReviewList

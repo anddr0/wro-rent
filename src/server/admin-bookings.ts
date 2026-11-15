@@ -18,6 +18,7 @@ import { notifyCustomer } from "@/server/notifications";
 import { countPendingReviews } from "@/server/reviews";
 import type { CustomerNotice, Recipient } from "@/server/notifications";
 import type { Supabase } from "@/server/supabase";
+import { isBikeUnavailable } from "@/server/unavailable";
 
 // BOOKING_FIELDS from bookings.ts plus what only admins see and the customer.
 // Written out in full: supabase-js reads the column types from this exact text.
@@ -66,6 +67,8 @@ export type AdminBookingsFilter = {
   // Only bookings that touch the days from `from` to `to`; null — no limit.
   from: CalendarDay | null;
   to: CalendarDay | null;
+  // Only bookings of this bike; null — of all bikes.
+  bikeId: string | null;
 };
 
 // Bookings of all customers, the newest first (А-6).
@@ -81,6 +84,9 @@ export async function listAdminBookings(
 
   if (filter.status !== "all") {
     query = query.eq("status", filter.status);
+  }
+  if (filter.bikeId !== null) {
+    query = query.eq("bike_id", filter.bikeId);
   }
   if (filter.from !== null) {
     // Still going on at the start of the first day.
@@ -237,6 +243,23 @@ async function confirmBooking(
   supabase: Supabase,
   bookingId: string,
 ): Promise<AdminBooking> {
+  // A request for a time the bike is marked unavailable for can't be
+  // confirmed: the admin removes the period first, or rejects the request.
+  const request = await getAdminBookingRow(supabase, bookingId);
+  const isUnavailable = await isBikeUnavailable(
+    supabase,
+    request.bikes.id,
+    new Date(request.starts_at),
+    new Date(request.ends_at),
+  );
+  if (isUnavailable) {
+    throw new HttpError(
+      409,
+      "The bike is marked unavailable for these dates",
+      "bike_unavailable",
+    );
+  }
+
   const { data: rejectedIds, error } = await supabase.rpc("confirm_booking", {
     p_booking_id: bookingId,
   });

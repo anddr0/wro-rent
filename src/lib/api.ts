@@ -8,6 +8,8 @@ export type ApiErrorCode =
   | "too_many_bookings"
   | "already_requested"
   | "write_access_required"
+  // Admin: the bike is marked unavailable for the dates of the request.
+  | "bike_unavailable"
   // Someone changed the booking in the meantime, e.g. it's already cancelled.
   | "status_changed"
   // The bot has an allow list and this user isn't on it.

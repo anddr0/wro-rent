@@ -238,6 +238,8 @@ export const en: Record<MessageKey, Message> = {
   "adminBooking.reasonHint":
     "The customer will get a message. They'll see the reason in it and in the booking card.",
   "adminBooking.back": "Back",
+  "adminBooking.errorBikeUnavailable":
+    "The bike is marked unavailable for these dates. Remove the period on the bike's page or reject the request.",
 
   "payment.cash": "Cash",
   "payment.blik": "BLIK",
@@ -370,6 +372,28 @@ export const en: Record<MessageKey, Message> = {
   "adminReviews.statusApproved": "Visible",
   "adminReviews.statusHidden": "Hidden",
   "adminReviews.failed": "That didn't work. Try again.",
+
+  "unavailable.title": "Unavailable",
+  "unavailable.formHint":
+    "Customers won't be able to book the bike for this time.",
+  "unavailable.empty":
+    "No periods: the bike can be booked at any opening time.",
+  "unavailable.add": "Add a period",
+  "unavailable.delete": "Remove the period",
+  "unavailable.deleteConfirm":
+    "Remove the period? The bike can be booked for this time again.",
+  "unavailable.wholeDays": "All day",
+  "unavailable.from": "From",
+  "unavailable.to": "To",
+  "unavailable.withTime": "Set the time",
+  "unavailable.withTimeHint": "Otherwise whole days",
+  "unavailable.startTime": "Start time",
+  "unavailable.endTime": "End time",
+  "unavailable.datesRequired": "Set both dates",
+  "unavailable.endBeforeStart": "The end must be after the start",
+  "unavailable.clashTitle": "There's already a booking for this time",
+  "unavailable.clashHint":
+    "You can save the period; the bookings won't change.",
 
   "bot.welcome": "Hi! This is WroRent — bike rental in Wrocław 🚲",
   "bot.openApp": "Open the app",

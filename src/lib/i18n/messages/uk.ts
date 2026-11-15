@@ -241,6 +241,8 @@ export const uk: Record<MessageKey, Message> = {
   "adminBooking.reasonHint":
     "Клієнт отримає повідомлення. Причину побачить у ньому та в картці бронювання.",
   "adminBooking.back": "Назад",
+  "adminBooking.errorBikeUnavailable":
+    "Велосипед позначено недоступним на ці дати. Приберіть період у картці велосипеда або відхиліть заявку.",
 
   "payment.cash": "Готівка",
   "payment.blik": "BLIK",
@@ -371,6 +373,28 @@ export const uk: Record<MessageKey, Message> = {
   "adminReviews.statusApproved": "Видно",
   "adminReviews.statusHidden": "Приховано",
   "adminReviews.failed": "Не вийшло. Спробуйте ще раз.",
+
+  "unavailable.title": "Недоступний",
+  "unavailable.formHint":
+    "На цей час клієнти не зможуть забронювати велосипед.",
+  "unavailable.empty":
+    "Періодів немає: велосипед можна бронювати в будь-який робочий час.",
+  "unavailable.add": "Додати період",
+  "unavailable.delete": "Прибрати період",
+  "unavailable.deleteConfirm":
+    "Прибрати період? Велосипед знову можна буде бронювати на цей час.",
+  "unavailable.wholeDays": "Увесь день",
+  "unavailable.from": "З",
+  "unavailable.to": "По",
+  "unavailable.withTime": "Вказати час",
+  "unavailable.withTimeHint": "Інакше — дні повністю",
+  "unavailable.startTime": "Час початку",
+  "unavailable.endTime": "Час кінця",
+  "unavailable.datesRequired": "Вкажіть обидві дати",
+  "unavailable.endBeforeStart": "Кінець має бути пізніше за початок",
+  "unavailable.clashTitle": "На цей час уже є бронювання",
+  "unavailable.clashHint":
+    "Період можна зберегти, бронювання при цьому не зміняться.",
 
   "bot.welcome": "Привіт! Це WroRent — прокат велосипедів у Вроцлаві 🚲",
   "bot.openApp": "Відкрити застосунок",
