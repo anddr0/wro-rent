@@ -297,11 +297,11 @@ export const uk: Record<MessageKey, Message> = {
   "bikeForm.deletePhoto": "Видалити фото",
   "bikeForm.moveLeft": "Посунути ліворуч",
   "bikeForm.moveRight": "Посунути праворуч",
-  "bikeForm.deletePhotoConfirm": "Видалити фото?",
   "bikeForm.tooManyPhotos": "У велосипеда може бути не більше {count} фото.",
   "bikeForm.badPhoto":
     "Цей файл не підходить. Потрібне фото JPEG, PNG або WebP.",
-  "bikeForm.photoFailed": "Не вийшло. Спробуйте ще раз.",
+  "bikeForm.unsaved": "Є незбережені зміни",
+  "bikeForm.leaveConfirm": "Вийти без збереження? Зміни зникнуть.",
 
   "adminPlans.title": "Тарифи",
   "adminPlans.description":
@@ -377,14 +377,10 @@ export const uk: Record<MessageKey, Message> = {
   "adminReviews.failed": "Не вийшло. Спробуйте ще раз.",
 
   "unavailable.title": "Недоступний",
-  "unavailable.formHint":
-    "На цей час клієнти не зможуть забронювати велосипед.",
   "unavailable.empty":
     "Періодів немає: велосипед можна бронювати в будь-який робочий час.",
   "unavailable.add": "Додати період",
   "unavailable.delete": "Прибрати період",
-  "unavailable.deleteConfirm":
-    "Прибрати період? Велосипед знову можна буде бронювати на цей час.",
   "unavailable.wholeDays": "Увесь день",
   "unavailable.from": "З",
   "unavailable.to": "По",
@@ -398,6 +394,7 @@ export const uk: Record<MessageKey, Message> = {
   "unavailable.clashHint":
     "Період можна зберегти, бронювання при цьому не зміняться.",
   "unavailable.pastDate": "Період не може бути в минулому",
+  "unavailable.addToList": "Додати",
 
   "pause.title": "Тимчасово недоступний",
   "pause.hint":

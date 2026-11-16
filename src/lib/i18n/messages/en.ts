@@ -294,11 +294,11 @@ export const en: Record<MessageKey, Message> = {
   "bikeForm.deletePhoto": "Delete photo",
   "bikeForm.moveLeft": "Move left",
   "bikeForm.moveRight": "Move right",
-  "bikeForm.deletePhotoConfirm": "Delete the photo?",
   "bikeForm.tooManyPhotos": "A bike can have at most {count} photos.",
   "bikeForm.badPhoto":
     "This file doesn't fit. A JPEG, PNG or WebP photo is needed.",
-  "bikeForm.photoFailed": "That didn't work. Try again.",
+  "bikeForm.unsaved": "You have unsaved changes",
+  "bikeForm.leaveConfirm": "Leave without saving? The changes will be lost.",
 
   "adminPlans.title": "Plans",
   "adminPlans.description":
@@ -376,14 +376,10 @@ export const en: Record<MessageKey, Message> = {
   "adminReviews.failed": "That didn't work. Try again.",
 
   "unavailable.title": "Unavailable",
-  "unavailable.formHint":
-    "Customers won't be able to book the bike for this time.",
   "unavailable.empty":
     "No periods: the bike can be booked at any opening time.",
   "unavailable.add": "Add a period",
   "unavailable.delete": "Remove the period",
-  "unavailable.deleteConfirm":
-    "Remove the period? The bike can be booked for this time again.",
   "unavailable.wholeDays": "All day",
   "unavailable.from": "From",
   "unavailable.to": "To",
@@ -397,6 +393,7 @@ export const en: Record<MessageKey, Message> = {
   "unavailable.clashHint":
     "You can save the period; the bookings won't change.",
   "unavailable.pastDate": "The period can't be in the past",
+  "unavailable.addToList": "Add",
 
   "pause.title": "Temporarily unavailable",
   "pause.hint":

@@ -1,9 +1,9 @@
 import type { AdminBikeResponse } from "@/lib/admin-bikes";
-import { deleteBike, getAdminBike, updateBike } from "@/server/admin-bikes";
+import { deleteBike, getAdminBike, saveBike } from "@/server/admin-bikes";
 import { requireAdmin } from "@/server/auth";
-import { readBikeFields } from "@/server/bike-fields";
+import { readBikeSaveForm } from "@/server/bike-fields";
 import { HttpError, withErrorHandling } from "@/server/http";
-import { isUuid, readJson } from "@/server/request";
+import { isUuid } from "@/server/request";
 import { createSupabaseClient } from "@/server/supabase";
 
 type Context = RouteContext<"/api/admin/bikes/[id]">;
@@ -27,13 +27,20 @@ export const GET = withErrorHandling(async (req, ctx: Context) => {
   return Response.json(response);
 });
 
-// Saves the bike: { name, description, isAvailable }.
+// Saves everything changed on the bike's page at once, see BikeSaveRequest.
+// A form: the request as JSON in "data", new photo files in their fields.
 export const PATCH = withErrorHandling(async (req, ctx: Context) => {
   await requireAdmin(req);
   const id = await readBikeId(ctx);
-  const fields = readBikeFields(await readJson(req));
+  const { request, newFiles } = await readBikeSaveForm(req);
 
-  const bike = await updateBike(createSupabaseClient(), id, fields);
+  const bike = await saveBike(
+    createSupabaseClient(),
+    id,
+    request,
+    newFiles,
+    new Date(),
+  );
 
   const response: AdminBikeResponse = { bike };
   return Response.json(response);

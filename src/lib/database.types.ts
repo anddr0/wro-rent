@@ -191,6 +191,9 @@ isOneToOne: false
           Functions: {
             "confirm_booking":
 { Args: { "p_booking_id": string }; Returns: string[]
+                           },
+"save_bike":
+{ Args: { "p_bike_id": string,"p_deleted_period_ids": (string)[],"p_description": string,"p_is_available": boolean,"p_is_paused": boolean,"p_name": string,"p_new_periods": Json,"p_photos": Json }; Returns: string[]
                            }
           }
           Enums: {

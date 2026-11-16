@@ -308,10 +308,10 @@ export const ru = {
   "bikeForm.deletePhoto": "Удалить фото",
   "bikeForm.moveLeft": "Сдвинуть влево",
   "bikeForm.moveRight": "Сдвинуть вправо",
-  "bikeForm.deletePhotoConfirm": "Удалить фото?",
   "bikeForm.tooManyPhotos": "У велосипеда может быть не больше {count} фото.",
   "bikeForm.badPhoto": "Этот файл не подходит. Нужно фото JPEG, PNG или WebP.",
-  "bikeForm.photoFailed": "Не получилось. Попробуйте ещё раз.",
+  "bikeForm.unsaved": "Есть несохранённые изменения",
+  "bikeForm.leaveConfirm": "Выйти без сохранения? Изменения пропадут.",
 
   "adminPlans.title": "Тарифы",
   "adminPlans.description":
@@ -387,14 +387,10 @@ export const ru = {
   "adminReviews.failed": "Не получилось. Попробуйте ещё раз.",
 
   "unavailable.title": "Недоступен",
-  "unavailable.formHint":
-    "На это время клиенты не смогут забронировать велосипед.",
   "unavailable.empty":
     "Периодов нет: велосипед можно бронировать в любое рабочее время.",
   "unavailable.add": "Добавить период",
   "unavailable.delete": "Убрать период",
-  "unavailable.deleteConfirm":
-    "Убрать период? Велосипед снова можно будет бронировать на это время.",
   "unavailable.wholeDays": "Весь день",
   "unavailable.from": "С",
   "unavailable.to": "По",
@@ -408,6 +404,7 @@ export const ru = {
   "unavailable.clashHint":
     "Период можно сохранить, брони при этом не изменятся.",
   "unavailable.pastDate": "Период не может быть в прошлом",
+  "unavailable.addToList": "Добавить",
 
   "pause.title": "Временно недоступен",
   "pause.hint":

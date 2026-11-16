@@ -301,11 +301,11 @@ export const pl: Record<MessageKey, Message> = {
   "bikeForm.deletePhoto": "Usuń zdjęcie",
   "bikeForm.moveLeft": "Przesuń w lewo",
   "bikeForm.moveRight": "Przesuń w prawo",
-  "bikeForm.deletePhotoConfirm": "Usunąć zdjęcie?",
   "bikeForm.tooManyPhotos": "Rower może mieć najwyżej {count} zdjęć.",
   "bikeForm.badPhoto":
     "Ten plik nie pasuje. Potrzebne zdjęcie JPEG, PNG lub WebP.",
-  "bikeForm.photoFailed": "Nie udało się. Spróbuj ponownie.",
+  "bikeForm.unsaved": "Masz niezapisane zmiany",
+  "bikeForm.leaveConfirm": "Wyjść bez zapisywania? Zmiany przepadną.",
 
   "adminPlans.title": "Taryfy",
   "adminPlans.description":
@@ -384,14 +384,10 @@ export const pl: Record<MessageKey, Message> = {
   "adminReviews.failed": "Nie udało się. Spróbuj ponownie.",
 
   "unavailable.title": "Niedostępny",
-  "unavailable.formHint":
-    "W tym czasie klienci nie będą mogli zarezerwować roweru.",
   "unavailable.empty":
     "Brak okresów: rower można rezerwować w każdych godzinach pracy.",
   "unavailable.add": "Dodaj okres",
   "unavailable.delete": "Usuń okres",
-  "unavailable.deleteConfirm":
-    "Usunąć okres? Rower znów będzie można rezerwować w tym czasie.",
   "unavailable.wholeDays": "Cały dzień",
   "unavailable.from": "Od",
   "unavailable.to": "Do",
@@ -404,6 +400,7 @@ export const pl: Record<MessageKey, Message> = {
   "unavailable.clashTitle": "W tym czasie jest już rezerwacja",
   "unavailable.clashHint": "Okres można zapisać, rezerwacje się nie zmienią.",
   "unavailable.pastDate": "Okres nie może być w przeszłości",
+  "unavailable.addToList": "Dodaj",
 
   "pause.title": "Tymczasowo niedostępny",
   "pause.hint":

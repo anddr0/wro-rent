@@ -3,10 +3,21 @@ import type {
   AdminBike,
   AdminBikeDetails,
   BikeFields,
+  BikeSaveRequest,
+  SavedPhoto,
 } from "@/lib/admin-bikes";
+import { BIKE_LIMITS } from "@/lib/admin-bikes";
 import { BIKE_PHOTOS_BUCKET, bikePhotoUrl } from "@/lib/bike-photos";
+import { MAX_UNAVAILABLE_DAYS } from "@/lib/unavailable";
+import type { NewUnavailablePeriod } from "@/lib/unavailable";
+import {
+  checkPhotoFile,
+  removePhotoFiles,
+  uploadPhotoFile,
+} from "@/server/bike-photos";
 import { HttpError } from "@/server/http";
 import type { Supabase } from "@/server/supabase";
+import { listUnavailablePeriods } from "@/server/unavailable";
 
 // The admin's bikes (А-1): the ones in use, or the archived ones.
 export async function listAdminBikes(
@@ -98,6 +109,11 @@ export async function getAdminBike(
       url: bikePhotoUrl(photo.path),
     })),
     hasBookings: await hasBookings(supabase, bikeId),
+    unavailablePeriods: await listUnavailablePeriods(
+      supabase,
+      bikeId,
+      new Date(),
+    ),
   };
 }
 
@@ -138,37 +154,125 @@ export async function createBike(
   return getAdminBike(supabase, data.id);
 }
 
-// Saves the name, the description and the visibility (А-3).
-export async function updateBike(
-  supabase: Supabase,
-  bikeId: string,
-  fields: BikeFields,
-): Promise<AdminBikeDetails> {
-  const { data, error } = await supabase
-    .from("bikes")
-    .update({
-      name: fields.name,
-      description: descriptionOrNull(fields.description),
-      is_available: fields.isAvailable,
-    })
-    .eq("id", bikeId)
-    .select("id")
-    .maybeSingle();
-
-  if (error) {
-    throw error;
-  }
-  if (!data) {
-    throw new HttpError(404, "Bike not found");
-  }
-  return getAdminBike(supabase, bikeId);
-}
-
 function descriptionOrNull(description: string): string | null {
   if (description === "") {
     return null;
   }
   return description;
+}
+
+// Saves everything the admin changed on the bike's page at once (А-3):
+// the fields, the pause, the photos and the unavailable periods. New photo
+// files are uploaded first; then one database transaction writes the rest
+// (the save_bike function), and only after that the files of deleted photos
+// are removed. If anything fails, nothing of the save is left behind.
+export async function saveBike(
+  supabase: Supabase,
+  bikeId: string,
+  request: BikeSaveRequest,
+  newFiles: File[],
+  now: Date,
+): Promise<AdminBikeDetails> {
+  const current = await getAdminBike(supabase, bikeId);
+  checkSavedPhotos(request.photos, current, newFiles);
+  checkNewPeriods(request.newPeriods, now);
+
+  const uploadedPaths: string[] = [];
+  try {
+    // The saved list for the database: ids of kept photos, paths of new ones.
+    const photosForDatabase: ({ id: string } | { path: string })[] = [];
+    for (const photo of request.photos) {
+      if (photo.kind === "existing") {
+        photosForDatabase.push({ id: photo.id });
+      } else {
+        const path = await uploadPhotoFile(
+          supabase,
+          bikeId,
+          newFiles[photo.file],
+        );
+        uploadedPaths.push(path);
+        photosForDatabase.push({ path });
+      }
+    }
+
+    const { data: deletedPaths, error } = await supabase.rpc("save_bike", {
+      p_bike_id: bikeId,
+      p_name: request.name,
+      p_description: request.description,
+      p_is_available: request.isAvailable,
+      p_is_paused: request.isPaused,
+      p_photos: photosForDatabase,
+      p_deleted_period_ids: request.deletedPeriodIds,
+      p_new_periods: request.newPeriods.map((period) => ({
+        starts_at: period.startsAt,
+        ends_at: period.endsAt,
+      })),
+    });
+    if (error) {
+      if (error.message.includes("bike_not_found")) {
+        throw new HttpError(404, "Bike not found");
+      }
+      throw error;
+    }
+
+    await removePhotoFiles(supabase, deletedPaths);
+  } catch (error) {
+    // Don't leave new files that no row points to.
+    await removePhotoFiles(supabase, uploadedPaths);
+    throw error;
+  }
+
+  return getAdminBike(supabase, bikeId);
+}
+
+// The photos the admin saves must be the bike's own ones or files sent
+// with the request, each once, and not more than the limit.
+function checkSavedPhotos(
+  photos: SavedPhoto[],
+  current: AdminBikeDetails,
+  newFiles: File[],
+): void {
+  if (photos.length > BIKE_LIMITS.maxPhotos) {
+    throw new HttpError(409, "Too many photos", "too_many_photos");
+  }
+
+  const currentIds = new Set(current.photos.map((photo) => photo.id));
+  const usedIds = new Set<string>();
+  const usedFiles = new Set<number>();
+  for (const photo of photos) {
+    if (photo.kind === "existing") {
+      if (!currentIds.has(photo.id) || usedIds.has(photo.id)) {
+        throw new HttpError(400, "Unknown photo in the list");
+      }
+      usedIds.add(photo.id);
+    } else {
+      const file = newFiles[photo.file];
+      if (!file || usedFiles.has(photo.file)) {
+        throw new HttpError(400, "A new photo has no file", "bad_photo");
+      }
+      checkPhotoFile(file);
+      usedFiles.add(photo.file);
+    }
+  }
+}
+
+const DAY = 24 * 60 * 60 * 1000;
+
+function checkNewPeriods(periods: NewUnavailablePeriod[], now: Date): void {
+  for (const period of periods) {
+    const startsAt = new Date(period.startsAt);
+    const endsAt = new Date(period.endsAt);
+    if (endsAt <= startsAt) {
+      throw new HttpError(400, "A period must end after it starts");
+    }
+    // A period that is already over closes nothing.
+    if (endsAt <= now) {
+      throw new HttpError(400, "A period is in the past");
+    }
+    if (endsAt.getTime() - startsAt.getTime() > MAX_UNAVAILABLE_DAYS * DAY) {
+      throw new HttpError(400, "A period is too long");
+    }
+  }
 }
 
 // Moves a bike to the archive or brings it back (А-5).
@@ -185,29 +289,6 @@ export async function setBikeArchived(
   const { data, error } = await supabase
     .from("bikes")
     .update({ archived_at: archivedAt })
-    .eq("id", bikeId)
-    .select("id")
-    .maybeSingle();
-
-  if (error) {
-    throw error;
-  }
-  if (!data) {
-    throw new HttpError(404, "Bike not found");
-  }
-  return getAdminBike(supabase, bikeId);
-}
-
-// Switches "temporarily unavailable" on or off. Bookings that already exist
-// are not touched; new requests are refused while it is on.
-export async function setBikePaused(
-  supabase: Supabase,
-  bikeId: string,
-  isPaused: boolean,
-): Promise<AdminBikeDetails> {
-  const { data, error } = await supabase
-    .from("bikes")
-    .update({ is_paused: isPaused })
     .eq("id", bikeId)
     .select("id")
     .maybeSingle();

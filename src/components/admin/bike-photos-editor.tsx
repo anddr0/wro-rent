@@ -12,61 +12,29 @@ import { useRef, useState } from "react";
 import { BikePhoto } from "@/components/bike-photo";
 import { FormError } from "@/components/form-error";
 import { BIKE_LIMITS } from "@/lib/admin-bikes";
-import type { AdminBikeResponse, BikePhotoItem } from "@/lib/admin-bikes";
-import { apiErrorCode, apiFetch, apiSendJson } from "@/lib/api";
+import { draftKey } from "@/lib/bike-draft";
+import type { DraftPhoto } from "@/lib/bike-draft";
 import type { MessageKey } from "@/lib/i18n/messages/ru";
 import { useT } from "@/lib/i18n/use-t";
 import { resizeImage } from "@/lib/resize-image";
-import { confirmInTelegram } from "@/lib/telegram/dialogs";
-import { useTelegram } from "@/lib/telegram/use-telegram";
 
 type BikePhotosEditorProps = {
-  bikeId: string;
-  photos: BikePhotoItem[];
-  // Called after every change on the server, so the page reloads the bike.
-  onChanged: () => Promise<unknown>;
+  photos: DraftPhoto[];
+  onChange: (photos: DraftPhoto[]) => void;
 };
 
-// The bike's photos (А-3): add, delete, move. Every change is saved at once,
-// without the "Save" button of the form below.
-export function BikePhotosEditor({
-  bikeId,
-  photos,
-  onChanged,
-}: BikePhotosEditorProps) {
+// The bike's photos (А-3): add, delete, move. Every change stays in the
+// page's draft; nothing is uploaded or deleted until "Save".
+export function BikePhotosEditor({ photos, onChange }: BikePhotosEditorProps) {
   const t = useT();
-  const { webApp } = useTelegram();
   const fileInput = useRef<HTMLInputElement>(null);
-  // One change at a time: the buttons wait while it is being saved.
-  const [isBusy, setIsBusy] = useState(false);
+  // A picked photo is being shrunk in the browser.
+  const [isResizing, setIsResizing] = useState(false);
   const [errorKey, setErrorKey] = useState<MessageKey | null>(null);
 
-  const photosPath = `/api/admin/bikes/${bikeId}/photos`;
   const canAddMore = photos.length < BIKE_LIMITS.maxPhotos;
 
-  // Runs one change and reloads the bike, whatever the outcome.
-  async function change(action: () => Promise<unknown>) {
-    setIsBusy(true);
-    setErrorKey(null);
-    try {
-      await action();
-    } catch (error) {
-      console.error(error);
-      const code = apiErrorCode(error);
-      if (code === "too_many_photos") {
-        setErrorKey("bikeForm.tooManyPhotos");
-      } else if (code === "bad_photo") {
-        setErrorKey("bikeForm.badPhoto");
-      } else {
-        setErrorKey("bikeForm.photoFailed");
-      }
-    } finally {
-      await onChanged();
-      setIsBusy(false);
-    }
-  }
-
-  async function uploadPhoto(event: ChangeEvent<HTMLInputElement>) {
+  async function addPhoto(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     // Clear the input, so picking the same file again fires "change" again.
     event.target.value = "";
@@ -74,40 +42,41 @@ export function BikePhotosEditor({
       return;
     }
 
-    await change(async () => {
+    setIsResizing(true);
+    setErrorKey(null);
+    try {
       const resized = await resizeImage(file, BIKE_LIMITS.maxPhotoSide);
-      const form = new FormData();
-      form.set("photo", resized, "photo.jpg");
-      await apiFetch<AdminBikeResponse>(photosPath, {
-        method: "POST",
-        body: form,
-      });
-    });
+      const newPhoto: DraftPhoto = {
+        kind: "new",
+        key: crypto.randomUUID(),
+        file: resized,
+        url: URL.createObjectURL(resized),
+      };
+      onChange([...photos, newPhoto]);
+    } catch (error) {
+      // Not an image the browser can read.
+      console.error(error);
+      setErrorKey("bikeForm.badPhoto");
+    } finally {
+      setIsResizing(false);
+    }
   }
 
-  async function deletePhoto(photo: BikePhotoItem) {
-    const isConfirmed = await confirmInTelegram(
-      webApp,
-      t("bikeForm.deletePhotoConfirm"),
-    );
-    if (!isConfirmed) {
-      return;
+  function deletePhoto(index: number) {
+    const photo = photos[index];
+    if (photo.kind === "new") {
+      // The picked file is no longer needed in the browser's memory.
+      URL.revokeObjectURL(photo.url);
     }
-    await change(() =>
-      apiSendJson<AdminBikeResponse>("DELETE", `${photosPath}/${photo.id}`),
-    );
+    onChange(photos.filter((item, itemIndex) => itemIndex !== index));
   }
 
   // Swaps the photo with its neighbour: -1 moves it left, +1 right.
-  async function movePhoto(index: number, step: -1 | 1) {
-    const photoIds = photos.map((photo) => photo.id);
-    const movedId = photoIds[index];
-    photoIds[index] = photoIds[index + step];
-    photoIds[index + step] = movedId;
-
-    await change(() =>
-      apiSendJson<AdminBikeResponse>("PUT", photosPath, { photoIds }),
-    );
+  function movePhoto(index: number, step: -1 | 1) {
+    const reordered = [...photos];
+    reordered[index] = photos[index + step];
+    reordered[index + step] = photos[index];
+    onChange(reordered);
   }
 
   return (
@@ -116,7 +85,7 @@ export function BikePhotosEditor({
 
       <div className="grid grid-cols-2 gap-3">
         {photos.map((photo, index) => (
-          <div key={photo.id} className="flex flex-col gap-1.5">
+          <div key={draftKey(photo)} className="flex flex-col gap-1.5">
             <div className="relative">
               <BikePhoto size="medium" url={photo.url} />
               {index === 0 && (
@@ -130,21 +99,21 @@ export function BikePhotosEditor({
                 <PhotoButton
                   icon={ChevronLeft}
                   label={t("bikeForm.moveLeft")}
-                  isDisabled={isBusy || index === 0}
+                  isDisabled={index === 0}
                   onClick={() => movePhoto(index, -1)}
                 />
                 <PhotoButton
                   icon={ChevronRight}
                   label={t("bikeForm.moveRight")}
-                  isDisabled={isBusy || index === photos.length - 1}
+                  isDisabled={index === photos.length - 1}
                   onClick={() => movePhoto(index, 1)}
                 />
               </div>
               <PhotoButton
                 icon={Trash2}
                 label={t("bikeForm.deletePhoto")}
-                isDisabled={isBusy}
-                onClick={() => deletePhoto(photo)}
+                isDisabled={false}
+                onClick={() => deletePhoto(index)}
               />
             </div>
           </div>
@@ -154,11 +123,11 @@ export function BikePhotosEditor({
           <button
             type="button"
             aria-label={t("bikeForm.addPhoto")}
-            disabled={isBusy}
+            disabled={isResizing}
             onClick={() => fileInput.current?.click()}
             className="flex aspect-4/3 items-center justify-center rounded-lg border border-dashed text-muted-foreground transition-opacity active:opacity-70 disabled:opacity-50"
           >
-            {isBusy ? (
+            {isResizing ? (
               <LoaderCircle className="size-6 animate-spin" />
             ) : (
               <ImagePlus className="size-6" strokeWidth={1.5} />
@@ -171,13 +140,11 @@ export function BikePhotosEditor({
         ref={fileInput}
         type="file"
         accept="image/*"
-        onChange={uploadPhoto}
+        onChange={addPhoto}
         className="hidden"
       />
 
-      {errorKey !== null && (
-        <FormError>{t(errorKey, { count: BIKE_LIMITS.maxPhotos })}</FormError>
-      )}
+      {errorKey !== null && <FormError>{t(errorKey)}</FormError>}
       <p className="text-sm text-muted-foreground">
         {t("bikeForm.photosHint")}
       </p>

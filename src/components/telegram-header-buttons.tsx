@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { canGoBack } from "@/lib/back-guard";
 import { useTelegram } from "@/lib/telegram/use-telegram";
 
 // Telegram's own buttons in the mini app header, shared by all pages:
@@ -22,7 +23,11 @@ export function TelegramHeaderButtons() {
       return;
     }
 
-    function goBack() {
+    async function goBack() {
+      // A screen with unsaved changes may ask first (see back-guard.ts).
+      if (!(await canGoBack())) {
+        return;
+      }
       // Opened straight on this page (a button under a bot message):
       // there is nothing to go back to, so go to the home page.
       if (window.history.length <= 1) {

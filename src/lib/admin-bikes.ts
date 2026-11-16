@@ -1,4 +1,8 @@
 // What the admin bikes API sends to the mini app.
+import type {
+  NewUnavailablePeriod,
+  UnavailablePeriod,
+} from "@/lib/unavailable";
 
 // A bike in the admin's list.
 export type AdminBike = {
@@ -34,12 +38,14 @@ export type AdminBikeDetails = {
   photos: BikePhotoItem[];
   // A bike that was ever booked can't be deleted, only archived (А-4).
   hasBookings: boolean;
+  // Times the admin closed the bike for, from now on, the nearest first.
+  unavailablePeriods: UnavailablePeriod[];
 };
 
 // GET, PATCH /api/admin/bikes/[id]; POST /api/admin/bikes; the photo routes
 export type AdminBikeResponse = { bike: AdminBikeDetails };
 
-// The body of POST /api/admin/bikes and PATCH /api/admin/bikes/[id].
+// The body of POST /api/admin/bikes (a new bike).
 export type BikeFields = {
   name: string;
   description: string;
@@ -56,3 +62,24 @@ export const BIKE_LIMITS = {
   // is at most this many pixels.
   maxPhotoSide: 1600,
 };
+
+// A photo in the order the admin saves: one the bike has, or a new file
+// sent with the same request (see newPhotoField).
+export type SavedPhoto =
+  { kind: "existing"; id: string } | { kind: "new"; file: number };
+
+// PATCH /api/admin/bikes/[id]: everything the admin changed on the bike's
+// page, saved with one button. Sent as a form: this object as JSON in the
+// field "data", and the files of new photos in their own fields.
+export type BikeSaveRequest = BikeFields & {
+  isPaused: boolean;
+  // All the photos the bike keeps, in order; the rest are deleted.
+  photos: SavedPhoto[];
+  deletedPeriodIds: string[];
+  newPeriods: NewUnavailablePeriod[];
+};
+
+// The form field with the file of new photo number `index`.
+export function newPhotoField(index: number): string {
+  return `photo-${index}`;
+}

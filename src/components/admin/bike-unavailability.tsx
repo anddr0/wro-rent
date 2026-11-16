@@ -2,182 +2,351 @@
 
 import { CalendarOff, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { ButtonLink } from "@/components/button";
-import { ErrorState } from "@/components/error-state";
+import { Button } from "@/components/button";
+import { Field, Select, TextInput } from "@/components/form";
 import { FormError } from "@/components/form-error";
 import { Row, Section, SectionTitle } from "@/components/section";
-import { Skeleton } from "@/components/skeleton";
 import { Switch } from "@/components/switch";
-import { apiSendJson } from "@/lib/api";
+import type { AdminBookingsResponse } from "@/lib/admin-bookings";
+import { draftKey } from "@/lib/bike-draft";
+import type { DraftPeriod } from "@/lib/bike-draft";
+import { overlapsAny } from "@/lib/booking-slots";
+import type { MessageKey } from "@/lib/i18n/messages/ru";
 import { useLocale, useT } from "@/lib/i18n/use-t";
-import { describePeriod } from "@/lib/unavailable";
-import type {
-  UnavailablePeriod,
-  UnavailablePeriodsResponse,
+import {
+  formatPeriod,
+  parseCalendarDay,
+  toCalendarDay,
+  toDateInputValue,
+} from "@/lib/rental-time";
+import { formatMinuteOfDay, listMinutesOfDay } from "@/lib/settings";
+import {
+  describePeriod,
+  timedPeriod,
+  wholeDaysPeriod,
 } from "@/lib/unavailable";
-import { confirmInTelegram } from "@/lib/telegram/dialogs";
-import { useTelegram } from "@/lib/telegram/use-telegram";
-import { refreshApi, useApi } from "@/lib/use-api";
+import type { NewUnavailablePeriod } from "@/lib/unavailable";
+import { useApi } from "@/lib/use-api";
 
-// "Unavailable" on the bike's page: the times an admin closed the bike for
-// by hand (repair and the like), with a way to add and to remove them.
 type BikeUnavailabilityProps = {
   bikeId: string;
-  // "Temporarily unavailable" is on.
+  periods: DraftPeriod[];
+  onPeriodsChange: (periods: DraftPeriod[]) => void;
+  // "Temporarily unavailable".
   isPaused: boolean;
+  onPausedChange: (isPaused: boolean) => void;
 };
 
+// "Unavailable" on the bike's page: the times the admin closes the bike for
+// (repair and the like) and the "temporarily unavailable" switch. Changes
+// stay in the page's draft until "Save".
 export function BikeUnavailability({
   bikeId,
+  periods,
+  onPeriodsChange,
   isPaused,
+  onPausedChange,
 }: BikeUnavailabilityProps) {
   const t = useT();
-  const { webApp } = useTelegram();
-  const path = `/api/admin/bikes/${bikeId}/unavailable`;
-  const { data, error, mutate } = useApi<UnavailablePeriodsResponse>(path);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [hasFailed, setHasFailed] = useState(false);
+  const locale = useLocale();
+  const [isAdding, setIsAdding] = useState(false);
 
-  async function deletePeriod(period: UnavailablePeriod) {
-    if (isDeleting) {
-      return;
-    }
-    const isConfirmed = await confirmInTelegram(
-      webApp,
-      t("unavailable.deleteConfirm"),
+  function addPeriod(period: NewUnavailablePeriod) {
+    const newPeriod: DraftPeriod = {
+      kind: "new",
+      key: crypto.randomUUID(),
+      ...period,
+    };
+    // Keep the list in time order, like the saved one.
+    const sorted = [...periods, newPeriod].sort(
+      (a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime(),
     );
-    if (!isConfirmed) {
-      return;
-    }
-
-    setIsDeleting(true);
-    setHasFailed(false);
-    try {
-      await apiSendJson("DELETE", `${path}/${period.id}`);
-    } catch (deleteError) {
-      console.error(deleteError);
-      setHasFailed(true);
-    } finally {
-      // This list and the calendar customers see for this bike.
-      await mutate();
-      await refreshApi(`/api/bikes/${bikeId}`);
-      setIsDeleting(false);
-    }
+    onPeriodsChange(sorted);
+    setIsAdding(false);
   }
 
-  let list = <Skeleton className="h-14 rounded-xl" />;
-  if (data) {
-    list = <PeriodList periods={data.periods} onDelete={deletePeriod} />;
-  } else if (error) {
-    list = <ErrorState onRetry={() => mutate()} />;
+  function removePeriod(key: string) {
+    onPeriodsChange(periods.filter((period) => draftKey(period) !== key));
   }
 
   return (
     <section className="flex flex-col gap-2">
       <SectionTitle>{t("unavailable.title")}</SectionTitle>
-      {list}
-      {hasFailed && <FormError>{t("adminBike.actionFailed")}</FormError>}
-      <ButtonLink
-        href={`/admin/bikes/${bikeId}/unavailable/new`}
-        variant="secondary"
-      >
-        <Plus />
-        {t("unavailable.add")}
-      </ButtonLink>
 
-      <PauseSwitch bikeId={bikeId} isPaused={isPaused} />
-    </section>
-  );
-}
-
-type PeriodListProps = {
-  periods: UnavailablePeriod[];
-  onDelete: (period: UnavailablePeriod) => void;
-};
-
-function PeriodList({ periods, onDelete }: PeriodListProps) {
-  const t = useT();
-  const locale = useLocale();
-
-  if (periods.length === 0) {
-    return (
-      <p className="px-1 text-sm text-muted-foreground">
-        {t("unavailable.empty")}
-      </p>
-    );
-  }
-
-  return (
-    <Section>
-      {periods.map((period) => {
-        const label = describePeriod(period, locale);
-        return (
-          <Row
-            key={period.id}
-            icon={CalendarOff}
-            title={label.text}
-            subtitle={
-              label.isWholeDays ? t("unavailable.wholeDays") : undefined
+      {periods.length === 0 ? (
+        <p className="px-1 text-sm text-muted-foreground">
+          {t("unavailable.empty")}
+        </p>
+      ) : (
+        <Section>
+          {periods.map((period) => {
+            const label = describePeriod(period, locale);
+            let subtitle: string | undefined;
+            if (label.isWholeDays) {
+              subtitle = t("unavailable.wholeDays");
             }
-            end={
-              <button
-                type="button"
-                aria-label={t("unavailable.delete")}
-                onClick={() => onDelete(period)}
-                className="flex size-9 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors active:bg-muted"
-              >
-                <Trash2 className="size-[18px]" />
-              </button>
-            }
-          />
-        );
-      })}
-    </Section>
-  );
-}
+            return (
+              <Row
+                key={draftKey(period)}
+                icon={CalendarOff}
+                title={label.text}
+                subtitle={subtitle}
+                end={
+                  <button
+                    type="button"
+                    aria-label={t("unavailable.delete")}
+                    onClick={() => removePeriod(draftKey(period))}
+                    className="flex size-9 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors active:bg-muted"
+                  >
+                    <Trash2 className="size-[18px]" />
+                  </button>
+                }
+              />
+            );
+          })}
+        </Section>
+      )}
 
-type PauseSwitchProps = {
-  bikeId: string;
-  isPaused: boolean;
-};
+      {isAdding ? (
+        <PeriodForm
+          bikeId={bikeId}
+          onAdd={addPeriod}
+          onCancel={() => setIsAdding(false)}
+        />
+      ) : (
+        <Button variant="secondary" onClick={() => setIsAdding(true)}>
+          <Plus />
+          {t("unavailable.add")}
+        </Button>
+      )}
 
-// "Temporarily unavailable": for a bike that is out for an unknown time.
-// Saved at once, like the periods above, without the page's "Save" button.
-function PauseSwitch({ bikeId, isPaused }: PauseSwitchProps) {
-  const t = useT();
-  const [isSaving, setIsSaving] = useState(false);
-  const [hasFailed, setHasFailed] = useState(false);
-
-  async function setPaused(newIsPaused: boolean) {
-    if (isSaving) {
-      return;
-    }
-    setIsSaving(true);
-    setHasFailed(false);
-    try {
-      await apiSendJson("POST", `/api/admin/bikes/${bikeId}/pause`, {
-        isPaused: newIsPaused,
-      });
-    } catch (error) {
-      console.error(error);
-      setHasFailed(true);
-    } finally {
-      // This page, the admin's list and the catalog customers see.
-      await refreshApi("/api/admin/bikes");
-      await refreshApi("/api/bikes");
-      setIsSaving(false);
-    }
-  }
-
-  return (
-    <>
       <Switch
         label={t("pause.title")}
         description={t("pause.hint")}
         isOn={isPaused}
-        onChange={setPaused}
+        onChange={onPausedChange}
       />
-      {hasFailed && <FormError>{t("adminBike.actionFailed")}</FormError>}
-    </>
+    </section>
+  );
+}
+
+type PeriodFormProps = {
+  bikeId: string;
+  onAdd: (period: NewUnavailablePeriod) => void;
+  onCancel: () => void;
+};
+
+// A new period, right under the list: the days and, if the switch is on,
+// the times of day. "Add" puts it into the draft.
+function PeriodForm({ bikeId, onAdd, onCancel }: PeriodFormProps) {
+  const t = useT();
+
+  // Today in Warsaw: the earliest day a period can start on.
+  const [today] = useState(() => toDateInputValue(toCalendarDay(new Date())));
+  // The values of <input type="date">: "2026-12-31", or "" when not set.
+  const [fromDay, setFromDay] = useState("");
+  const [toDay, setToDay] = useState("");
+  const [hasTime, setHasTime] = useState(false);
+  // Minutes from midnight: 540 is 9:00.
+  const [startMinute, setStartMinute] = useState(9 * 60);
+  const [endMinute, setEndMinute] = useState(18 * 60);
+  const [errorKey, setErrorKey] = useState<MessageKey | null>(null);
+
+  // The period the fields describe, or null while they don't make one yet.
+  let period: NewUnavailablePeriod | null = null;
+  const firstDay = parseCalendarDay(fromDay);
+  const lastDay = parseCalendarDay(toDay);
+  if (firstDay !== null && lastDay !== null) {
+    if (hasTime) {
+      period = timedPeriod(firstDay, startMinute, lastDay, endMinute);
+    } else {
+      period = wholeDaysPeriod(firstDay, lastDay);
+    }
+    // "To" before "from", or the same day with the end time before the start.
+    if (new Date(period.endsAt) <= new Date(period.startsAt)) {
+      period = null;
+    }
+  }
+
+  // "From" can't be in the past, and "to" can't be before "from": when the
+  // new "from" is later, "to" moves along. iPhone fills the field with today
+  // the moment its picker opens, so "to" got today and stayed behind.
+  function changeFromDay(value: string) {
+    setFromDay(value);
+    if (toDay === "" || toDay < value) {
+      setToDay(value);
+    }
+  }
+
+  function add() {
+    if (firstDay === null || lastDay === null) {
+      setErrorKey("unavailable.datesRequired");
+      return;
+    }
+    // The picker may not grey out past days on every phone: check here too.
+    if (fromDay < today) {
+      setErrorKey("unavailable.pastDate");
+      return;
+    }
+    if (period === null) {
+      setErrorKey("unavailable.endBeforeStart");
+      return;
+    }
+    // Today with times that are already over.
+    if (new Date(period.endsAt) <= new Date()) {
+      setErrorKey("unavailable.pastDate");
+      return;
+    }
+    onAdd(period);
+  }
+
+  const minutes = listMinutesOfDay();
+
+  return (
+    <div className="flex flex-col gap-3 rounded-xl border bg-card p-4 shadow-sm">
+      <div className="grid grid-cols-2 gap-3">
+        <Field label={t("unavailable.from")}>
+          <TextInput
+            type="date"
+            value={fromDay}
+            min={today}
+            onChange={(event) => changeFromDay(event.target.value)}
+          />
+        </Field>
+        <Field label={t("unavailable.to")}>
+          <TextInput
+            type="date"
+            value={toDay}
+            min={fromDay === "" ? today : fromDay}
+            onChange={(event) => setToDay(event.target.value)}
+          />
+        </Field>
+      </div>
+
+      <Switch
+        label={t("unavailable.withTime")}
+        description={t("unavailable.withTimeHint")}
+        isOn={hasTime}
+        onChange={setHasTime}
+      />
+
+      {hasTime && (
+        <div className="grid grid-cols-2 gap-3">
+          <Field label={t("unavailable.startTime")}>
+            <Select
+              value={startMinute}
+              onChange={(event) => setStartMinute(Number(event.target.value))}
+            >
+              {minutes.map((minute) => (
+                <option key={minute} value={minute}>
+                  {formatMinuteOfDay(minute)}
+                </option>
+              ))}
+            </Select>
+          </Field>
+          <Field label={t("unavailable.endTime")}>
+            <Select
+              value={endMinute}
+              onChange={(event) => setEndMinute(Number(event.target.value))}
+            >
+              {minutes.map((minute) => (
+                <option key={minute} value={minute}>
+                  {formatMinuteOfDay(minute)}
+                </option>
+              ))}
+            </Select>
+          </Field>
+        </div>
+      )}
+
+      {period !== null && (
+        <BookingsInPeriod
+          bikeId={bikeId}
+          fromDay={fromDay}
+          toDay={toDay}
+          period={period}
+        />
+      )}
+
+      {errorKey !== null && <FormError>{t(errorKey)}</FormError>}
+
+      <div className="grid grid-cols-2 gap-2">
+        <Button variant="secondary" size="small" onClick={onCancel}>
+          {t("adminBooking.back")}
+        </Button>
+        <Button size="small" onClick={add}>
+          {t("unavailable.addToList")}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+type BookingsInPeriodProps = {
+  bikeId: string;
+  fromDay: string;
+  toDay: string;
+  period: NewUnavailablePeriod;
+};
+
+// A warning: bookings of this bike that fall into the period. The period
+// can still be added; what to do with those bookings is the admin's call.
+function BookingsInPeriod({
+  bikeId,
+  fromDay,
+  toDay,
+  period,
+}: BookingsInPeriodProps) {
+  const t = useT();
+  const locale = useLocale();
+
+  const params = new URLSearchParams({
+    status: "all",
+    bikeId,
+    from: fromDay,
+    to: toDay,
+  });
+  const { data } = useApi<AdminBookingsResponse>(
+    `/api/admin/bookings?${params.toString()}`,
+  );
+  if (!data) {
+    return null;
+  }
+
+  // The API filters by whole days; here the exact times are compared,
+  // and only the bookings that are still going on count.
+  const clashing = data.bookings.filter((booking) => {
+    const isOpen =
+      booking.status === "pending" ||
+      booking.status === "confirmed" ||
+      booking.status === "active";
+    return (
+      isOpen &&
+      overlapsAny(new Date(booking.startsAt), new Date(booking.endsAt), [
+        period,
+      ])
+    );
+  });
+  if (clashing.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="flex flex-col gap-2 rounded-xl border border-amber-500/40 p-3">
+      <span className="font-semibold">{t("unavailable.clashTitle")}</span>
+      {clashing.map((booking) => (
+        <span
+          key={booking.id}
+          className="text-sm text-muted-foreground wrap-anywhere"
+        >
+          {booking.customer.fullName} ·{" "}
+          {formatPeriod(booking.startsAt, booking.endsAt, locale)} ·{" "}
+          {t(`status.${booking.status}`)}
+        </span>
+      ))}
+      <span className="text-sm text-muted-foreground">
+        {t("unavailable.clashHint")}
+      </span>
+    </div>
   );
 }
