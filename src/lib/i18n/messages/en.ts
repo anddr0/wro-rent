@@ -398,6 +398,12 @@ export const en: Record<MessageKey, Message> = {
     "You can save the period; the bookings won't change.",
   "unavailable.pastDate": "The period can't be in the past",
 
+  "pause.title": "Temporarily unavailable",
+  "pause.hint":
+    "The bike stays in the catalog, but can't be booked while this is on. Existing bookings don't change.",
+  "pause.badge": "Unavailable",
+  "pause.customerNote": "Temporarily unavailable",
+
   "bot.welcome": "Hi! This is WroRent — bike rental in Wrocław 🚲",
   "bot.openApp": "Open the app",
 };

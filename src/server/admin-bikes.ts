@@ -15,7 +15,7 @@ export async function listAdminBikes(
 ): Promise<AdminBike[]> {
   let query = supabase
     .from("bikes")
-    .select("id, name, is_available, bike_photos(path)")
+    .select("id, name, is_available, is_paused, bike_photos(path)")
     .order("name")
     // Only the first photo of each bike: the cover.
     .order("sort_order", { referencedTable: "bike_photos" })
@@ -40,6 +40,7 @@ export async function listAdminBikes(
       id: bike.id,
       name: bike.name,
       isAvailable: bike.is_available,
+      isPaused: bike.is_paused,
       coverUrl: cover ? bikePhotoUrl(cover.path) : null,
       busyUntil: busyUntilByBike.get(bike.id) ?? null,
     };
@@ -72,7 +73,7 @@ export async function getAdminBike(
   const { data: bike, error } = await supabase
     .from("bikes")
     .select(
-      "id, name, description, is_available, archived_at, bike_photos(id, path)",
+      "id, name, description, is_available, is_paused, archived_at, bike_photos(id, path)",
     )
     .eq("id", bikeId)
     .order("sort_order", { referencedTable: "bike_photos" })
@@ -91,6 +92,7 @@ export async function getAdminBike(
     description: bike.description,
     isAvailable: bike.is_available,
     isArchived: bike.archived_at !== null,
+    isPaused: bike.is_paused,
     photos: bike.bike_photos.map((photo) => ({
       id: photo.id,
       url: bikePhotoUrl(photo.path),
@@ -183,6 +185,29 @@ export async function setBikeArchived(
   const { data, error } = await supabase
     .from("bikes")
     .update({ archived_at: archivedAt })
+    .eq("id", bikeId)
+    .select("id")
+    .maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+  if (!data) {
+    throw new HttpError(404, "Bike not found");
+  }
+  return getAdminBike(supabase, bikeId);
+}
+
+// Switches "temporarily unavailable" on or off. Bookings that already exist
+// are not touched; new requests are refused while it is on.
+export async function setBikePaused(
+  supabase: Supabase,
+  bikeId: string,
+  isPaused: boolean,
+): Promise<AdminBikeDetails> {
+  const { data, error } = await supabase
+    .from("bikes")
+    .update({ is_paused: isPaused })
     .eq("id", bikeId)
     .select("id")
     .maybeSingle();

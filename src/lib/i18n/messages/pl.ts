@@ -405,6 +405,12 @@ export const pl: Record<MessageKey, Message> = {
   "unavailable.clashHint": "Okres można zapisać, rezerwacje się nie zmienią.",
   "unavailable.pastDate": "Okres nie może być w przeszłości",
 
+  "pause.title": "Tymczasowo niedostępny",
+  "pause.hint":
+    "Rower zostaje w katalogu, ale nie można go zarezerwować, dopóki przełącznik jest włączony. Istniejące rezerwacje się nie zmieniają.",
+  "pause.badge": "Niedostępny",
+  "pause.customerNote": "Tymczasowo niedostępny",
+
   "bot.welcome": "Cześć! To WroRent — wypożyczalnia rowerów we Wrocławiu 🚲",
   "bot.openApp": "Otwórz aplikację",
 };

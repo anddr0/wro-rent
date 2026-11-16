@@ -44,6 +44,7 @@ const ERROR_MESSAGES: Partial<Record<ApiErrorCode, MessageKey>> = {
   too_many_bookings: "book.errorTooManyBookings",
   already_requested: "book.errorAlreadyRequested",
   write_access_required: "book.errorWriteAccess",
+  bike_paused: "pause.customerNote",
 };
 
 type BookingFormProps = {

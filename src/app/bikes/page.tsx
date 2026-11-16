@@ -2,6 +2,7 @@
 
 import { Bike } from "lucide-react";
 import Link from "next/link";
+import { BikeNote } from "@/components/bike-note";
 import { BikePhoto } from "@/components/bike-photo";
 import { ButtonLink } from "@/components/button";
 import { EmptyState } from "@/components/empty-state";
@@ -68,20 +69,23 @@ function BikeCard({ bike, priceFrom }: BikeCardProps) {
       </Link>
       <div className="flex flex-col gap-0.5 px-1">
         <span className="font-medium wrap-anywhere">{bike.name}</span>
-        {priceFrom !== null && (
-          <span className="text-sm text-muted-foreground">
-            {t("common.priceFrom", { price: priceFrom })}
-          </span>
-        )}
+        <BikeNote bike={bike} priceFrom={priceFrom} />
       </div>
-      <div className="grid grid-cols-2 gap-2">
+      {/* A paused bike can be looked at, but not booked. */}
+      {bike.isPaused ? (
         <ButtonLink href={`/bikes/${bike.id}`} variant="secondary">
           {t("bikes.details")}
         </ButtonLink>
-        <ButtonLink href={`/bikes/${bike.id}/book`}>
-          {t("common.book")}
-        </ButtonLink>
-      </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-2">
+          <ButtonLink href={`/bikes/${bike.id}`} variant="secondary">
+            {t("bikes.details")}
+          </ButtonLink>
+          <ButtonLink href={`/bikes/${bike.id}/book`}>
+            {t("common.book")}
+          </ButtonLink>
+        </div>
+      )}
     </div>
   );
 }

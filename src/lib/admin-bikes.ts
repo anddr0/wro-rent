@@ -6,6 +6,8 @@ export type AdminBike = {
   name: string;
   // False — hidden from customers.
   isAvailable: boolean;
+  // True — in the catalog, but can't be booked until the admin switches it off.
+  isPaused: boolean;
   coverUrl: string | null;
   // When the customer who has the bike now brings it back (ISO string).
   // Null when the bike is free.
@@ -27,6 +29,7 @@ export type AdminBikeDetails = {
   description: string | null;
   isAvailable: boolean;
   isArchived: boolean;
+  isPaused: boolean;
   // In order; the first one is the cover.
   photos: BikePhotoItem[];
   // A bike that was ever booked can't be deleted, only archived (А-4).

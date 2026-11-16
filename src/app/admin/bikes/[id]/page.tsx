@@ -136,7 +136,7 @@ function BikeEditor({ bike }: { bike: AdminBikeDetails }) {
         submitLabel={t("common.save")}
         onSubmit={saveBike}
       >
-        <BikeUnavailability bikeId={bike.id} />
+        <BikeUnavailability bikeId={bike.id} isPaused={bike.isPaused} />
 
         <section className="flex flex-col gap-2">
           <SectionTitle>{t("review.title")}</SectionTitle>

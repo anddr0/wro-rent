@@ -3,6 +3,7 @@
 import { ArrowRight, Bike, CalendarCheck, MapPin } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { BikeNote } from "@/components/bike-note";
 import { BikePhoto } from "@/components/bike-photo";
 import { BookingRow } from "@/components/booking/booking-row";
 import { ButtonLink } from "@/components/button";
@@ -154,11 +155,7 @@ function HomeBikes({ catalog, hasFailed, onRetry }: HomeBikesProps) {
             >
               <BikePhoto size="medium" url={bike.coverUrl} />
               <span className="font-medium wrap-anywhere">{bike.name}</span>
-              {catalog.priceFrom !== null && (
-                <span className="text-sm text-muted-foreground">
-                  {t("common.priceFrom", { price: catalog.priceFrom })}
-                </span>
-              )}
+              <BikeNote bike={bike} priceFrom={catalog.priceFrom} />
             </Link>
           ))}
         </div>

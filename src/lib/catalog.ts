@@ -2,7 +2,10 @@
 import type { Tables } from "@/lib/database.types";
 import type { BikeReviews } from "@/lib/reviews";
 
-type BikeFields = Pick<Tables<"bikes">, "id" | "name" | "description">;
+type BikeFields = Pick<Tables<"bikes">, "id" | "name" | "description"> & {
+  // "Temporarily unavailable": shown in the catalog, but can't be booked.
+  isPaused: boolean;
+};
 
 // A bike in the catalog list, with its cover (the first photo).
 export type CatalogBike = BikeFields & { coverUrl: string | null };

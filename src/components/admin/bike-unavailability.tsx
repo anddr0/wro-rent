@@ -7,6 +7,7 @@ import { ErrorState } from "@/components/error-state";
 import { FormError } from "@/components/form-error";
 import { Row, Section, SectionTitle } from "@/components/section";
 import { Skeleton } from "@/components/skeleton";
+import { Switch } from "@/components/switch";
 import { apiSendJson } from "@/lib/api";
 import { useLocale, useT } from "@/lib/i18n/use-t";
 import { describePeriod } from "@/lib/unavailable";
@@ -20,7 +21,16 @@ import { refreshApi, useApi } from "@/lib/use-api";
 
 // "Unavailable" on the bike's page: the times an admin closed the bike for
 // by hand (repair and the like), with a way to add and to remove them.
-export function BikeUnavailability({ bikeId }: { bikeId: string }) {
+type BikeUnavailabilityProps = {
+  bikeId: string;
+  // "Temporarily unavailable" is on.
+  isPaused: boolean;
+};
+
+export function BikeUnavailability({
+  bikeId,
+  isPaused,
+}: BikeUnavailabilityProps) {
   const t = useT();
   const { webApp } = useTelegram();
   const path = `/api/admin/bikes/${bikeId}/unavailable`;
@@ -74,6 +84,8 @@ export function BikeUnavailability({ bikeId }: { bikeId: string }) {
         <Plus />
         {t("unavailable.add")}
       </ButtonLink>
+
+      <PauseSwitch bikeId={bikeId} isPaused={isPaused} />
     </section>
   );
 }
@@ -121,5 +133,51 @@ function PeriodList({ periods, onDelete }: PeriodListProps) {
         );
       })}
     </Section>
+  );
+}
+
+type PauseSwitchProps = {
+  bikeId: string;
+  isPaused: boolean;
+};
+
+// "Temporarily unavailable": for a bike that is out for an unknown time.
+// Saved at once, like the periods above, without the page's "Save" button.
+function PauseSwitch({ bikeId, isPaused }: PauseSwitchProps) {
+  const t = useT();
+  const [isSaving, setIsSaving] = useState(false);
+  const [hasFailed, setHasFailed] = useState(false);
+
+  async function setPaused(newIsPaused: boolean) {
+    if (isSaving) {
+      return;
+    }
+    setIsSaving(true);
+    setHasFailed(false);
+    try {
+      await apiSendJson("POST", `/api/admin/bikes/${bikeId}/pause`, {
+        isPaused: newIsPaused,
+      });
+    } catch (error) {
+      console.error(error);
+      setHasFailed(true);
+    } finally {
+      // This page, the admin's list and the catalog customers see.
+      await refreshApi("/api/admin/bikes");
+      await refreshApi("/api/bikes");
+      setIsSaving(false);
+    }
+  }
+
+  return (
+    <>
+      <Switch
+        label={t("pause.title")}
+        description={t("pause.hint")}
+        isOn={isPaused}
+        onChange={setPaused}
+      />
+      {hasFailed && <FormError>{t("adminBike.actionFailed")}</FormError>}
+    </>
   );
 }

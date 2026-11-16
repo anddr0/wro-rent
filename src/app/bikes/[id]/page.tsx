@@ -70,8 +70,16 @@ export default function BikePage() {
         averageRating={data.reviews.averageRating}
       />
 
+      {/* A paused bike can be looked at, but not booked. */}
+      {bike.isPaused && (
+        <BottomBar>
+          <p className="py-3 text-center font-medium text-muted-foreground">
+            {t("pause.customerNote")}
+          </p>
+        </BottomBar>
+      )}
       {/* Without an active plan there is nothing to book. */}
-      {plans.length > 0 && (
+      {!bike.isPaused && plans.length > 0 && (
         <BottomBar>
           <ButtonLink href={`/bikes/${bike.id}/book`}>
             {t("common.book")}

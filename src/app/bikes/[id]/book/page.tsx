@@ -67,6 +67,9 @@ export default function BookPage() {
       </>
     );
   }
+  if (bike.data.bike.isPaused) {
+    return <NotFoundText>{t("pause.customerNote")}</NotFoundText>;
+  }
   if (bike.data.plans.length === 0) {
     return <NotFoundText>{t("book.noPlans")}</NotFoundText>;
   }

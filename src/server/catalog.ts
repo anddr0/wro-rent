@@ -13,7 +13,7 @@ export async function listVisibleBikes(
 ): Promise<CatalogBike[]> {
   const { data, error } = await supabase
     .from("bikes")
-    .select("id, name, description, bike_photos(path)")
+    .select("id, name, description, is_paused, bike_photos(path)")
     .eq("is_available", true)
     .is("archived_at", null)
     .order("name")
@@ -31,6 +31,7 @@ export async function listVisibleBikes(
       id: bike.id,
       name: bike.name,
       description: bike.description,
+      isPaused: bike.is_paused,
       coverUrl: cover ? bikePhotoUrl(cover.path) : null,
     };
   });
@@ -44,7 +45,7 @@ export async function findVisibleBike(
 ): Promise<BikeDetails | null> {
   const { data, error } = await supabase
     .from("bikes")
-    .select("id, name, description, bike_photos(path)")
+    .select("id, name, description, is_paused, bike_photos(path)")
     .eq("id", bikeId)
     .eq("is_available", true)
     .is("archived_at", null)
@@ -62,6 +63,7 @@ export async function findVisibleBike(
     id: data.id,
     name: data.name,
     description: data.description,
+    isPaused: data.is_paused,
     photoUrls: data.bike_photos.map((photo) => bikePhotoUrl(photo.path)),
   };
 }

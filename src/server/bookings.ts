@@ -155,6 +155,13 @@ export async function createBooking(
   if (!bike) {
     throw new HttpError(404, "Bike not found");
   }
+  if (bike.isPaused) {
+    throw new HttpError(
+      409,
+      "The bike is temporarily unavailable",
+      "bike_paused",
+    );
+  }
   if (!plan) {
     throw new HttpError(409, "This plan is not offered", "plan_unavailable");
   }

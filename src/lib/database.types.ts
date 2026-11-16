@@ -97,14 +97,14 @@ isOneToOne: false
                   ]
                 },"bikes": {
                   Row: {
-                    "archived_at": string | null,"created_at": string,"description": string | null,"id": string,"is_available": boolean,"name": string,"updated_at": string
+                    "archived_at": string | null,"created_at": string,"description": string | null,"id": string,"is_available": boolean,"is_paused": boolean,"name": string,"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "archived_at"?: string | null,"created_at"?: string,"description"?: string | null,"id"?: string,"is_available"?: boolean,"name": string,"updated_at"?: string
+                    "archived_at"?: string | null,"created_at"?: string,"description"?: string | null,"id"?: string,"is_available"?: boolean,"is_paused"?: boolean,"name": string,"updated_at"?: string
                   }
                   Update: {
-                    "archived_at"?: string | null,"created_at"?: string,"description"?: string | null,"id"?: string,"is_available"?: boolean,"name"?: string,"updated_at"?: string
+                    "archived_at"?: string | null,"created_at"?: string,"description"?: string | null,"id"?: string,"is_available"?: boolean,"is_paused"?: boolean,"name"?: string,"updated_at"?: string
                   }
                   Relationships: [
                     

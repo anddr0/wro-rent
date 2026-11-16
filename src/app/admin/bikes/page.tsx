@@ -108,9 +108,12 @@ function BikeList({ bikes, hasFailed, onRetry }: BikeListProps) {
             title={bike.name}
             subtitle={state}
             badge={
-              !bike.isAvailable && (
-                <HiddenBadge label={t("adminBikes.hidden")} />
-              )
+              <span className="flex shrink-0 gap-1">
+                {bike.isPaused && <HiddenBadge label={t("pause.badge")} />}
+                {!bike.isAvailable && (
+                  <HiddenBadge label={t("adminBikes.hidden")} />
+                )}
+              </span>
             }
           />
         );
